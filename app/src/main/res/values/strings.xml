@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+    ********************************************************************************************
+    * New features.
+    * Regex to search for unquoted apostrophes: (?<!\\)\'
+    * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
+    ******************************************************************************************** -->
+    <string name="news">New features</string>
+    <string name="news_message">\nOFeed support of SI-Droid Event.
+        \n\n■ Get result lists from SI-Droid Event and upload them to OFeed.
+        \n■ The result lists are updated with external id:s when uploading to OFeed.
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * Contributors.
+    ******************************************************************************************** -->
+    <string-array name="about_contributors">
+        <item>Lukáš Kettner, OK Kamenice – OFeed and test.</item>
+    </string-array>
+
+    <!--
+    ********************************************************************************************
+    * Name of this app.
+    ******************************************************************************************** -->
+    <string name="app_name" translatable="false">OFeed SI-Droid Connector</string>
+
+    <!--
+    ********************************************************************************************
+    * General.
+    ******************************************************************************************** -->
+    <string name="about">About</string>
+    <string name="contributors">Contributors</string>
+    <string name="do_not_show_again">Don\'t show this again</string>
+    <string name="license">License</string>
+    <string name="qr_code_scanner">QR code scanner</string>
+    <string name="reset">Reset</string>
+    <string name="settings">Settings</string>
+    <string name="start_uploading">Start uploading</string>
+    <string name="stop_uploading">Stop uploading</string>
+    <string name="update">Update</string>
+    <string name="upload_interval">Upload interval</string>
+
+    <!--
+    ********************************************************************************************
+    * Confirm exiting app with back button, which will stop the foreground service.
+    ******************************************************************************************** -->
+    <string name="back_button_exit_confirmation">Stop uploading and exit?
+        \nTap <b>Home</b> to leave app and continue uploading.
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * Android battery restriction, which can stop the foreground service.
+    ******************************************************************************************** -->
+    <string name="battery_restriction_title">Battery restriction</string>
+    <string name="battery_restriction">Android battery restriction is enabled for this app.
+        This can cause the uploading of results to stop.
+        \n\nDisable battery restriction?
+        \n\nThis will launch Android\'s settings for this app, where you can enable
+        Battery => <b>Allow background usage</b> or <b>Unrestricted</b> (or similar wordings).
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * Time units.
+    ******************************************************************************************** -->
+    <string name="minute">min</string>
+    <string name="second">sec</string>
+
+    <!--
+    ********************************************************************************************
+    * SI-Droid Event settings.
+    ******************************************************************************************** -->
+    <string name="si_droid">SI-Droid Event</string>
+    <string name="port_number">Port number</string>
+    <string name="port_number_error">Port number must be between 1025 and 65535.</string>
+    <string name="port_number_help">The port number is defined by SI-Droid Event.
+        Open that app and select
+        <i>Settings</i> => <i>Result Service</i> => <i>Result Service Port</i>.
+        \n\nAlso make sure that <i>Use the builtin result service</i> is enabled.
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * OFeed settings.
+    ******************************************************************************************** -->
+    <string name="ofeed">OFeed</string>
+    <string name="server">Server address (URL)</string>
+    <string name="server_not_specified">Server not specified.</string>
+    <string name="server_incorrect_url">Incorrect server address (URL):</string>
+    <string name="server_https_required">https required.</string>
+    <string name="server_https_required_reason">Android requires a secure connection (https://server…).</string>
+    <string name="event_id">Event id</string>
+    <string name="event_id_is_missing">Event id is missing.</string>
+    <string name="password">Password</string>
+    <string name="password_is_missing">Password is missing.</string>
+    <string name="qr_code_scan">Scan</string>
+    <string name="qr_code_scan_failed">The scanning failed.</string>
+    <string name="qr_code_invalid">Invalid QR code.</string>
+    <string name="qr_code_start">Must start with %s</string>
+    <string name="timeouts" tools:ignore="MissingTranslation">Timeouts</string>
+    <string name="http_timeouts" tools:ignore="MissingTranslation">HTTP timeouts</string>
+    <string name="http_timeouts_help" tools:ignore="MissingTranslation">Timeouts in seconds. Zero means no timeout.</string>
+    <string name="http_timeouts_defaults_help" tools:ignore="MissingTranslation">Reset timeouts to default values.</string>
+    <string name="http_timeout_connect" tools:ignore="MissingTranslation">Connect timeout</string>
+    <string name="http_timeout_connect_help" tools:ignore="MissingTranslation">Max time period to establish a connection with host.</string>
+    <string name="http_timeout_read" tools:ignore="MissingTranslation">Read timeout</string>
+    <string name="http_timeout_read_help" tools:ignore="MissingTranslation">Max time between two data packets when waiting for server\'s response.</string>
+    <string name="http_timeout_write" tools:ignore="MissingTranslation">Write timeout</string>
+    <string name="http_timeout_write_help" tools:ignore="MissingTranslation">Max time between two data packets when sending request to server.</string>
+    <string name="http_timeout_call" tools:ignore="MissingTranslation">Call timeout</string>
+    <string name="http_timeout_call_help" tools:ignore="MissingTranslation">Time limit for a complete call.</string>
+
+    <!--
+    ********************************************************************************************
+    * Log and status.
+    ******************************************************************************************** -->
+    <string name="log">Log</string>
+    <string name="show_log">Show log</string>
+    <string name="show_http_log">HTTP log</string>
+    <string name="log_is_empty">Log is empty.</string>
+
+    <string name="status">Status</string>
+    <string name="status_running">Running OK.</string>
+    <string name="status_stopped">Stopped.</string>
+    <string name="status_not_configured">Not configured.</string>
+    <string name="si_droid_unreachable_title">SI-Droid unreachable.</string>
+    <string name="si_droid_unreachable_message">Make sure that:
+        \n■ SI-Droid Event is running.
+        \n■ Its <i>Result Service</i> is enabled
+        \n■ Its port number matches this app\'s settings.
+        \n\n<b>Troubleshooting</b> – If a service stops unexpectedly, check Android\'s
+        Settings => Apps => <i>App Name</i> => Battery => <b>Unrestricted</b> or <b>Allow background usage</b>
+        (or similar wordings).
+    </string>
+    <string name="status_latest_update">Latest upload of results to OFeed</string>
+    <string name="status_unknown">Unknown.</string>
+
+    <!--
+    ********************************************************************************************
+    * Log/trace messages.
+    ******************************************************************************************** -->
+    <string name="si_droid_get_request">Requesting results from SI-Droid.</string>
+    <string name="si_droid_results_retrieved">Results retrieved from SI-Droid.</string>
+    <string name="si_droid_no_results">No results from SI-Droid.</string>
+    <string name="ofeed_post_request">Submitting results to OFeed.</string>
+    <string name="ofeed_upload_ok">Results uploaded to OFeed.</string>
+
+    <string name="null_response" translatable="false">HTTP response body is null.</string>
+    <string name="io_exception" translatable="false">I/O exception.</string>
+    <string name="external_id_error" translatable="false">Update of external id failed.</string>
+
+    <!--
+    ********************************************************************************************
+    * Help.
+    ******************************************************************************************** -->
+    <string name="help">Help</string>
+    <string name="help_general">This app retrieves result lists from SI-Droid Event and uploads them to OFeed.</string>
+
+    <!--
+    ********************************************************************************************
+    * Notifications in the status bar. Shows that the foreground service is running.
+    ******************************************************************************************** -->
+    <string name="ofeed_results_service_notification_title">OFeed service</string>
+    <string name="ofeed_results_service_notification_text">SI-Droid OFeed Connector upload service</string>
+    <string name="notifications_permission_title">Android permission</string>
+    <string name="notifications_permission_message">Please allow the notification icon to be displayed.
+        It indicates that the app\'s upload service is running.
+    </string>
+    <string name="notifications_permission_not_granted">The notification icon will not be displayed.
+        The OFeed upload service will still run.
+    </string>
+    <!--
+    ********************************************************************************************
+    * In-app update.
+    ******************************************************************************************** -->
+    <string name="update_title">App update</string>
+    <string name="update_available">A new version is available.\n\nDownload and install from Google Play Store?</string>
+    <string name="update_ok">Update completed OK.</string>
+    <string name="update_canceled">Update cancelled.</string>
+    <string name="update_failed">Update failed.</string>
+    <string name="update_postpone_one_week">Postpone one week</string>
+
+    <!--
+    ********************************************************************************************
+    * License.
+    ******************************************************************************************** -->
+    <string name="license_apache" translatable="false">Apache 2.0</string>
+    <string name="license_ok_http" translatable="false">
+        <b>Open Source License</b>
+        \nThis application uses the following open-source software:
+        \n\n<b>OkHttp</b>
+        \nCopyright © 2019 Square, Inc.
+        \n\nLicensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at:
+        \n\nhttp://www.apache.org/licenses/LICENSE-2.0
+        \n\nUnless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+    </string>
+
+</resources>

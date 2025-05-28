@@ -1,0 +1,26 @@
+[versions]
+agp = "8.10.1"
+appcompat = "1.7.1"
+material = "1.12.0"
+activity = "1.10.1"
+constraintlayout = "2.2.1"
+okhttp = "4.12.0"
+desugaring = "2.1.5"
+preference = "1.2.1"
+scanner = "16.1.0"
+appupdate = "2.1.0"
+
+[libraries]
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttplog = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "scanner" }
+desugarjdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugaring" }
+preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
+appupdate = { group = "com.google.android.play", name = "app-update", version.ref = "appupdate" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }

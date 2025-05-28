@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:keepScreenOn="true"
+    android:fitsSystemWindows="true"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/main_service_status_caption"
+        style="@style/medium_bold_wrap_content"
+        android:textSize="24sp"
+        android:text="@string/status"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/main_service_status_icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        app:srcCompat="@drawable/status_ok"
+        tools:ignore="ContentDescription"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/main_service_status"
+        app:layout_constraintTop_toTopOf="@id/main_service_status"
+        app:layout_constraintBottom_toBottomOf="@id/main_service_status" />
+    <TextView
+        android:id="@+id/main_service_status"
+        style="@style/medium_wrap_content"
+        android:textSize="24sp"
+        android:text="@string/status_running"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/main_service_status_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/main_service_status_caption" />
+    <TextView
+        android:id="@+id/main_service_status_help"
+        style="@style/medium_wrap_content"
+        android:text="@string/si_droid_unreachable_message"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_service_status" />
+
+    <Button
+        android:id="@+id/main_start_button"
+        style="@style/button_style_24sp"
+        android:layout_marginTop="32dp"
+        android:text="@string/start_uploading"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_service_status_help" />
+
+    <TextView
+        android:id="@+id/main_http_call_status_caption"
+        style="@style/medium_bold_wrap_content"
+        android:text="@string/status_latest_update"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_start_button" />
+    <ImageView
+        android:id="@+id/main_http_call_status_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:srcCompat="@drawable/help"
+        tools:ignore="ContentDescription"
+        app:layout_constraintStart_toStartOf="@id/main_http_call_status_caption"
+        app:layout_constraintTop_toBottomOf="@id/main_http_call_status_caption" />
+    <TextView
+        android:id="@+id/main_http_call_status"
+        style="@style/medium_wrap_content"
+        android:text="@string/status_unknown"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/main_http_call_status_icon"
+        app:layout_constraintTop_toTopOf="@id/main_http_call_status_icon"
+        app:layout_constraintBottom_toBottomOf="@id/main_http_call_status_icon" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/main_snackbar_anchor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <!--
+    ********************************************************************************************
+    * Time picker layout.
+    ******************************************************************************************** -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        tools:ignore="ContentDescription,HardCodedText">
+
+        <!--
+        ********************************************************************************************
+        * Minutes.
+        ******************************************************************************************** -->
+        <TextView
+            android:id="@+id/time_interval_picker_min_caption"
+            style="@style/medium_bold_wrap_content"
+            android:text="@string/minute"
+            app:layout_constraintStart_toStartOf="@id/time_interval_picker_min"
+            app:layout_constraintEnd_toEndOf="@id/time_interval_picker_min"
+            app:layout_constraintTop_toTopOf="parent" />
+        <NumberPicker
+            android:id="@+id/time_interval_picker_min"
+            style="@style/medium_wrap_content"
+            android:layout_width="50dp"
+            android:layout_marginStart="4dp"
+            android:descendantFocusability="blocksDescendants"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/time_interval_min_sec_separator"
+            app:layout_constraintTop_toBottomOf="@id/time_interval_picker_min_caption" />
+
+        <!--
+        ********************************************************************************************
+        * Minutes-seconds separator.
+        ******************************************************************************************** -->
+        <TextView
+            android:id="@+id/time_interval_min_sec_separator"
+            style="@style/medium_bold_wrap_content"
+            android:layout_marginStart="4dp"
+            android:text=":"
+            app:layout_constraintStart_toEndOf="@id/time_interval_picker_min"
+            app:layout_constraintEnd_toStartOf="@id/time_interval_picker_sec"
+            app:layout_constraintTop_toTopOf="@id/time_interval_picker_min"
+            app:layout_constraintBottom_toBottomOf="@id/time_interval_picker_min" />
+
+        <!--
+        ********************************************************************************************
+        * Seconds.
+        ******************************************************************************************** -->
+        <TextView
+            android:id="@+id/time_interval_picker_sec_caption"
+            style="@style/medium_bold_wrap_content"
+            android:text="@string/second"
+            app:layout_constraintStart_toStartOf="@id/time_interval_picker_sec"
+            app:layout_constraintEnd_toEndOf="@id/time_interval_picker_sec"
+            app:layout_constraintTop_toTopOf="parent" />
+        <NumberPicker
+            android:id="@+id/time_interval_picker_sec"
+            style="@style/medium_wrap_content"
+            android:layout_width="50dp"
+            android:layout_marginStart="4dp"
+            android:descendantFocusability="blocksDescendants"
+            app:layout_constraintStart_toEndOf="@id/time_interval_min_sec_separator"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/time_interval_picker_sec_caption" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

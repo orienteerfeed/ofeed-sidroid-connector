@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <!--
+    ********************************************************************************************
+    * HTTP timeouts.
+    ******************************************************************************************** -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        tools:ignore="HardcodedText,ContentDescription,LabelFor" >
+
+        <TextView
+            android:id="@+id/settings_http_timeout_text"
+            style="@style/medium_wrap_content"
+            android:text="@string/http_timeouts_help"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- https://www.baeldung.com/okhttp-timeouts
+        Connect timeout for new connections. The default value is 10 seconds.
+        The connect timeout is applied when connecting a TCP socket to the target host. -->
+        <TextView
+            android:id="@+id/settings_http_connect_timeout_text"
+            style="@style/medium_bold_wrap_content"
+            android:text="@string/http_timeout_connect"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/settings_http_connect_timeout"
+            app:layout_constraintBottom_toBottomOf="@id/settings_http_connect_timeout" />
+        <EditText
+            android:id="@+id/settings_http_connect_timeout"
+            style="@style/medium_wrap_content"
+            android:minWidth="64dp"
+            android:ellipsize="none"
+            android:inputType="number"
+            android:singleLine="true"
+            android:gravity="center_horizontal"
+            android:text="10"
+            android:importantForAutofill="no"
+            app:layout_constraintStart_toEndOf="@id/settings_http_timeout_barrier"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_timeout_text" />
+        <TextView
+            android:id="@+id/settings_http_connect_timeout_help"
+            style="@style/medium_wrap_content"
+            android:text="@string/http_timeout_connect_help"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_connect_timeout" />
+
+        <!-- https://www.baeldung.com/okhttp-timeouts
+        Read timeout for new connections. The default value is 10 seconds.
+        The read timeout is applied to both the TCP socket and for individual read IO
+        operations including on Source of the Response. -->
+        <TextView
+            android:id="@+id/settings_http_read_timeout_text"
+            style="@style/medium_bold_wrap_content"
+            android:text="@string/http_timeout_read"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/settings_http_read_timeout"
+            app:layout_constraintBottom_toBottomOf="@id/settings_http_read_timeout" />
+        <EditText
+            android:id="@+id/settings_http_read_timeout"
+            style="@style/medium_wrap_content"
+            android:minWidth="64dp"
+            android:ellipsize="none"
+            android:inputType="number"
+            android:singleLine="true"
+            android:gravity="center_horizontal"
+            android:text="10"
+            android:importantForAutofill="no"
+            app:layout_constraintStart_toEndOf="@id/settings_http_timeout_barrier"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_connect_timeout_help" />
+        <TextView
+            android:id="@+id/settings_http_read_timeout_help"
+            style="@style/medium_wrap_content"
+            android:text="@string/http_timeout_read_help"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_read_timeout" />
+
+        <!-- https://www.baeldung.com/okhttp-timeouts
+        Write timeout for new connections. The default value is 10 seconds.
+        The write timeout is applied for individual write IO operations.  -->
+        <TextView
+            android:id="@+id/settings_http_write_timeout_text"
+            style="@style/medium_bold_wrap_content"
+            android:text="@string/http_timeout_write"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/settings_http_write_timeout"
+            app:layout_constraintBottom_toBottomOf="@id/settings_http_write_timeout" />
+        <EditText
+            android:id="@+id/settings_http_write_timeout"
+            style="@style/medium_wrap_content"
+            android:minWidth="64dp"
+            android:ellipsize="none"
+            android:inputType="number"
+            android:singleLine="true"
+            android:gravity="center_horizontal"
+            android:text="10"
+            android:importantForAutofill="no"
+            app:layout_constraintStart_toEndOf="@id/settings_http_timeout_barrier"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_read_timeout_help" />
+        <TextView
+            android:id="@+id/settings_http_write_timeout_help"
+            style="@style/medium_wrap_content"
+            android:text="@string/http_timeout_write_help"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_write_timeout" />
+
+        <!-- https://www.baeldung.com/okhttp-timeouts
+        Timeout for complete calls. The default value is 0 seconds (no timeout).
+        The call timeout spans the entire call: resolving DNS, connecting, writing the
+        request body, server processing, and reading the response body. If the call
+        requires redirects or retries all must complete within one timeout period. -->
+        <TextView
+            android:id="@+id/settings_http_call_timeout_text"
+            style="@style/medium_bold_wrap_content"
+            android:text="@string/http_timeout_call"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/settings_http_call_timeout"
+            app:layout_constraintBottom_toBottomOf="@id/settings_http_call_timeout" />
+        <EditText
+            android:id="@+id/settings_http_call_timeout"
+            style="@style/medium_wrap_content"
+            android:minWidth="64dp"
+            android:ellipsize="none"
+            android:inputType="number"
+            android:singleLine="true"
+            android:gravity="center_horizontal"
+            android:text="0"
+            android:importantForAutofill="no"
+            app:layout_constraintStart_toEndOf="@id/settings_http_timeout_barrier"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_write_timeout_help" />
+        <TextView
+            android:id="@+id/settings_http_call_timeout_help"
+            style="@style/medium_wrap_content"
+            android:text="@string/http_timeout_call_help"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_call_timeout" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/settings_http_timeout_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierMargin="4dp"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="settings_http_connect_timeout_text,
+            settings_http_read_timeout_text,settings_http_write_timeout_text,
+            settings_http_call_timeout_text," />
+
+        <Button
+            android:id="@+id/settings_http_reset_timeouts"
+            style="@style/button_style"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="@string/reset"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_call_timeout_help" />
+        <TextView
+            android:id="@+id/settings_http_reset_timeouts_help"
+            style="@style/medium_wrap_content"
+            android:text="@string/http_timeouts_defaults_help"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_http_reset_timeouts" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

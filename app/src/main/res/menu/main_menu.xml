@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:ignore="AlwaysShowAction,MenuTitle" >
+    <item
+        android:id="@+id/main_menu_overflow"
+        app:showAsAction="always"
+        android:icon="@drawable/more" >
+        <menu>
+            <item
+                android:id="@+id/main_menu_settings"
+                app:showAsAction="ifRoom|withText"
+                android:title="@string/settings"
+                android:icon="@drawable/settings" />
+            <item
+                android:id="@+id/main_menu_log"
+                app:showAsAction="ifRoom|withText"
+                android:title="@string/show_log"
+                android:icon="@drawable/log_file" />
+            <item
+                android:id="@+id/main_menu_http_log"
+                app:showAsAction="ifRoom|withText"
+                android:title="@string/show_http_log"
+                android:icon="@drawable/http" />
+            <item
+                android:id="@+id/main_menu_help"
+                app:showAsAction="ifRoom|withText"
+                android:title="@string/help"
+                android:icon="@drawable/help" />
+            <item
+                android:id="@+id/main_menu_license"
+                app:showAsAction="ifRoom|withText"
+                android:title="@string/license"
+                android:icon="@drawable/copyright" />
+            <item
+                android:id="@+id/main_menu_about"
+                app:showAsAction="ifRoom|withText"
+                android:title="@string/about"
+                android:icon="@drawable/info" />
+        </menu>
+    </item>
+</menu>

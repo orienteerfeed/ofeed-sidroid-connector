@@ -1,0 +1,40 @@
+# IntelliJ IDEA / Android Studio
+.idea/
+.idea/.name
+.idea/assetWizardSettings.xml
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/workspace.xml
+.idea/dictionaries/
+
+# Project files
+*.iml
+
+# Gradle
+.gradle/
+/build
+/captures
+/externalNativeBuild
+/cxx
+
+# Local configuration
+local.properties
+/local.properties
+
+# OS generated files
+.DS_Store
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# Optional - keep build/outputs/ consistent across all modules
+**/build/
+**/captures/
+**/outputs/

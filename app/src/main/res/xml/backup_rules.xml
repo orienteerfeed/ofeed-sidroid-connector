@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <include domain="sharedpref" path="O_FEED_SERVER"/>
+    <include domain="sharedpref" path="O_FEED_EVENT_ID"/>
+    <include domain="sharedpref" path="O_FEED_EVENT_PASSWORD"/>
+    <include domain="sharedpref" path="SI_DROID_PORT"/>
+    <include domain="sharedpref" path="UPLOAD_INTERVAL_SEC"/>
+</full-backup-content>
