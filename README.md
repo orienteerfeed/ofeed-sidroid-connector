@@ -60,4 +60,3 @@ Contributions are welcome! To contribute:
 ## Contact
 
 If you have questions or feedback, feel free to reach out via [email](mailto:connector@stigning.se?subject=OFeed%20SI-Droid%20Connector) or open an issue on GitHub.
-
