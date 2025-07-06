@@ -8,12 +8,12 @@ layout.buildDirectory.set(File("${externalBuildDir}${project.name}"))
 
 android {
     namespace = "com.orienteerfeed.ofeed_sidroid_connector"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.orienteerfeed.ofeed_sidroid_connector"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }

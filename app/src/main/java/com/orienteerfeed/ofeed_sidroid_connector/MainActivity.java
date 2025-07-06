@@ -28,6 +28,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsetsController;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -94,6 +96,13 @@ public class MainActivity extends AppCompatActivity {
                 view.setLayoutParams(mlp);
                 return WindowInsetsCompat.CONSUMED;
             });
+
+            // Fix: Android's status bar shows white icons/texts on its white background.
+            WindowInsetsController controller = getWindow().getInsetsController();
+            if (controller != null) {
+                int appearance = isNightMode() ? 0 : WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+                controller.setSystemBarsAppearance(appearance, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+            }
         }
 
         prefs = new Preferences(this);
@@ -165,6 +174,11 @@ public class MainActivity extends AppCompatActivity {
                         .show();
             }
         });
+    }
+
+    private boolean isNightMode() {
+        return (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES;
     }
 
     // ********************************************************************************************
