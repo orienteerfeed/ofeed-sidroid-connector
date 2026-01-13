@@ -19,9 +19,17 @@
         android:layout_marginTop="8dp"
         tools:ignore="ContentDescription" >
 
+        <View
+            android:id="@+id/settings_middle_of_screen"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
         <!--
         ********************************************************************************************
-        * Settings.
+        * General settings.
         ******************************************************************************************** -->
         <TextView
             android:id="@+id/settings_upload_interval_title"
@@ -37,6 +45,36 @@
             tools:ignore="HardcodedText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/settings_upload_interval_title" />
+        <Button
+            android:id="@+id/settings_upload_http_timeouts"
+            style="@style/button_style"
+            android:text="@string/timeouts"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@+id/settings_upload_interval"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/settings_upload_interval" />
+        <TextView
+            android:id="@+id/settings_create_xml_id_caption"
+            style="@style/medium_bold_wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/create_xml_id"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_upload_interval" />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/settings_create_xml_id"
+            style="@style/medium_bold_wrap_content"
+            app:layout_constraintStart_toEndOf="@id/settings_create_xml_id_caption"
+            app:layout_constraintTop_toTopOf="@id/settings_create_xml_id_caption"
+            app:layout_constraintBottom_toBottomOf="@id/settings_create_xml_id_caption" />
+        <ImageView
+            android:id="@+id/settings_create_xml_id_help"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:srcCompat="@drawable/help"
+            app:layout_constraintStart_toEndOf="@id/settings_create_xml_id"
+            app:layout_constraintTop_toTopOf="@id/settings_create_xml_id"
+            app:layout_constraintBottom_toBottomOf="@id/settings_create_xml_id" />
 
         <!--
         ********************************************************************************************
@@ -48,27 +86,26 @@
             android:layout_marginTop="16dp"
             android:text="@string/si_droid"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/settings_upload_interval" />
+            app:layout_constraintTop_toBottomOf="@id/settings_create_xml_id" />
 
         <EditText
             android:id="@+id/settings_si_droid_port"
-            style="@style/medium_wrap_content"
-            android:layout_width="0dp"
+            style="@style/medium_0_wrap"
+            android:layout_marginEnd="8dp"
             android:ellipsize="none"
             android:inputType="number"
             android:hint="@string/port_number"
             android:singleLine="true"
             android:importantForAutofill="no"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/settings_ofeed_server_help"
-            app:layout_constraintTop_toBottomOf="@id/settings_si_droid_title"
-            tools:ignore="HardcodedText" />
+            app:layout_constraintEnd_toStartOf="@id/settings_si_droid_port_help"
+            app:layout_constraintTop_toBottomOf="@id/settings_si_droid_title" />
         <ImageView
             android:id="@+id/settings_si_droid_port_help"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/help"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/settings_middle_of_screen"
             app:layout_constraintTop_toTopOf="@id/settings_si_droid_port"
             app:layout_constraintBottom_toBottomOf="@id/settings_si_droid_port" />
 
@@ -76,29 +113,35 @@
         ********************************************************************************************
         * OFeed settings.
         ******************************************************************************************** -->
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/settings_ofeed_title"
             style="@style/medium_bold_wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/ofeed"
             app:drawableStartCompat="@drawable/ofeed"
-            android:drawablePadding="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/settings_si_droid_port" />
+        <View
+            android:id="@+id/settings_ofeed_selected"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:background="?attr/colorPrimary"
+            app:layout_constraintStart_toStartOf="@id/settings_ofeed_title"
+            app:layout_constraintEnd_toEndOf="@id/settings_ofeed_title"
+            app:layout_constraintTop_toBottomOf="@id/settings_ofeed_title" />
 
         <EditText
             android:id="@+id/settings_ofeed_server"
-            style="@style/medium_wrap_content"
-            android:layout_width="0dp"
+            style="@style/medium_0_wrap"
+            android:layout_marginTop="8dp"
             android:ellipsize="none"
-            android:inputType="text|textNoSuggestions"
-            android:hint="@string/server"
-            android:singleLine="true"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:hint="api.orienteerfeed.com"
+            tools:ignore="HardcodedText"
             android:importantForAutofill="no"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/settings_ofeed_server_help"
-            app:layout_constraintTop_toBottomOf="@id/settings_ofeed_title"
-            tools:ignore="HardcodedText" />
+            app:layout_constraintTop_toBottomOf="@id/settings_ofeed_selected" />
         <ImageView
             android:id="@+id/settings_ofeed_server_help"
             android:layout_width="wrap_content"
@@ -107,23 +150,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/settings_ofeed_server"
             app:layout_constraintBottom_toBottomOf="@id/settings_ofeed_server" />
-
         <EditText
             android:id="@+id/settings_ofeed_event_id"
-            style="@style/medium_wrap_content"
-            android:layout_width="0dp"
+            style="@style/medium_0_wrap"
             android:ellipsize="none"
-            android:inputType="text|textNoSuggestions"
+            android:inputType="textMultiLine|textNoSuggestions"
             android:hint="@string/event_id"
-            android:singleLine="true"
             android:importantForAutofill="no"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/settings_ofeed_server_help"
             app:layout_constraintTop_toBottomOf="@id/settings_ofeed_server" />
         <EditText
             android:id="@+id/settings_ofeed_event_password"
-            style="@style/medium_wrap_content"
-            android:layout_width="0dp"
+            style="@style/medium_0_wrap"
             android:ellipsize="none"
             android:inputType="textPassword"
             android:hint="@string/password"
@@ -140,25 +179,53 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/settings_ofeed_event_password"
             app:layout_constraintBottom_toBottomOf="@id/settings_ofeed_event_password" />
-
         <Button
             android:id="@+id/settings_ofeed_qr_code"
             style="@style/button_style"
             android:layout_marginTop="8dp"
             android:text="@string/qr_code_scan"
-            android:gravity="start|center_vertical"
+            android:gravity="center"
             android:drawableLeft="@drawable/qr_code"
             tools:ignore="RtlHardcoded"
             android:drawablePadding="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/settings_ofeed_event_password" />
-        <Button
-            android:id="@+id/settings_ofeed_http_timeouts"
-            style="@style/button_style"
-            android:layout_marginStart="32dp"
-            android:text="@string/timeouts"
-            android:gravity="start|center_vertical"
-            app:layout_constraintStart_toEndOf="@id/settings_ofeed_qr_code"
-            app:layout_constraintTop_toTopOf="@id/settings_ofeed_qr_code" />
+
+        <!--
+        ********************************************************************************************
+        * OResults settings.
+        ******************************************************************************************** -->
+        <TextView
+            android:id="@+id/settings_oresults_title"
+            style="@style/medium_bold_wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Results"
+            tools:ignore="HardcodedText"
+            app:drawableStartCompat="@drawable/oresults"
+            android:drawablePadding="2dp"
+            app:layout_constraintStart_toEndOf="@id/settings_ofeed_title"
+            app:layout_constraintBottom_toBottomOf="@id/settings_ofeed_title" />
+        <View
+            android:id="@+id/settings_oresults_selected"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:layout_marginStart="11dp"
+            android:background="?attr/colorPrimary"
+            app:layout_constraintStart_toStartOf="@id/settings_oresults_title"
+            app:layout_constraintEnd_toEndOf="@id/settings_oresults_title"
+            app:layout_constraintTop_toBottomOf="@id/settings_oresults_title" />
+        <EditText
+            android:id="@+id/settings_oresults_api_key"
+            style="@style/medium_0_wrap"
+            android:layout_marginTop="8dp"
+            android:ellipsize="none"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:hint="@string/oresults_api_key"
+            tools:ignore="HardcodedText"
+            android:importantForAutofill="no"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/settings_ofeed_server_help"
+            app:layout_constraintTop_toBottomOf="@id/settings_ofeed_selected" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

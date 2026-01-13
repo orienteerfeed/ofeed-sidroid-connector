@@ -7,11 +7,10 @@ import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.DEFAULT_HTTP
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.string2Int;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.appcompat.view.ContextThemeWrapper;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 /**
  * Settings dialog for HTTP timeouts.
@@ -29,8 +28,7 @@ class SettingsHttpTimeoutsDialog {
     }
 
     void show() {
-        ContextThemeWrapper themedContext = new ContextThemeWrapper(activity, R.style.Theme_ofeed_sidroid_connector);
-        View layout = LayoutInflater.from(themedContext).inflate(R.layout.settings_http_timeouts_dialog, null);
+        View layout = activity.getLayoutInflater().inflate(R.layout.settings_http_timeouts_dialog, null);
         EditText connectTimeout = layout.findViewById(R.id.settings_http_connect_timeout);
         EditText readTimeout = layout.findViewById(R.id.settings_http_read_timeout);
         EditText writeTimeout = layout.findViewById(R.id.settings_http_write_timeout);
@@ -46,9 +44,8 @@ class SettingsHttpTimeoutsDialog {
             writeTimeout.setText(String.valueOf(DEFAULT_HTTP_WRITE_TIMEOUT_SEC));
             callTimeout.setText(String.valueOf(DEFAULT_HTTP_CALL_TIMEOUT_SEC));
         });
-        new androidx.appcompat.app.AlertDialog.Builder(activity)
+        new MaterialAlertDialogBuilder(activity)
                 .setView(layout)
-                .setIcon(R.drawable.settings)
                 .setTitle(R.string.http_timeouts)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     prefs.httpConnectTimeoutSec = string2Int(connectTimeout.getText().toString());
@@ -58,6 +55,6 @@ class SettingsHttpTimeoutsDialog {
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .setCancelable(false)
-                .create().show();
+                .show();
     }
 }

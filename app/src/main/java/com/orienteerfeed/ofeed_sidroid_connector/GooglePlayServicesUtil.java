@@ -11,6 +11,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.moduleinstall.ModuleInstall;
 import com.google.android.gms.common.moduleinstall.ModuleInstallClient;
 import com.google.android.gms.common.moduleinstall.ModuleInstallRequest;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 
 /**
@@ -34,7 +35,7 @@ public class GooglePlayServicesUtil {
         } else if (apiAvailability.isUserResolvableError(resultCode)) {
             // Play Services is unavailable or outdated.
             if (!prefs.manuallyUpdateGooglePlayServices) return;
-            new androidx.appcompat.app.AlertDialog.Builder(activity)
+            new MaterialAlertDialogBuilder(activity)
                     .setTitle(R.string.qr_code_scanner)
                     .setIcon(R.drawable.qr_code)
                     .setMessage(getStatusMessage(resultCode))
@@ -51,11 +52,11 @@ public class GooglePlayServicesUtil {
                         prefs.manuallyUpdateGooglePlayServices = false;
                         prefs.save();
                     })
-                    .create().show();
+                    .show();
 
         } else {
             if (!prefs.manuallyUpdateGooglePlayServices) return;
-            new androidx.appcompat.app.AlertDialog.Builder(activity)
+            new MaterialAlertDialogBuilder(activity)
                     .setTitle(R.string.qr_code_scanner)
                     .setIcon(R.drawable.qr_code)
                     .setMessage(getStatusMessage(resultCode))
@@ -64,7 +65,7 @@ public class GooglePlayServicesUtil {
                         prefs.manuallyUpdateGooglePlayServices = false;
                         prefs.save();
                     })
-                    .create().show();
+                    .show();
 
         }
     }

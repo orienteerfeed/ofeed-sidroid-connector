@@ -8,9 +8,8 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">New features</string>
-    <string name="news_message">\nOFeed support of SI-Droid Event.
-        \n\n■ Get result lists from SI-Droid Event and upload them to OFeed.
-        \n■ The result lists are updated with external id:s when uploading to OFeed.
+    <string name="news_message">■ Upload to OResults.
+        \n■ Upload of XML file from local storage.
     </string>
 
     <!--
@@ -18,20 +17,27 @@
     * Contributors.
     ******************************************************************************************** -->
     <string-array name="about_contributors">
-        <item>Lukáš Kettner, OK Kamenice – OFeed and test.</item>
+        <item>Lukáš Kettner, OK Kamenice</item>
     </string-array>
 
     <!--
     ********************************************************************************************
-    * Name of this app.
+    * App name, and some other name related items.
     ******************************************************************************************** -->
-    <string name="app_name" translatable="false">OFeed SI-Droid Connector</string>
+    <string name="app_name" translatable="false">SI-Droid Connector</string>
+    <string name="app_title_ofeed_connector" translatable="false">OFeed Connector</string>
+    <string name="app_title_oresults_connector" translatable="false">OResults Connector</string>
+
+    <string name="ofeed" translatable="false">OFeed</string>
+    <string name="si_droid" translatable="false">SI-Droid Event</string>
 
     <!--
     ********************************************************************************************
     * General.
     ******************************************************************************************** -->
     <string name="about">About</string>
+    <string name="clear_ofeed">Clear OFeed</string>
+    <string name="cleared_ok">Cleared OK</string>
     <string name="contributors">Contributors</string>
     <string name="do_not_show_again">Don\'t show this again</string>
     <string name="license">License</string>
@@ -42,6 +48,15 @@
     <string name="stop_uploading">Stop uploading</string>
     <string name="update">Update</string>
     <string name="upload_interval">Upload interval</string>
+    <string name="upload_file">Upload file</string>
+    <string name="uploads">Uploads</string>
+
+    <!--
+    ********************************************************************************************
+    * Time units.
+    ******************************************************************************************** -->
+    <string name="minute">min</string>
+    <string name="second">sec</string>
 
     <!--
     ********************************************************************************************
@@ -53,46 +68,30 @@
 
     <!--
     ********************************************************************************************
-    * Android battery restriction, which can stop the foreground service.
-    ******************************************************************************************** -->
-    <string name="battery_restriction_title">Battery restriction</string>
-    <string name="battery_restriction">Android battery restriction is enabled for this app.
-        This can cause the uploading of results to stop.
-        \n\nDisable battery restriction?
-        \n\nThis will launch Android\'s settings for this app, where you can enable
-        Battery => <b>Allow background usage</b> or <b>Unrestricted</b> (or similar wordings).
-    </string>
-
-    <!--
-    ********************************************************************************************
-    * Time units.
-    ******************************************************************************************** -->
-    <string name="minute">min</string>
-    <string name="second">sec</string>
-
-    <!--
-    ********************************************************************************************
     * SI-Droid Event settings.
     ******************************************************************************************** -->
-    <string name="si_droid">SI-Droid Event</string>
     <string name="port_number">Port number</string>
     <string name="port_number_error">Port number must be between 1025 and 65535.</string>
     <string name="port_number_help">The port number is defined by SI-Droid Event.
-        Open that app and select
-        <i>Settings</i> => <i>Result Service</i> => <i>Result Service Port</i>.
-        \n\nAlso make sure that <i>Use the builtin result service</i> is enabled.
+        Open that app and select <b>Settings</b> → <b>Result Service</b> → <b>Result Service Port</b>.
+        \n\nAlso make sure that <b>Use the builtin result service</b> is enabled.
     </string>
 
     <!--
     ********************************************************************************************
     * OFeed settings.
     ******************************************************************************************** -->
-    <string name="ofeed">OFeed</string>
-    <string name="server">Server address (URL)</string>
+    <string name="help_server">OFeed server address (URL):
+        \n■ Default <i>https://api.orienteerfeed.com/rest/v1/events</i>
+        \n■ <i>api.orienteerfeed.com</i> → default
+        \n■ <i>xxx.yyy.zzz</i> → <i>https://xxx.yyy.zzz/rest/v1/events</i>
+        \n■ Path must be <i>/rest/v1/events</i>
+        \n■ Android requires <i>https</i>
+    </string>
     <string name="server_not_specified">Server not specified.</string>
-    <string name="server_incorrect_url">Incorrect server address (URL):</string>
+    <string name="server_incorrect_url">Incorrect server address (URL).</string>
+    <string name="server_incorrect_path">Incorrect path. Server URL must end with <i>/rest/v1/events</i></string>
     <string name="server_https_required">https required.</string>
-    <string name="server_https_required_reason">Android requires a secure connection (https://server…).</string>
     <string name="event_id">Event id</string>
     <string name="event_id_is_missing">Event id is missing.</string>
     <string name="password">Password</string>
@@ -113,6 +112,24 @@
     <string name="http_timeout_write_help" tools:ignore="MissingTranslation">Max time between two data packets when sending request to server.</string>
     <string name="http_timeout_call" tools:ignore="MissingTranslation">Call timeout</string>
     <string name="http_timeout_call_help" tools:ignore="MissingTranslation">Time limit for a complete call.</string>
+    <string name="create_xml_id">Create XML id</string>
+    <string name="xml_id_help">The uploaded results list will be updated with a unique id for each competitor.
+        \n\nThis XML id tag is formed from each competitor\'s name and SI card.
+        The combination of \"FamilyName + GivenName + SICard\" may only appear once in the event.
+        \n\nShould normally be enabled. Uncheck to <b>not</b> modify the results list.
+    </string>
+    <string name="clear_ofeed_competitors">This will delete all competitors of this event in OFeed.
+        \n\nThis cleanup can be used if duplicates have appeared in OFeed.
+        The next upload will restore the competitors.
+        \n\n<b>Cannot be undone!</b>
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * OResults settings.
+    ******************************************************************************************** -->
+    <string name="oresults_api_key">Api key</string>
+    <string name="oresults_api_key_is_missing">Api key is missing.</string>
 
     <!--
     ********************************************************************************************
@@ -124,54 +141,67 @@
     <string name="log_is_empty">Log is empty.</string>
 
     <string name="status">Status</string>
-    <string name="status_running">Running OK.</string>
-    <string name="status_stopped">Stopped.</string>
-    <string name="status_not_configured">Not configured.</string>
-    <string name="si_droid_unreachable_title">SI-Droid unreachable.</string>
+    <string name="status_running">Running OK</string>
+    <string name="status_stopped">Stopped</string>
+    <string name="status_not_configured">Not configured</string>
+    <string name="si_droid_unreachable_title">SI-Droid unreachable</string>
     <string name="si_droid_unreachable_message">Make sure that:
         \n■ SI-Droid Event is running.
-        \n■ Its <i>Result Service</i> is enabled
+        \n■ Its <i>Result Service</i> is enabled.
         \n■ Its port number matches this app\'s settings.
-        \n\n<b>Troubleshooting</b> – If a service stops unexpectedly, check Android\'s
-        Settings => Apps => <i>App Name</i> => Battery => <b>Unrestricted</b> or <b>Allow background usage</b>
-        (or similar wordings).
+        \n\n<b>Troubleshooting</b>
+        \nIf a service stops unexpectedly, check Android\'s
+        Settings → Apps → <i>App Name</i> → Battery → <b>Unrestricted</b> or <b>Allow background usage</b>
+        (or similar wording).
     </string>
-    <string name="status_latest_update">Latest upload of results to OFeed</string>
-    <string name="status_unknown">Unknown.</string>
 
     <!--
     ********************************************************************************************
     * Log/trace messages.
     ******************************************************************************************** -->
-    <string name="si_droid_get_request">Requesting results from SI-Droid.</string>
-    <string name="si_droid_results_retrieved">Results retrieved from SI-Droid.</string>
-    <string name="si_droid_no_results">No results from SI-Droid.</string>
-    <string name="ofeed_post_request">Submitting results to OFeed.</string>
-    <string name="ofeed_upload_ok">Results uploaded to OFeed.</string>
-
-    <string name="null_response" translatable="false">HTTP response body is null.</string>
-    <string name="io_exception" translatable="false">I/O exception.</string>
-    <string name="external_id_error" translatable="false">Update of external id failed.</string>
+    <string name="si_droid_get_request" translatable="false">Connector → SI-Droid.</string>
+    <string name="si_droid_results_retrieved" translatable="false">Connector ← SI-Droid.</string>
+    <string name="si_droid_no_results">No results ← SI-Droid.</string>
+    <string name="ofeed_post_request" translatable="false">Connector → OFeed.</string>
+    <string name="oresults_post_request" translatable="false">Connector → OResults.</string>
+    <string name="upload_ok">Uploaded OK.</string>
+    <string name="upload_failed">Failed.</string>
 
     <!--
     ********************************************************************************************
     * Help.
     ******************************************************************************************** -->
-    <string name="help">Help</string>
-    <string name="help_general">This app retrieves result lists from SI-Droid Event and uploads them to OFeed.</string>
+    <string name="help_title">Help</string>
+    <string name="help_message">This app retrieves results lists from SI-Droid Event
+        and uploads them to OFeed or OResults.
+        \n\nIt can also upload a results list from the local storage of the device.
+        \n\nThe uploaded results list can be updated with a unique id for each competitor.
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * Android battery restriction, which can stop the foreground service.
+    ******************************************************************************************** -->
+    <string name="battery_restriction_title">Battery restriction</string>
+    <string name="battery_restriction">Android battery restriction is enabled for this app.
+        This can cause the uploading of results to stop.
+        \n\nDisable battery restriction?
+        \n\nThis will launch Android\'s settings for this app, where you can enable
+        Battery → <b>Allow background usage</b> or <b>Unrestricted</b> (or similar wording).
+    </string>
 
     <!--
     ********************************************************************************************
     * Notifications in the status bar. Shows that the foreground service is running.
     ******************************************************************************************** -->
-    <string name="ofeed_results_service_notification_title">OFeed service</string>
-    <string name="ofeed_results_service_notification_text">SI-Droid OFeed Connector upload service</string>
+    <string name="notification_title">Connector service</string>
+    <string name="notification_text">SI-Droid Connector upload service</string>
     <string name="notifications_permission_title">Android permission</string>
     <string name="notifications_permission_message">Please allow the notification icon to be displayed.
         It indicates that the app\'s upload service is running.
     </string>
     <string name="notifications_permission_not_granted">The notification icon will not be displayed.
-        The OFeed upload service will still run.
+        The upload service will still run.
     </string>
     <!--
     ********************************************************************************************

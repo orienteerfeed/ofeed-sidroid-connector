@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="196dp"
+    android:height="196dp"
+    android:viewportWidth="196.0"
+    android:viewportHeight="196.0">
+    <!-- Background shadow for drawable ofeed_on_control_flag -->
+    <path
+        android:fillColor="#808080"
+        android:pathData="M0 192HL4 196H196V4L192 0 0 192z"/>
+</vector>

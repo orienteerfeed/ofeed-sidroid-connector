@@ -14,6 +14,16 @@
                 android:title="@string/settings"
                 android:icon="@drawable/settings" />
             <item
+                android:id="@+id/main_menu_file"
+                app:showAsAction="ifRoom|withText"
+                android:title="@string/upload_file"
+                android:icon="@drawable/upload_static" />
+            <item
+                android:id="@+id/main_menu_clear_ofeed"
+                app:showAsAction="ifRoom|withText"
+                android:title="@string/clear_ofeed"
+                android:icon="@drawable/clear" />
+            <item
                 android:id="@+id/main_menu_log"
                 app:showAsAction="ifRoom|withText"
                 android:title="@string/show_log"
@@ -26,7 +36,7 @@
             <item
                 android:id="@+id/main_menu_help"
                 app:showAsAction="ifRoom|withText"
-                android:title="@string/help"
+                android:title="@string/help_title"
                 android:icon="@drawable/help" />
             <item
                 android:id="@+id/main_menu_license"

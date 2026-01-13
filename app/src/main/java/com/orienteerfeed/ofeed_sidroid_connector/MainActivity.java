@@ -16,27 +16,31 @@
 package com.orienteerfeed.ofeed_sidroid_connector;
 
 import static android.view.View.GONE;
+import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static android.webkit.URLUtil.isHttpsUrl;
 import static com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.SI_DROID_PING_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.SI_DROID_URL;
+import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.UPLOAD_TO_OFEED;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.USER_AGENT;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsService.XML_IDS_FILENAME;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsService.resultServiceIsRunning;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsetsController;
@@ -50,14 +54,18 @@ import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -66,16 +74,31 @@ import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    private MaterialToolbar toolbar;
     private Preferences prefs;
     private ResultsServiceManager serviceManager;
     private Button startServiceButton;
-    private TextView serviceStatus, serviceStatusHelp, httpCallStatus;
-    private ImageView serviceStatusIcon, httpCallStatusIcon;
+    private TextView serviceStatus;
+    private ImageView serviceStatusIcon, serviceStatusHelp;
     private SimpleTimer serviceStateTimer;
+    // Status list.
+    private StatusListItemAdapter statusListAdapter;
+    private LinearLayoutManager statusListLayoutManager;
+    // Progress indicator which shows the countdown towards next upload of results.
+    private CountdownIndicator countdownIndicator;
+    private TextView countdownIndicatorText;
+    private ImageView countdownUploadIcon, countdownOkIcon, countdownErrorIcon;
+    private Animatable countdownUploadIconAnimation;
+    // Log.
+    private String resultServiceLogSaved, resultServiceHttpLogSaved;
 
     // ********************************************************************************************
     // Lifecycle.
@@ -111,14 +134,53 @@ public class MainActivity extends AppCompatActivity {
 
         catchBackButtonAndConfirmExit();
 
+        toolbar = findViewById(R.id.main_toolbar);
+        toolbar.post(() -> {
+            toolbar.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.main_menu_settings) settings();
+                else if (itemId == R.id.main_menu_file) uploadXmlFileFromDisk();
+                else if (itemId == R.id.main_menu_clear_ofeed) clearOFeed();
+                else if (itemId == R.id.main_menu_log) showLog();
+                else if (itemId == R.id.main_menu_http_log) showHttpLog();
+                else if (itemId == R.id.main_menu_help) showDialog(R.string.help_title, R.string.help_message);
+                else if (itemId == R.id.main_menu_license) new LicenseDialog(this).show();
+                else if (itemId == R.id.main_menu_about) new AboutDialog(this).show();
+                else return false;
+                return true;
+            });
+            setAppTitle();
+        });
+
         startServiceButton = findViewById(R.id.main_start_button);
         serviceStatus = findViewById(R.id.main_service_status);
-        serviceStatusHelp = findViewById(R.id.main_service_status_help);
         serviceStatusIcon = findViewById(R.id.main_service_status_icon);
+        serviceStatusHelp = findViewById(R.id.main_service_status_help);
+        serviceStatusHelp.setOnClickListener(v ->
+                showDialog(R.string.si_droid_unreachable_title, R.string.si_droid_unreachable_message));
         updateServiceState();
-        httpCallStatus = findViewById(R.id.main_http_call_status);
-        httpCallStatusIcon = findViewById(R.id.main_http_call_status_icon);
-        updateLatestStatus();
+        // Status list.
+        RecyclerView statusListRecyclerView = findViewById(R.id.main_status_recycler_view);
+        statusListLayoutManager = new LinearLayoutManager(this);
+        statusListRecyclerView.setLayoutManager(statusListLayoutManager);
+        ArrayList<StatusListItem> statusListItems = new ArrayList<>();
+        statusListAdapter = new StatusListItemAdapter(statusListItems);
+        statusListRecyclerView.setAdapter(statusListAdapter);
+        // Countdown and upload animations.
+        CircularProgressIndicator progressIndicator = findViewById(R.id.main_countdown_indicator);
+        countdownIndicatorText = findViewById(R.id.main_countdown_text);
+        countdownIndicator = new CountdownIndicator(progressIndicator, countdownIndicatorText);
+        countdownUploadIcon = findViewById(R.id.main_countdown_upload_icon);
+        Drawable d = countdownUploadIcon.getDrawable();
+        if (d instanceof Animatable) {
+            countdownUploadIconAnimation = (Animatable) (d);
+        } else {
+            countdownUploadIconAnimation = null;
+            countdownUploadIcon.setImageResource(R.drawable.upload_static); // Fall back to static version.
+        }
+        countdownOkIcon = findViewById(R.id.main_countdown_ok_icon);
+        countdownErrorIcon = findViewById(R.id.main_countdown_error_icon);
+
 
         if (!hasNotificationsPermission()) requestNotificationsPermission();
         // In-app update.
@@ -157,8 +219,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void handleOnBackPressed() {
                 if (exitSnackbarIsVisible) return;
-                View root = findViewById(R.id.main_snackbar_anchor);
-                Snackbar.make(root, R.string.back_button_exit_confirmation, Snackbar.LENGTH_LONG)
+                View root = findViewById(android.R.id.content);
+                Snackbar snackbar = Snackbar.make(root, R.string.back_button_exit_confirmation, Snackbar.LENGTH_LONG)
                         .setAction(android.R.string.ok, v -> finish())
                         .addCallback(new Snackbar.Callback() {
                             @Override
@@ -170,8 +232,11 @@ public class MainActivity extends AppCompatActivity {
                             public void onDismissed(Snackbar transientBottomBar, int event) {
                                 exitSnackbarIsVisible = false;
                             }
-                        })
-                        .show();
+                        });
+                TextView tv = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                tv.setMaxLines(3);
+                snackbar.show();
             }
         });
     }
@@ -179,6 +244,16 @@ public class MainActivity extends AppCompatActivity {
     private boolean isNightMode() {
         return (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) ==
                 Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    /**
+     * Update main screen in accordance with {@link Preferences#uploadTo}
+     * (set app title, enable/disable Clear OFeed menu item).
+     */
+    private void setAppTitle() {
+        boolean isOFeed = prefs.uploadTo == UPLOAD_TO_OFEED;
+        toolbar.setTitle(isOFeed ? R.string.app_title_ofeed_connector : R.string.app_title_oresults_connector);
+        toolbar.getMenu().findItem(R.id.main_menu_clear_ofeed).setEnabled(isOFeed);
     }
 
     // ********************************************************************************************
@@ -197,12 +272,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateServiceState() {
+        setAppTitle();
         if (!isValidSettings()) {
             serviceStatus.setText(R.string.status_not_configured);
             serviceStatusIcon.setImageResource(R.drawable.status_warning);
             startServiceButton.setText(R.string.settings);
             startServiceButton.setOnClickListener(v -> settings());
-        } else if (!ResultsService.isRunning) {
+        } else if (!resultServiceIsRunning) {
             String pingUrl = String.format(Locale.US, SI_DROID_PING_URL, prefs.siDroidPort);
             new HttpPing(pingUrl, USER_AGENT, isReachable ->
                     runOnUiThread(() -> {
@@ -212,7 +288,10 @@ public class MainActivity extends AppCompatActivity {
                             serviceStatusHelp.setVisibility(GONE);
                             startServiceButton.setText(R.string.start_uploading);
                             startServiceButton.setEnabled(true);
-                            startServiceButton.setOnClickListener(v -> startOFeedResultsService());
+                            startServiceButton.setOnClickListener(v -> {
+                                startServiceButton.setEnabled(false); // Disable until service has started.
+                                startOFeedResultsService();
+                            });
                         } else {
                             serviceStatus.setText(R.string.si_droid_unreachable_title);
                             serviceStatusIcon.setImageResource(R.drawable.error_red);
@@ -229,90 +308,206 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateLatestStatus() {
-        if (serviceManager != null) {
-            String s = serviceManager.getLatestStatus();
-            if (!s.isEmpty()) {
-                int iconResId = s.startsWith("S") ? R.drawable.status_ok : R.drawable.error_red;
-                httpCallStatusIcon.setImageResource(iconResId);
-                httpCallStatus.setText(s.substring(1));
-            }
-        }
-    }
-
-    // ********************************************************************************************
-    // Menu.
-    // ********************************************************************************************
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.main_menu_settings) settings();
-        else if (itemId == R.id.main_menu_log) showLog();
-        else if (itemId == R.id.main_menu_http_log) showHttpLog();
-        else if (itemId == R.id.main_menu_help) help();
-        else if (itemId == R.id.main_menu_license) new LicenseDialog(this).show();
-        else if (itemId == R.id.main_menu_about) new AboutDialog(this).show();
-        else return super.onOptionsItemSelected(item);
-        return true;
-    }
-
-    //**********************************************************************************************
-    // Help.
-    //**********************************************************************************************
-    private void help() {
-        ContextThemeWrapper themedContext = new ContextThemeWrapper(this, R.style.Theme_ofeed_sidroid_connector);
-        View layout = LayoutInflater.from(themedContext).inflate(R.layout.dialog_with_scroll_view, null);
-        TextView message = layout.findViewById(R.id.dialog_with_scroll_view_text);
-        message.setText(R.string.help_general);
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setView(layout)
-                .setIcon(R.drawable.help)
-                .setTitle(R.string.help)
-                .setPositiveButton(android.R.string.ok, null)
-                .show();
-    }
-
     // ********************************************************************************************
     // OFeed results service.
     // ********************************************************************************************
+
     private void startOFeedResultsService() {
+        resultServiceLogSaved = null;
+        resultServiceHttpLogSaved = null;
+
         String siDroidUrl = String.format(Locale.US, SI_DROID_URL, prefs.siDroidPort);
-        serviceManager = new ResultsServiceManager(this, siDroidUrl,
-                prefs.oFeedServer, prefs.oFeedEventId, prefs.oFeedEventPassword, USER_AGENT, prefs.uploadIntervalSec,
+        String oFeedUrl = getEndpointUpload();
+        if (oFeedUrl == null) {
+            showDialog(R.string.ofeed, R.string.server_incorrect_path);
+            return;
+        }
+        serviceManager = new ResultsServiceManager(this, prefs.uploadTo, siDroidUrl,
+                oFeedUrl, prefs.oFeedEventId, prefs.oFeedEventPassword, prefs.oResultsApiKey, USER_AGENT, prefs.uploadIntervalSec,
                 new int[]{prefs.httpConnectTimeoutSec, prefs.httpReadTimeoutSec, prefs.httpWriteTimeoutSec, prefs.httpCallTimeoutSec},
-                new ResultsService.ResultsServiceStatus() {
+                prefs.createXmlId,
+                new ResultsService.ResultsServiceUpdateStatus() {
+                    private long updateStartTimeMs;
+
                     @Override
-                    public void onSuccess(String status) {
+                    public void onUpdateStart(long timeMs) {
                         runOnUiThread(() -> {
-                            httpCallStatus.setText(status);
-                            httpCallStatusIcon.setImageResource(R.drawable.status_ok);
+                            // Countdown and upload animations.
+                            updateStartTimeMs = timeMs;
+                            countdownUploadIcon.setVisibility(VISIBLE);
+                            if (countdownUploadIconAnimation != null) countdownUploadIconAnimation.start();
+                            countdownOkIcon.setVisibility(INVISIBLE);
+                            countdownErrorIcon.setVisibility(INVISIBLE);
+                            countdownIndicatorText.setVisibility(INVISIBLE);
+                            countdownIndicator.start(prefs.uploadIntervalSec);
+                            // Service has started.
+                            startServiceButton.setEnabled(true);
                         });
                     }
 
                     @Override
-                    public void onFailure(String status) {
+                    public void onUpdateSuccess(long timeMs, String status) {
                         runOnUiThread(() -> {
-                            httpCallStatus.setText(status);
-                            httpCallStatusIcon.setImageResource(R.drawable.error_red);
+                            // Countdown and upload animations.
+                            int deltaTimeMs = (int) (timeMs - updateStartTimeMs);
+                            countdownUploadAnimation(deltaTimeMs, countdownOkIcon);
+                            // Status list.
+                            addStatusListItem(status, R.drawable.status_ok);
+                        });
+                    }
+
+                    @Override
+                    public void onUpdateFailure(long timeMs, String status) {
+                        runOnUiThread(() -> {
+                            // Countdown and upload animations.
+                            int deltaTimeMs = (int) (timeMs - updateStartTimeMs);
+                            countdownUploadAnimation(deltaTimeMs, countdownErrorIcon);
+                            // Status list.
+                            addStatusListItem(status, R.drawable.error_red);
                         });
                     }
                 });
+        // Start the service.
         serviceManager.startOFeedResultsService();
         serviceManager.bindOFeedResultsService();
+        // Animate first countdown.
+        countdownIndicatorText.setVisibility(VISIBLE);
+        countdownIndicator.start(ResultsService.TIME_TO_FIRST_UPDATE_SEC);
     }
 
     private void stopOFeedResultsService() {
+        countdownUploadAnimationStop();
         if (serviceManager != null) {
+            resultServiceLogSaved = serviceManager.getLog();
+            resultServiceHttpLogSaved = serviceManager.getHttpLog();
             serviceManager.unbindOFeedResultsService();
             serviceManager.stopOFeedResultsService();
         }
+    }
+
+    private void addStatusListItem(String status, int iconResId) {
+        statusListAdapter.addListItemAtTop(new StatusListItem(status, iconResId));
+        if (statusListLayoutManager.findFirstVisibleItemPosition() <= 1) {
+            statusListLayoutManager.scrollToPositionWithOffset(0, 0);
+        }
+    }
+
+    /**
+     * Get endpoint for uploading results to OFeed.
+     *
+     * @return ".../rest/v1/upload/iof", or
+     * null if {@link Preferences#oFeedUrl} does not end with "/rest/v1/events".
+     */
+    private String getEndpointUpload() {
+        if (!prefs.oFeedUrl.endsWith("/rest/v1/events")) return null;
+        int i = prefs.oFeedUrl.lastIndexOf("/events");
+        return prefs.oFeedUrl.substring(0, i) + "/upload/iof";
+    }
+
+    /**
+     * Get endpoint for deleting all competitors of this event in OFeed.
+     *
+     * @return ".../rest/v1/events/{eventId}/competitors", or
+     * null if {@link Preferences#oFeedUrl} does not end with "/rest/v1/events".
+     */
+    private String getOFeedEndpointDelete() {
+        if (!prefs.oFeedUrl.endsWith("/rest/v1/events")) return null;
+        return prefs.oFeedUrl + "/" + prefs.oFeedEventId + "/" + "competitors";
+    }
+
+    // ********************************************************************************************
+    // Delete OFeed competitors.
+    // ********************************************************************************************
+
+    /**
+     * Delete all competitors of this event in OFeed
+     * Handy if duplicates have appeared in OFeed; the next upload will restore the competitors.
+     */
+    private void clearOFeed() {
+        boolean wasRunning = resultServiceIsRunning;
+        if (resultServiceIsRunning) stopOFeedResultsService();
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.clear_ofeed)
+                .setMessage(R.string.clear_ofeed_competitors)
+                .setPositiveButton(android.R.string.ok, (d, which) -> deleteOFeedCompetitors())
+                .setNegativeButton(android.R.string.cancel, (d, which) -> {
+                    if (wasRunning) startOFeedResultsService();
+                })
+                .setCancelable(false)
+                .show();
+        setDialogTextSize(dialog);
+    }
+
+    private static final DateTimeFormatter HH_MM_SS = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM);
+
+    /**
+     * Do the actual deletion of OFeed competitors.
+     */
+    private void deleteOFeedCompetitors() {
+        String url = getOFeedEndpointDelete();
+        if (url == null) {
+            showDialog(R.string.ofeed, R.string.server_incorrect_path);
+            return;
+        }
+
+        new OFeedClear(url, prefs.oFeedEventId, prefs.oFeedEventPassword, USER_AGENT, (isCleared, message) ->
+                runOnUiThread(() -> {
+                    String status = LocalTime.now().format(HH_MM_SS) + " ";
+                    int iconResId;
+                    if (isCleared) {
+                        SerializableManager.delete(this, XML_IDS_FILENAME);
+                        iconResId = R.drawable.status_ok;
+                        status += getString(R.string.cleared_ok);
+                    } else {
+                        iconResId = R.drawable.error_red;
+                        status += message;
+                    }
+                    addStatusListItem(status, iconResId);
+                })).delete();
+    }
+
+    // ********************************************************************************************
+    // Countdown and upload animations.
+    // ********************************************************************************************
+    private void countdownUploadAnimation(int deltaTimeMs, ImageView icon) {
+        if (deltaTimeMs >= 1_000) {
+            // Upload took more than one second, just show the result.
+            countdownUploadAnimationShowResult(icon);
+        } else {
+            // Upload completed in less than a second, continue to show upload icon for a full second.
+            new SimpleTimer(1_000 - deltaTimeMs, () -> {
+                // One second has elapsed.
+                if (isAnimating()) {
+                    countdownUploadAnimationShowResult(icon);
+                }
+            }).startTimer();
+        }
+    }
+
+    private void countdownUploadAnimationShowResult(ImageView icon) {
+        if (countdownUploadIconAnimation != null) countdownUploadIconAnimation.stop();
+        countdownUploadIcon.setVisibility(INVISIBLE);
+        icon.setVisibility(VISIBLE);
+        // Show result icon for five seconds, then show the countdown.
+        new SimpleTimer(5_000, () -> {
+            if (isAnimating()) {
+                icon.setVisibility(INVISIBLE);
+                countdownIndicatorText.setVisibility(VISIBLE);
+            }
+        }).startTimer();
+    }
+
+    private void countdownUploadAnimationStop() {
+        countdownIndicator.stop();
+        if (countdownUploadIconAnimation != null) countdownUploadIconAnimation.stop();
+        countdownUploadIcon.setVisibility(INVISIBLE);
+        countdownOkIcon.setVisibility(INVISIBLE);
+        countdownErrorIcon.setVisibility(INVISIBLE);
+        countdownIndicatorText.setVisibility(INVISIBLE);
+    }
+
+    private boolean isAnimating() {
+        return countdownIndicator.isRunning();
     }
 
     // ********************************************************************************************
@@ -327,57 +522,159 @@ public class MainActivity extends AppCompatActivity {
      * Checks that all configuration parameters have valid values.
      */
     private boolean isValidSettings() {
-        return prefs.siDroidPort >= 1025 && prefs.siDroidPort <= 65535 &&
-                !prefs.oFeedServer.isEmpty() &&
-                isHttpsUrl(prefs.oFeedServer) &&
-                !prefs.oFeedEventId.isEmpty() &&
-                !prefs.oFeedEventPassword.isEmpty();
+        if (prefs.siDroidPort < 1025 || prefs.siDroidPort > 65535) return false;
+        if (prefs.uploadTo == UPLOAD_TO_OFEED) {
+            return !prefs.oFeedUrl.isEmpty() &&
+                    isHttpsUrl(prefs.oFeedUrl) &&
+                    !prefs.oFeedEventId.isEmpty() &&
+                    !prefs.oFeedEventPassword.isEmpty();
+        } else {
+            return !prefs.oResultsApiKey.isEmpty();
+        }
+    }
+
+    // ********************************************************************************************
+    // Upload xml results file from local storage to OFeed/OResults, once only.
+    // ********************************************************************************************
+
+    private void uploadXmlFileFromDisk() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/xml");   // Or "*/*".
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"text/xml", "application/xml"});
+        openXmlLauncher.launch(intent);
+    }
+
+    final ActivityResultLauncher<Intent> openXmlLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent intent = result.getData();
+                    if (intent != null) {
+                        Uri uri = intent.getData();
+                        if (uri != null) {
+                            int modeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                            getContentResolver().takePersistableUriPermission(uri, modeFlags);
+                            uploadXmlFile(uri);
+                        }
+                    }
+                }
+            }
+    );
+
+    private void uploadXmlFile(Uri localXmlFile) {
+        if (resultServiceIsRunning) stopOFeedResultsService();
+
+        long startTimeMs = System.currentTimeMillis();
+        uploadXmlFileAnimationStart();
+        LocalXmlFileUploader uploader = new LocalXmlFileUploader(this, USER_AGENT,
+                (isUploaded, message) ->
+                        runOnUiThread(() -> {
+                            int deltaTimeMs = (int) (System.currentTimeMillis() - startTimeMs);
+                            if (isUploaded) {
+                                addStatusListItem(getString(R.string.upload_ok), R.drawable.status_ok);
+                                uploadXmlFileAnimationStop(deltaTimeMs, countdownOkIcon);
+                            } else {
+                                addStatusListItem(message, R.drawable.error_red);
+                                uploadXmlFileAnimationStop(deltaTimeMs, countdownErrorIcon);
+                            }
+                        }));
+
+        if (prefs.uploadTo == UPLOAD_TO_OFEED) {
+            String oFeedUrl = getEndpointUpload();
+            if (oFeedUrl == null) {
+                showDialog(R.string.ofeed, R.string.server_incorrect_path);
+                return;
+            }
+            uploader.setOFeedParams(oFeedUrl, prefs.oFeedEventId, prefs.oFeedEventPassword);
+            uploader.uploadToOFeed(localXmlFile, prefs.createXmlId);
+        } else {
+            uploader.setOResultsParams(prefs.oResultsApiKey);
+            uploader.uploadToOResults(localXmlFile, prefs.createXmlId);
+        }
+    }
+
+    private void uploadXmlFileAnimationStart() {
+        countdownUploadIcon.setVisibility(VISIBLE);
+        if (countdownUploadIconAnimation != null) countdownUploadIconAnimation.start();
+    }
+
+    private void uploadXmlFileAnimationStop(int deltaTimeMs, ImageView icon) {
+        if (deltaTimeMs >= 1_000) {
+            // Upload took more than one second, just show the result.
+            uploadXmlFileAnimationShowResult(icon);
+        } else {
+            // Upload completed in less than a second, continue to show upload icon for a full second.
+            new SimpleTimer(1_000 - deltaTimeMs, () -> {
+                // One second has elapsed.
+                uploadXmlFileAnimationShowResult(icon);
+            }).startTimer();
+        }
+    }
+
+    private void uploadXmlFileAnimationShowResult(ImageView icon) {
+        if (countdownUploadIconAnimation != null) countdownUploadIconAnimation.stop();
+        countdownUploadIcon.setVisibility(INVISIBLE);
+        fadeIn(icon);
+        // Show result icon for some seconds.
+        new SimpleTimer(3_000, () -> fadeOut(icon)).startTimer();
+    }
+
+    private void fadeIn(ImageView icon) {
+        icon.setAlpha(0f);
+        icon.setVisibility(VISIBLE);
+        icon.animate().alpha(1f).setDuration(500).start();
+    }
+
+    private void fadeOut(ImageView icon) {
+        icon.animate().alpha(0f).setDuration(500)
+                .withEndAction(() -> icon.setVisibility(INVISIBLE)).start();
     }
 
     // ********************************************************************************************
     // Log.
     // ********************************************************************************************
     private void showLog() {
+        // Try to get the log from the result service manager.
         if (serviceManager != null) {
             String log = serviceManager.getLog();
             if (!log.isEmpty()) {
-                showLog(R.string.log, log);
-            } else {
-                showSnackbarEmptyLog();
+                showLogDialog(R.string.log, log);
+                return;
             }
-        } else {
-            showSnackbarEmptyLog();
         }
+        // Try the log that was saved when stopping the service manager.
+        if (resultServiceLogSaved != null && !resultServiceLogSaved.isEmpty()) {
+            showLogDialog(R.string.log, resultServiceLogSaved);
+            return;
+        }
+        // No log available.
+        showSnackbarEmptyLog();
     }
 
     private void showHttpLog() {
+        // Try to get the log from the result service manager.
         if (serviceManager != null) {
             String log = serviceManager.getHttpLog();
             if (!log.isEmpty()) {
-                showLog(R.string.show_http_log, log);
-            } else {
-                showSnackbarEmptyLog();
+                showLogDialog(R.string.show_http_log, log.replace("\n", "\n\n"));
+                return;
             }
-        } else {
-            showSnackbarEmptyLog();
         }
-    }
-
-    private void showLog(int titleResId, String log) {
-        ContextThemeWrapper themedContext = new ContextThemeWrapper(this, R.style.Theme_ofeed_sidroid_connector);
-        View layout = LayoutInflater.from(themedContext).inflate(R.layout.dialog_with_scroll_view, null);
-        TextView message = layout.findViewById(R.id.dialog_with_scroll_view_text);
-        message.setText(log);
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setView(layout)
-                .setTitle(titleResId)
-                .setPositiveButton(android.R.string.ok, null)
-                .show();
+        // Try the log that was saved when stopping the service manager.
+        if (resultServiceHttpLogSaved != null && !resultServiceHttpLogSaved.isEmpty()) {
+            showLogDialog(R.string.show_http_log, resultServiceHttpLogSaved.replace("\n", "\n\n"));
+            return;
+        }
+        // No log available.
+        showSnackbarEmptyLog();
     }
 
     private void showSnackbarEmptyLog() {
-        View root = findViewById(R.id.main_snackbar_anchor);
-        Snackbar.make(root, R.string.log_is_empty, Snackbar.LENGTH_LONG).show();
+        View root = findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar.make(root, R.string.log_is_empty, Snackbar.LENGTH_LONG);
+        TextView tv = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        snackbar.show();
     }
 
     // ********************************************************************************************
@@ -397,14 +694,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestNotificationsPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            new MaterialAlertDialogBuilder(this)
+            AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(getString(R.string.notifications_permission_title))
                     .setMessage(getString(R.string.notifications_permission_message))
                     .setCancelable(false)
-                    .setPositiveButton(android.R.string.ok, (dialog, id) ->
+                    .setPositiveButton(android.R.string.ok, (d, id) ->
                             ActivityCompat.requestPermissions(this,
                                     new String[]{Manifest.permission.POST_NOTIFICATIONS}, PERMISSIONS_REQUEST_CODE))
-                    .create().show();
+                    .show();
+            setDialogTextSize(dialog);
         }
     }
 
@@ -418,11 +716,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 for (int result : grantResults) {
                     if (result == PackageManager.PERMISSION_DENIED) {
-                        View root = findViewById(R.id.main_snackbar_anchor);
-                        Snackbar.make(root, R.string.notifications_permission_not_granted, Snackbar.LENGTH_INDEFINITE)
-                                .setAction(android.R.string.ok, v -> {
-                                })
-                                .show();
+                        showDialog(R.string.notifications_permission_title, R.string.notifications_permission_not_granted);
                     }
                 }
             }
@@ -433,19 +727,50 @@ public class MainActivity extends AppCompatActivity {
     // New features.
     // ********************************************************************************************
     private void showNews() {
-        ContextThemeWrapper themedContext = new ContextThemeWrapper(this, R.style.Theme_ofeed_sidroid_connector);
-        View layout = LayoutInflater.from(themedContext).inflate(R.layout.dialog_with_scroll_view, null);
-        TextView message = layout.findViewById(R.id.dialog_with_scroll_view_text);
-        message.setText(R.string.news_message);
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setView(layout)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.news)
+                .setMessage(R.string.news_message)
                 .setPositiveButton(android.R.string.ok, null)
-                .setNeutralButton(R.string.do_not_show_again, (dialog, which) -> {
+                .setNeutralButton(R.string.do_not_show_again, (d, which) -> {
                     prefs.showNews = false;
                     prefs.save();
                 })
                 .show();
+        setDialogTextSize(dialog);
+    }
+
+    // ********************************************************************************************
+    // Utilities: Show alert dialog variations.
+    // ********************************************************************************************
+
+    /**
+     * Show alert dialog with OK button and larger text.
+     */
+    private void showDialog(int titleResId, int messageResId) {
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle(titleResId)
+                .setMessage(messageResId)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+        setDialogTextSize(dialog);
+    }
+
+    /**
+     * Show alert dialog with OK button and default text (more compact).
+     */
+    private void showLogDialog(int titleResId, String message) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(titleResId)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+    }
+
+    private void setDialogTextSize(AlertDialog dialog) {
+        TextView tv = dialog.findViewById(android.R.id.message);
+        if (tv != null) tv.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyLarge);
+        tv = dialog.findViewById(androidx.appcompat.R.id.alertTitle);
+        if (tv != null) tv.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleLarge);
     }
 
     // ********************************************************************************************
@@ -461,26 +786,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (isBatteryRestricted()) {
-            ContextThemeWrapper themedContext = new ContextThemeWrapper(this, R.style.Theme_ofeed_sidroid_connector);
-            View layout = LayoutInflater.from(themedContext).inflate(R.layout.dialog_with_scroll_view, null);
-            TextView message = layout.findViewById(R.id.dialog_with_scroll_view_text);
-            message.setText(R.string.battery_restriction);
-            new androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setView(layout)
-                    .setIcon(R.drawable.battery)
+            AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.battery_restriction_title)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    .setMessage(R.string.battery_restriction)
+                    .setPositiveButton(android.R.string.ok, (d, which) -> {
                         // Redirect user to Android's settings to remove background restriction.
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         intent.setData(Uri.parse("package:" + getPackageName()));
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                     })
-                    .setNeutralButton(R.string.do_not_show_again, (dialog, which) -> {
+                    .setNeutralButton(R.string.do_not_show_again, (d, which) -> {
                         prefs.checkBatteryRestriction = false;
                         prefs.save();
                     })
                     .show();
+            setDialogTextSize(dialog);
         }
     }
 
@@ -526,12 +847,7 @@ public class MainActivity extends AppCompatActivity {
                         msgResId = R.string.update_failed;
                     }
                     if (msgResId != 0) {
-                        new androidx.appcompat.app.AlertDialog.Builder(this)
-                                .setIcon(R.drawable.update)
-                                .setTitle(R.string.update_title)
-                                .setMessage(msgResId)
-                                .setPositiveButton(android.R.string.ok, null)
-                                .create().show();
+                        showDialog(R.string.update_title, msgResId);
                     }
                 });
     }
@@ -549,23 +865,19 @@ public class MainActivity extends AppCompatActivity {
                     appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
 
                 // An update is available. Ask if the user wants the new version.
-                new androidx.appcompat.app.AlertDialog.Builder(this)
+                AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.update_title)
                         .setMessage(R.string.update_available)
-                        .setIcon(R.drawable.update)
-
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        .setPositiveButton(android.R.string.ok, (d, which) -> {
                             // Yes, the user wants the new version. Request the update.
                             appUpdateManager.startUpdateFlowForResult(
                                     appUpdateInfo,
                                     inAppUpdateCallback,
                                     AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build());
                         })
-
                         .setNegativeButton(android.R.string.cancel, null)
                         // No, the user does not want the new version at this moment.
-
-                        .setNeutralButton(R.string.update_postpone_one_week, (dialog, which) -> {
+                        .setNeutralButton(R.string.update_postpone_one_week, (d, which) -> {
                             // Disable upgrade check for one week.
                             LocalDate postponeUntil = LocalDate.now().plusWeeks(1);
                             prefs.inAppUpdatePostponedUntilYear = postponeUntil.getYear();
@@ -575,7 +887,8 @@ public class MainActivity extends AppCompatActivity {
                         })
 
                         // Show the update dialog.
-                        .create().show();
+                        .show();
+                setDialogTextSize(dialog);
             }
         });
     }

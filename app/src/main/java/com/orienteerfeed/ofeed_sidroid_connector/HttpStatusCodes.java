@@ -29,7 +29,7 @@ class HttpStatusCodes {
     static String getMeaning(int code) {
         for (HttpStatusCode httpStatusCode : HTTP_STATUS_CODES) {
             if (httpStatusCode.code == code) {
-                return String.format(Locale.US, "%d (%s).", code, httpStatusCode.meaning);
+                return String.format(Locale.US, "%d %s.", code, httpStatusCode.meaning);
             }
         }
         return String.format(Locale.US, "%d.", code);

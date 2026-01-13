@@ -8,9 +8,8 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nya funktioner</string>
-    <string name="news_message">\nOFeed stöd för SI-Droid Event.
-        \n\n■ Hämtar resultatlistor från SI-Droid Event och laddar upp dem till OFeed.
-        \n■ Resultatlistorna kompletteras med externa id:n när de laddas upp till OFeed.
+    <string name="news_message">■ Upload to OResults.
+        \n■ Upload of XML file from local storage.
     </string>
 
     <!--
@@ -18,7 +17,7 @@
     * Contributors.
     ******************************************************************************************** -->
     <string-array name="about_contributors">
-        <item>Lukáš Kettner, OK Kamenice – OFeed och test.</item>
+        <item>Lukáš Kettner, OK Kamenice.</item>
     </string-array>
 
     <!--
@@ -26,36 +25,20 @@
     * General.
     ******************************************************************************************** -->
     <string name="about">Om</string>
+    <string name="clear_ofeed">Rensa OFeed</string>
+    <string name="cleared_ok">Rensat OK</string>
     <string name="contributors">Bidragsgivare</string>
     <string name="do_not_show_again">Visa inte igen</string>
     <string name="license">Licens</string>
     <string name="qr_code_scanner">QR-kodskanner</string>
     <string name="reset">Reset</string>
     <string name="settings">Inställningar</string>
-    <string name="update">Updatering</string>
     <string name="start_uploading">Starta uppladdning</string>
     <string name="stop_uploading">Stoppa uppladdning</string>
+    <string name="update">Updatering</string>
+    <string name="upload_file">Ladda upp fil</string>
     <string name="upload_interval">Uppladdningsintervall</string>
-
-    <!--
-    ********************************************************************************************
-    * Confirm exiting app with back button, which will stop the foreground service.
-    ******************************************************************************************** -->
-    <string name="back_button_exit_confirmation">Stoppa uppladdning och avsluta?
-        Klicka på <b>Hem</b> för att lämna appen och fortsätta uppladdningen.
-    </string>
-
-    <!--
-    ********************************************************************************************
-    * Android battery restriction, which can stop the foreground service.
-    ******************************************************************************************** -->
-    <string name="battery_restriction_title">Batterirestriktioner</string>
-    <string name="battery_restriction">Androids batterirestriktioner är påslagna för appen.
-        Det kan medföra att uppladdningen stoppas.
-        \n\nSlå av batterirestriktionen?
-        \n\nDetta startar Androids inställningar för appen, där du kan ändra inställningen
-        Batteri => <b>Tillåt bakgrundsanvändning</b> eller <b>Inga begränsningar</b> (eller liknande formulering).
-    </string>
+    <string name="uploads">Uppladdningar</string>
 
     <!--
     ********************************************************************************************
@@ -66,9 +49,16 @@
 
     <!--
     ********************************************************************************************
+    * Confirm exiting app with back button, which will stop the foreground service.
+    ******************************************************************************************** -->
+    <string name="back_button_exit_confirmation">Sluta ladda upp och avsluta?
+        \nKlicka på <b>Hem</b> för att lämna appen och fortsätta ladda upp.
+    </string>
+
+    <!--
+    ********************************************************************************************
     * SI-Droid Event settings.
     ******************************************************************************************** -->
-    <string name="si_droid">SI-Droid Event</string>
     <string name="port_number">Portnummer</string>
     <string name="port_number_error">Portnumret måste vara mellan 1025 och 65535.</string>
     <string name="port_number_help">Portnumret definieras av SI-Droid Event.
@@ -80,12 +70,17 @@
     ********************************************************************************************
     * OFeed settings.
     ******************************************************************************************** -->
-    <string name="ofeed">OFeed</string>
-    <string name="server">Serveradress (URL)</string>
+    <string name="help_server">OFeed serveradress (URL):
+        \n■ Default <i>https://api.orienteerfeed.com/rest/v1/events</i>
+        \n■ <i>api.orienteerfeed.com</i> → default
+        \n■ <i>xxx.yyy.zzz</i> → <i>https://xxx.yyy.zzz/rest/v1/events</i>
+        \n■ Måste sluta med <i>/rest/v1/events</i>
+        \n■ Android kräver <i>https</i>
+    </string>
     <string name="server_not_specified">Server inte angiven.</string>
-    <string name="server_incorrect_url">Felaktig serveradress (URL):</string>
+    <string name="server_incorrect_url">Felaktig serveradress (URL).</string>
+    <string name="server_incorrect_path">Felaktig path. Serverns URL måste sluta med <i>/rest/v1/events</i></string>
     <string name="server_https_required">https krävs.</string>
-    <string name="server_https_required_reason">Android kräven en säker förbindelse (https://server…).</string>
     <string name="event_id">Event-id</string>
     <string name="event_id_is_missing">Even-id saknas.</string>
     <string name="password">Lösen</string>
@@ -98,6 +93,24 @@
     <string name="http_timeouts">HTTP timeouter</string>
     <string name="http_timeouts_help">Tidsgränser i sekunder. Noll innebär ingen timeout.</string>
     <string name="http_timeouts_defaults_help">Återställ timeouterna till förvalda värden.</string>
+    <string name="create_xml_id">Skapa XML-id</string>
+    <string name="xml_id_help">Den uppladdade resultatlistan kommer att uppdateras med ett unikt id för varje deltagare.
+        \n\nDetta id bildas av varje deltagares namn och bricknummer.
+        Kombinationen \”Efternamn + Förnamn + bricknummer\” får endast förekomma en gång i tävlingen.
+        \n\nSka normalt vara aktiverad. Avmarkera för att <b>inte</b> modifiera resultatlistan.
+    </string>
+    <string name="clear_ofeed_competitors">Detta kommer att radera alla deltagare i OFeed.
+        \n\nDenna rensning kan användas om dubbletter har dykt upp i OFeed.
+        Nästa uppladdning kommer att återställa deltagarna.
+        \n\n<b>Kan inte ångras!</b>
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * OResults settings.
+    ******************************************************************************************** -->
+    <string name="oresults_api_key">Api key</string>
+    <string name="oresults_api_key_is_missing">Api key saknas.</string>
 
     <!--
     ********************************************************************************************
@@ -120,32 +133,43 @@
         => Appar => <i>Appnamn</i> => Batteri => <b>Tillåt bakgrundsanvändning</b> eller
         <b>Inga begränsningar</b> (eller liknande formulering).
     </string>
-    <string name="status_latest_update">Senaste uppladning till OFeed</string>
-    <string name="status_unknown">Okänd.</string>
 
     <!--
     ********************************************************************************************
     * Log/trace messages.
     ******************************************************************************************** -->
-    <string name="si_droid_get_request">Begär resultat från SI-Droid.</string>
-    <string name="si_droid_results_retrieved">Resultat erhållna från SI-Droid.</string>
-    <string name="si_droid_no_results">Inga resultat från SI-Droid.</string>
-    <string name="ofeed_post_request">Skickar resultat till OFeed.</string>
-    <string name="ofeed_upload_ok">Resultat uppladdade till OFeed.</string>
+    <string name="si_droid_no_results">Inga resultat ← SI-Droid.</string>
+    <string name="upload_ok">Uppladdad OK.</string>
+    <string name="upload_failed">Misslyckades.</string>
 
     <!--
     ********************************************************************************************
     * Help.
     ******************************************************************************************** -->
-    <string name="help">Hjälp</string>
-    <string name="help_general">Den här appen hämtar resultatlistor från SI-Droid Event och laddar upp dem till OFeed.</string>
+    <string name="help_title">Hjälp</string>
+    <string name="help_message">Den här appen hämtar resultatlistor från SI-Droid Event
+        och laddar upp dem till OFeed eller OResults. Den uppladdade resultatlistan kan uppdateras
+        med ett unikt id för varje deltagare.
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * Android battery restriction, which can stop the foreground service.
+    ******************************************************************************************** -->
+    <string name="battery_restriction_title">Batterirestriktioner</string>
+    <string name="battery_restriction">Androids batterirestriktioner är påslagna för appen.
+        Det kan medföra att uppladdningen stoppas.
+        \n\nSlå av batterirestriktionen?
+        \n\nDetta startar Androids inställningar för appen, där du kan ändra inställningen
+        Batteri => <b>Tillåt bakgrundsanvändning</b> eller <b>Inga begränsningar</b> (eller liknande formulering).
+    </string>
 
     <!--
     ********************************************************************************************
     * Notifications in the status bar. Shows that the foreground service is running.
     ******************************************************************************************** -->
-    <string name="ofeed_results_service_notification_title">OFeed tjänst</string>
-    <string name="ofeed_results_service_notification_text">SI-Droid OFeed Connector uppladdningstjänst</string>
+    <string name="notification_title">Connector service</string>
+    <string name="notification_text">SI-Droid Connector uppladdningstjänst</string>
     <string name="notifications_permission_title">Android behörighet</string>
     <string name="notifications_permission_message">Tillåt att aviseringsikonen visas.
         Den indikerar att appens uppladdningstjänst körs.

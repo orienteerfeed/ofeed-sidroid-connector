@@ -5,10 +5,17 @@ import static android.webkit.URLUtil.isHttpsUrl;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Base64;
 import android.widget.NumberPicker;
 
 import androidx.annotation.NonNull;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public class Util {
@@ -85,6 +92,17 @@ public class Util {
     }
 
     /**
+     * Encode data as a Base64-encoded string. Note that this method uses android.util.Base64,
+     * which is different from java.util.Base64 (requires API 26+).
+     *
+     * @param data The data to encode.
+     * @return The data encoded as a Base64-encoded string.
+     */
+    static String base64EncodeToString(@NonNull String data) {
+        return android.util.Base64.encodeToString(data.getBytes(), Base64.NO_WRAP);
+    }
+
+    /**
      * This version of Integer.parseInt() returns 0 if not a number.
      *
      * @param s String representation of an integer value.
@@ -97,5 +115,66 @@ public class Util {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    /**
+     * Read text file in assets folder.
+     *
+     * @param filePath Path within the assets folder.
+     */
+    @SuppressWarnings("SameParameterValue")
+    static String readTextFromAssets(Context context, String filePath) throws IOException {
+        StringBuilder builder = new StringBuilder(11_560);  // Length of apache-2.0.txt.
+        try (InputStream is = context.getAssets().open(filePath);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line.trim()).append("\n");
+            }
+        }
+        return builder.toString();
+    }
+
+//    /**
+//     * Read text file from local storage.
+//     */
+//    static String readTextFileOld(Context context, Uri uri) throws IOException {
+//        InputStream is = context.getContentResolver().openInputStream(uri);
+//        if (is == null) throw new FileNotFoundException("Unable to open XML file.");
+//
+//        try (is; ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+//            byte[] data = new byte[4096];
+//            int n;
+//            while ((n = is.read(data)) != -1) {
+//                buffer.write(data, 0, n);
+//            }
+//
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                return buffer.toString(StandardCharsets.UTF_8);
+//            } else {
+//                //noinspection StringOperationCanBeSimplified
+//                return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+//            }
+//        }
+//    }
+
+    /**
+     * Read text file from local storage.
+     */
+    static String readTextFile(Context context, Uri uri) throws IOException {
+        InputStream is = context.getContentResolver().openInputStream(uri);
+        if (is == null) throw new FileNotFoundException("Unable to open XML file.");
+
+        StringBuilder sb = new StringBuilder(10_000);
+        try (is;
+             InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+             BufferedReader br = new BufferedReader(reader)) {
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+        }
+        return sb.toString();
     }
 }

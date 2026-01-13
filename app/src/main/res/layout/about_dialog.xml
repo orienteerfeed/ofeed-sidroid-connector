@@ -11,6 +11,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         tools:ignore="ContentDescription,HardcodedText" >
+        <View
+            android:layout_width="196dp"
+            android:layout_height="196dp"
+            android:background="@drawable/background_shadow"
+            app:layout_constraintStart_toStartOf="@id/about_logo"
+            app:layout_constraintTop_toTopOf="@id/about_logo" />
 
         <ImageView
             android:id="@+id/about_logo"
@@ -43,13 +49,25 @@
             app:layout_constraintTop_toBottomOf="@id/about_version" />
 
         <TextView
+            android:id="@+id/about_oresults_web"
+            style="@style/medium_wrap_content"
+            android:layout_marginTop="8dp"
+            android:autoLink="web"
+            android:text="oresults.eu"
+            android:drawablePadding="8dp"
+            app:drawableStartCompat="@drawable/www"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/about_ofeed_web" />
+
+        <TextView
             android:id="@+id/about_contributors_title"
             style="@style/medium_bold_wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/contributors"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/about_ofeed_web" />
+            app:layout_constraintTop_toBottomOf="@id/about_oresults_web" />
         <TextSwitcher
             android:id="@+id/about_contributors"
             android:layout_width="wrap_content"

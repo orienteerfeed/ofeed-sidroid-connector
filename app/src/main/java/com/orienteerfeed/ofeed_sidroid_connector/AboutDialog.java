@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 
-import androidx.appcompat.view.ContextThemeWrapper;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 class AboutDialog {
 
@@ -30,8 +29,7 @@ class AboutDialog {
     }
 
     void show() {
-        ContextThemeWrapper themedContext = new ContextThemeWrapper(activity, R.style.Theme_ofeed_sidroid_connector);
-        View layout = LayoutInflater.from(themedContext).inflate(R.layout.about_dialog, null);
+        View layout = activity.getLayoutInflater().inflate(R.layout.about_dialog, null);
         String version = activity.getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME;
         ((TextView) layout.findViewById(R.id.about_version)).setText(version);
 
@@ -52,10 +50,11 @@ class AboutDialog {
         textSwitcher.setOutAnimation(animOut);
         textSwitcher.setText(contributors[contributorsIndex]);
 
-        new androidx.appcompat.app.AlertDialog.Builder(activity)
+        new MaterialAlertDialogBuilder(activity)
                 .setView(layout)
                 .setTitle(activity.getString(R.string.about))
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> contributorsHandler.removeCallbacks(updateContributor))
+                .setPositiveButton(android.R.string.ok, (d, which)
+                        -> contributorsHandler.removeCallbacks(updateContributor))
                 .setCancelable(false)
                 .create().show();
     }

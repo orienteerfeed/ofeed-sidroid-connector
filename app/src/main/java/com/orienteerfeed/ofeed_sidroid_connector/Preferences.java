@@ -97,15 +97,22 @@ public class Preferences {
     private static final String KEY_HTTP_CALL_TIMEOUT_SEC = "UPLOAD_POST_CALL_TIMEOUT_SEC";
     static final int DEFAULT_HTTP_CALL_TIMEOUT_SEC = 0;
 
+
+    // Base URL: https://api.orienteerfeed.com/rest/v1
+    // Upload                                          /upload/iof
+    // Delete                                          /events/%s/competitors"
+
     /**
-     * Endpoint URL of OFeed, eg, "https://api.orienteerfeed.com/rest/v1/events".
-     * Default value {@link #DEFAULT_OFEED_SERVER}.
+     * OFeed URL as entered or scanned by the user, eg, "https://api.orienteerfeed.com/rest/v1".
+     * Default value {@link #DEFAULT_OFEED_URL}.
      *
      * @noinspection JavadocLinkAsPlainText
      */
-    String oFeedServer;
-    private static final String KEY_OFEED_SERVER = "O_FEED_SERVER";
-    private static final String DEFAULT_OFEED_SERVER = "https://api.orienteerfeed.com/rest/v1/upload/iof";
+    String oFeedUrl;
+    private static final String KEY_OFEED_URL = "OFEED_URL";
+    static final String DEFAULT_OFEED_URL = "https://api.orienteerfeed.com/rest/v1/events";
+    static final String DEFAULT_OFEED_HOST = "api.orienteerfeed.com";
+    static final String DEFAULT_OFEED_PATH = "/rest/v1/events";
 
     /**
      * OFeed event id.
@@ -132,12 +139,44 @@ public class Preferences {
     private static final int DEFAULT_SI_DROID_PORT = 8080;
 
     /**
+     * Api key for uploading results to OResults.
+     */
+    String oResultsApiKey;
+    private static final String KEY_ORESULTS_API_KEY = "ORESULTS_API_KEY";
+    private static final String DEFAULT_ORESULTS_API_KEY = "";
+
+    /**
+     * URL for uploading results to OResults.
+     */
+    static final String ORESULTS_URL = "https://api.oresults.eu/results";
+
+    /**
+     * Values for {@link #uploadTo}.
+     */
+    static final int UPLOAD_TO_OFEED = 0, UPLOAD_TO_ORESULTS = 1;
+
+    /**
+     *
+     * Upload to: One of {@link #UPLOAD_TO_OFEED}, {@link #UPLOAD_TO_ORESULTS}.
+     */
+    int uploadTo;
+    private static final String KEY_UPLOAD_TO = "UPLOAD_TO";
+    private static final int DEFAULT_UPLOAD_TO = UPLOAD_TO_OFEED;
+
+    /**
      * Interval (seconds) between updates from SI-Droid to OFeed.
      * Default value {@link #DEFAULT_UPLOAD_INTERVAL_SEC}.
      */
     int uploadIntervalSec;
     private static final String KEY_UPLOAD_INTERVAL_SEC = "UPLOAD_INTERVAL_SEC";
     private static final int DEFAULT_UPLOAD_INTERVAL_SEC = 30;
+
+    /**
+     * Create a unique id for each person in the uploaded XML file.
+     */
+    boolean createXmlId;
+    private static final String KEY_CREATE_XML_ID_ENABLED = "CREATE_XML_ID_ENABLED";
+    private static final boolean DEFAULT_CREATE_XML_ID_ENABLED = true;
 
     /**
      * Android battery restrictions.
@@ -196,15 +235,24 @@ public class Preferences {
         httpWriteTimeoutSec = prefs.getInt(KEY_HTTP_WRITE_TIMEOUT_SEC, DEFAULT_HTTP_WRITE_TIMEOUT_SEC);
         httpCallTimeoutSec = prefs.getInt(KEY_HTTP_CALL_TIMEOUT_SEC, DEFAULT_HTTP_CALL_TIMEOUT_SEC);
 
-        oFeedServer = prefs.getString(KEY_OFEED_SERVER, DEFAULT_OFEED_SERVER);
+        oFeedUrl = prefs.getString(KEY_OFEED_URL, DEFAULT_OFEED_URL);
         oFeedEventId = prefs.getString(KEY_OFEED_EVENT_ID, DEFAULT_OFEED_EVENT_ID);
         oFeedEventPassword = prefs.getString(KEY_OFEED_EVENT_PASSWORD, DEFAULT_OFEED_EVENT_PASSWORD);
 
         // SI-Droid.
         siDroidPort = prefs.getInt(KEY_SI_DROID_PORT, DEFAULT_SI_DROID_PORT);
 
+        // Api key.
+        oResultsApiKey = prefs.getString(KEY_ORESULTS_API_KEY, DEFAULT_ORESULTS_API_KEY);
+
+        // Upload to.
+        uploadTo = prefs.getInt(KEY_UPLOAD_TO, DEFAULT_UPLOAD_TO);
+
         // Upload interval.
         uploadIntervalSec = prefs.getInt(KEY_UPLOAD_INTERVAL_SEC, DEFAULT_UPLOAD_INTERVAL_SEC);
+
+        // Create XML id.
+        createXmlId = prefs.getBoolean(KEY_CREATE_XML_ID_ENABLED, DEFAULT_CREATE_XML_ID_ENABLED);
 
         // Battery restriction
         checkBatteryRestriction = prefs.getBoolean(KEY_BATTERY_RESTRICTION, DEFAULT_BATTERY_RESTRICTION);
@@ -232,15 +280,24 @@ public class Preferences {
         editor.putInt(KEY_HTTP_WRITE_TIMEOUT_SEC, httpWriteTimeoutSec);
         editor.putInt(KEY_HTTP_CALL_TIMEOUT_SEC, httpCallTimeoutSec);
 
-        editor.putString(KEY_OFEED_SERVER, oFeedServer);
+        editor.putString(KEY_OFEED_URL, oFeedUrl);
         editor.putString(KEY_OFEED_EVENT_ID, oFeedEventId);
         editor.putString(KEY_OFEED_EVENT_PASSWORD, oFeedEventPassword);
 
         // SI-Droid.
         editor.putInt(KEY_SI_DROID_PORT, siDroidPort);
 
+        // Api key.
+        editor.putString(KEY_ORESULTS_API_KEY, oResultsApiKey);
+
+        // Upload to.
+        editor.putInt(KEY_UPLOAD_TO, uploadTo);
+
         // Upload interval.
         editor.putInt(KEY_UPLOAD_INTERVAL_SEC, uploadIntervalSec);
+
+        // Create XML id.
+        editor.putBoolean(KEY_CREATE_XML_ID_ENABLED, createXmlId);
 
         // Battery restriction
         editor.putBoolean(KEY_BATTERY_RESTRICTION, checkBatteryRestriction);

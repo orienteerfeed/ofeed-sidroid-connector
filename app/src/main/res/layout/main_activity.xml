@@ -10,7 +10,18 @@
     android:layout_marginEnd="8dp"
     android:keepScreenOn="true"
     android:fitsSystemWindows="true"
+    tools:ignore="ContentDescription"
     tools:context=".MainActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:menu="@menu/main_menu"
+        app:title="@string/app_title_ofeed_connector"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/main_service_status_caption"
@@ -20,14 +31,13 @@
         android:layout_marginTop="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/main_toolbar" />
 
     <ImageView
         android:id="@+id/main_service_status_icon"
         android:layout_width="36dp"
         android:layout_height="36dp"
         app:srcCompat="@drawable/status_ok"
-        tools:ignore="ContentDescription"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/main_service_status"
@@ -41,16 +51,19 @@
         android:layout_marginTop="32dp"
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@id/main_service_status_icon"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/main_service_status_help"
         app:layout_constraintTop_toTopOf="@id/main_service_status_caption" />
-    <TextView
+    <ImageView
         android:id="@+id/main_service_status_help"
-        style="@style/medium_wrap_content"
-        android:text="@string/si_droid_unreachable_message"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        app:srcCompat="@drawable/help"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/main_service_status"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_service_status" />
+        app:layout_constraintTop_toTopOf="@id/main_service_status"
+        app:layout_constraintBottom_toBottomOf="@id/main_service_status" />
 
     <Button
         android:id="@+id/main_start_button"
@@ -61,37 +74,83 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/main_service_status_help" />
 
-    <TextView
-        android:id="@+id/main_http_call_status_caption"
-        style="@style/medium_bold_wrap_content"
-        android:text="@string/status_latest_update"
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/main_countdown_indicator"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
         android:layout_marginTop="32dp"
+        android:indeterminate="false"
+        app:indicatorSize="128dp"
+        app:trackThickness="16dp"
+        app:trackCornerRadius="3dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/main_start_button" />
-    <ImageView
-        android:id="@+id/main_http_call_status_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:srcCompat="@drawable/help"
-        tools:ignore="ContentDescription"
-        app:layout_constraintStart_toStartOf="@id/main_http_call_status_caption"
-        app:layout_constraintTop_toBottomOf="@id/main_http_call_status_caption" />
     <TextView
-        android:id="@+id/main_http_call_status"
-        style="@style/medium_wrap_content"
-        android:text="@string/status_unknown"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/main_http_call_status_icon"
-        app:layout_constraintTop_toTopOf="@id/main_http_call_status_icon"
-        app:layout_constraintBottom_toBottomOf="@id/main_http_call_status_icon" />
+        android:id="@+id/main_countdown_text"
+        style="@style/medium_bold_wrap_content"
+        android:textSize="24sp"
+        android:text="60"
+        tools:ignore="HardcodedText"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@id/main_countdown_indicator"
+        app:layout_constraintEnd_toEndOf="@id/main_countdown_indicator"
+        app:layout_constraintTop_toTopOf="@id/main_countdown_indicator"
+        app:layout_constraintBottom_toBottomOf="@id/main_countdown_indicator" />
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/main_snackbar_anchor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/main_countdown_ok_icon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        app:srcCompat="@drawable/status_ok"
+        android:visibility="invisible"
+        tools:ignore="ContentDescription"
+        app:layout_constraintStart_toStartOf="@id/main_countdown_indicator"
+        app:layout_constraintEnd_toEndOf="@id/main_countdown_indicator"
+        app:layout_constraintTop_toTopOf="@id/main_countdown_indicator"
+        app:layout_constraintBottom_toBottomOf="@id/main_countdown_indicator" />
+
+    <ImageView
+        android:id="@+id/main_countdown_error_icon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        app:srcCompat="@drawable/error_red"
+        android:visibility="invisible"
+        tools:ignore="ContentDescription"
+        app:layout_constraintStart_toStartOf="@id/main_countdown_indicator"
+        app:layout_constraintEnd_toEndOf="@id/main_countdown_indicator"
+        app:layout_constraintTop_toTopOf="@id/main_countdown_indicator"
+        app:layout_constraintBottom_toBottomOf="@id/main_countdown_indicator" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/main_countdown_upload_icon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        app:srcCompat="@drawable/upload_animated"
+        android:visibility="invisible"
+        tools:ignore="ContentDescription"
+        app:layout_constraintStart_toStartOf="@id/main_countdown_indicator"
+        app:layout_constraintEnd_toEndOf="@id/main_countdown_indicator"
+        app:layout_constraintTop_toTopOf="@id/main_countdown_indicator"
+        app:layout_constraintBottom_toBottomOf="@id/main_countdown_indicator" />
+
+    <TextView
+        android:id="@+id/main_status_caption"
+        style="@style/medium_bold_wrap_content"
+        android:textSize="24sp"
+        android:layout_marginTop="32dp"
+        android:text="@string/uploads"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_countdown_indicator" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/main_status_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_status_caption"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

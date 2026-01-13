@@ -4,7 +4,7 @@ plugins {
 
 // Set build directory outside Android Studio development environment.
 var externalBuildDir = project.findProperty("EXTERNAL_BUILD_DIR") as String
-layout.buildDirectory.set(File("${externalBuildDir}${project.name}"))
+layout.buildDirectory.set(File("${externalBuildDir}OFeed-SIDroid-Connector/${project.name}"))
 
 android {
     namespace = "com.orienteerfeed.ofeed_sidroid_connector"
@@ -12,10 +12,10 @@ android {
 
     defaultConfig {
         applicationId = "com.orienteerfeed.ofeed_sidroid_connector"
-        minSdk = 24
+        minSdk = 23
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 10
+        versionName = "beta 10"  // OResults. Upload of local file.
     }
 
     buildFeatures {

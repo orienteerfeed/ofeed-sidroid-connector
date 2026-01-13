@@ -1,16 +1,21 @@
 package com.orienteerfeed.ofeed_sidroid_connector;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_OFEED_AUTHORIZATION;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_OFEED_EVENT_ID;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_OFEED_TIMEOUT_CALL_SEC;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_OFEED_TIMEOUT_CONNECT_SEC;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_OFEED_TIMEOUT_READ_SEC;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_OFEED_TIMEOUT_WRITE_SEC;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_OFEED_URL;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_SI_DROID_URL;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_UPDATE_INTERVAL_SEC;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.KEY_USER_AGENT;
+import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.ORESULTS_URL;
+import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.UPLOAD_TO_OFEED;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_CREATE_XML_ID;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CALL_SEC;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CONNECT_SEC;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_HTTP_TIMEOUT_READ_SEC;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_HTTP_TIMEOUT_WRITE_SEC;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_OFEED_AUTHORIZATION;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_OFEED_EVENT_ID;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_OFEED_URL;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_ORESULTS_API_KEY;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_SI_DROID_URL;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_UPDATE_INTERVAL_SEC;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_UPLOAD_TO;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_USER_AGENT;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -47,7 +52,7 @@ import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
- * Foreground service which gets results from SI-Droid and uploads them to OFeed.
+ * Foreground service which retrieves results from SI-Droid Event and uploads them to OFeed.
  */
 public class ResultsService extends Service {
 
@@ -56,44 +61,55 @@ public class ResultsService extends Service {
     // *********************************************************************************************
 
     /**
-     * Callback for updating the main user interface with the status of the most recent update
-     * of results from SI-Droid to OFeed.
+     * Callback for updating the main user interface with the status of the update
+     * of results from SI-Droid Event to OFeed.
      */
-    public interface ResultsServiceStatus {
-        void onSuccess(String status);
+    public interface ResultsServiceUpdateStatus {
+        /**
+         * Update started by requesting results from SI-Droid Event.
+         *
+         * @param timeMs Timestamp (ms).
+         */
+        void onUpdateStart(long timeMs);
 
-        void onFailure(String status);
+        /**
+         * Update successfully completed.
+         *
+         * @param timeMs Timestamp (ms).
+         * @param status Status message.
+         */
+        void onUpdateSuccess(long timeMs, String status);
+
+        /**
+         * Update failed.
+         *
+         * @param timeMs Timestamp (ms).
+         * @param status Status message.
+         */
+        void onUpdateFailure(long timeMs, String status);
     }
 
+    // *********************************************************************************************
+    // Methods.
+    // *********************************************************************************************
+
     /**
-     * Set callback for updating the main user interface with the status of the most recent update.
+     * Set callback for updating the main user interface with the status of the update.
      */
-    public void setResultsServiceStatus(ResultsServiceStatus statusListener) {
+    public void setResultsServiceStatus(ResultsServiceUpdateStatus statusListener) {
         this.statusListener = statusListener;
     }
 
     private static final DateTimeFormatter HH_MM_SS = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM);
-    private String latestStatus = "";
 
     private void statusSuccess(String status) {
         String s = LocalTime.now().format(HH_MM_SS) + " " + status;
-        latestStatus = "S" + s;  // Prefix for success.
-        statusListener.onSuccess(s);
+        if (statusListener != null) statusListener.onUpdateSuccess(System.currentTimeMillis(), s);
     }
 
     private void statusFailure(String status) {
         String s = LocalTime.now().format(HH_MM_SS) + " " + status;
-        latestStatus = "F" + s;  // Prefix for failure.
-        statusListener.onFailure(s);
-    }
-
-    /**
-     * Get status of the most recent update.
-     *
-     * @return Status, prefixed with "S" for success and "F" for failure.
-     */
-    public String getLatestStatus() {
-        return latestStatus;
+        if (statusListener != null) statusListener.onUpdateFailure(System.currentTimeMillis(), s);
     }
 
     // *********************************************************************************************
@@ -117,18 +133,36 @@ public class ResultsService extends Service {
     // *********************************************************************************************
     // Member fields.
     // *********************************************************************************************
-    // Flag checked by main activity to see if service is running.
-    public static boolean isRunning = false;
+    //
+    /**
+     * Flag between {@link ResultsService} and {@link MainActivity} which
+     * signals if the results service is running.
+     * Set to true by {@link ResultsService#onStartCommand(Intent, int, int)} when
+     * the service starts, set to false by {@link ResultsService#onDestroy()} when
+     * the service stops.
+     */
+    public static boolean resultServiceIsRunning = false;
     private OkHttpClient httpClient;
-    private ResultsServiceStatus statusListener = null;
-    private String oFeedUrl, oFeedEventId, oFeedAuthorization, oFeedUserAgent;
+    private ResultsServiceUpdateStatus statusListener = null;
+    private int uploadTo;
+    private String oFeedUrl, oFeedEventId, oFeedAuthorization, oResultsApiKey, UserAgent;
     private int updateIntervalMillisec;
+    private boolean createXmlId;
     private static final MediaType XML_MEDIA_TYPE = MediaType.parse("text/xml; charset=utf-8");
 
     private Request siDroidGetRequest;
     private SimpleTimer updateIntervalTimer = null;
 
     private CircularLog serverLog, httpLog;
+
+    private XmlIds xmlIds;
+    public static final String XML_IDS_FILENAME = "xml_ids.dat";
+
+    /**
+     * Allow some time for the service to start before the first update of results
+     * from SI-Droid Event to OFeed takes place.
+     */
+    public static final int TIME_TO_FIRST_UPDATE_SEC = 3;
 
     // *********************************************************************************************
     // Binder that is given to the client.
@@ -137,7 +171,7 @@ public class ResultsService extends Service {
 
     public class OFeedResultsBinder extends Binder {
         ResultsService getService() {
-            // Return this instance of GnssService so manager can call public methods.
+            // Return this instance of ResultsService so manager can call public methods.
             return ResultsService.this;
         }
     }
@@ -154,6 +188,11 @@ public class ResultsService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        xmlIds = SerializableManager.load(this, XML_IDS_FILENAME);
+        if (xmlIds == null) {
+            xmlIds = new XmlIds();
+        }
+
         Notification notification;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notification = createNotification();
@@ -175,16 +214,19 @@ public class ResultsService extends Service {
         super.onStartCommand(intent, flags, startId);
 
         // Get params.
-        String siDroidUrl = intent.getStringExtra(KEY_SI_DROID_URL);
-        oFeedUrl = intent.getStringExtra(KEY_OFEED_URL);
-        oFeedEventId = intent.getStringExtra(KEY_OFEED_EVENT_ID);
-        oFeedAuthorization = intent.getStringExtra(KEY_OFEED_AUTHORIZATION);
-        oFeedUserAgent = intent.getStringExtra(KEY_USER_AGENT);
-        updateIntervalMillisec = intent.getIntExtra(KEY_UPDATE_INTERVAL_SEC, 30) * 1_000;
-        int timeoutConnectSec = intent.getIntExtra(KEY_OFEED_TIMEOUT_CONNECT_SEC, -1);    // -1 = Use default timeout.
-        int timeoutReadSec = intent.getIntExtra(KEY_OFEED_TIMEOUT_READ_SEC, -1);
-        int timeoutWriteSec = intent.getIntExtra(KEY_OFEED_TIMEOUT_WRITE_SEC, -1);
-        int timeoutCallSec = intent.getIntExtra(KEY_OFEED_TIMEOUT_CALL_SEC, -1);
+        uploadTo = intent.getIntExtra(RESULTS_SERVICE_KEY_UPLOAD_TO, 0);
+        String siDroidUrl = intent.getStringExtra(RESULTS_SERVICE_KEY_SI_DROID_URL);
+        oFeedUrl = intent.getStringExtra(RESULTS_SERVICE_KEY_OFEED_URL);
+        oFeedEventId = intent.getStringExtra(RESULTS_SERVICE_KEY_OFEED_EVENT_ID);
+        oFeedAuthorization = intent.getStringExtra(RESULTS_SERVICE_KEY_OFEED_AUTHORIZATION);
+        UserAgent = intent.getStringExtra(RESULTS_SERVICE_KEY_USER_AGENT);
+        updateIntervalMillisec = intent.getIntExtra(RESULTS_SERVICE_KEY_UPDATE_INTERVAL_SEC, 30) * 1_000;
+        oResultsApiKey = intent.getStringExtra(RESULTS_SERVICE_KEY_ORESULTS_API_KEY);
+        int timeoutConnectSec = intent.getIntExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CONNECT_SEC, -1);    // -1 = Use default timeout.
+        int timeoutReadSec = intent.getIntExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_READ_SEC, -1);
+        int timeoutWriteSec = intent.getIntExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_WRITE_SEC, -1);
+        int timeoutCallSec = intent.getIntExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CALL_SEC, -1);
+        createXmlId = intent.getBooleanExtra(RESULTS_SERVICE_KEY_CREATE_XML_ID, true);
 
         // Create the HTTP client and attach a logger.
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(logItem -> httpLog.add(logItem));
@@ -197,37 +239,41 @@ public class ResultsService extends Service {
         if (timeoutCallSec >= 0) clientBuilder.callTimeout(timeoutCallSec, TimeUnit.SECONDS);
         httpClient = clientBuilder.build();
 
-        // Create GET request to pull results out of SI-Droid.
-        siDroidGetRequest = new Request.Builder()
-                .url(Objects.requireNonNull(siDroidUrl))
-                .header("User-Agent", oFeedUserAgent)
-                .get().build();
+            // Create GET request to pull results out of SI-Droid Event.
+            siDroidGetRequest = new Request.Builder()
+                    .url(Objects.requireNonNull(siDroidUrl))
+                    .header("User-Agent", UserAgent)
+                    .get().build();
 
-        // Allow some time for the service to start before the first update of results from SI-Droid to OFeed takes place.
-        new SimpleTimer(3_000, this::firstUpdateOfResults).startTimer();
+            // Allow some time for the service to start before the first update of results from SI-Droid Event to OFeed takes place.
+            new SimpleTimer(1_000 * TIME_TO_FIRST_UPDATE_SEC, this::firstUpdateOfResults).startTimer();
 
-        isRunning = true;
-
+        resultServiceIsRunning = true;
         return Service.START_STICKY_COMPATIBILITY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        isRunning = false;
+        resultServiceIsRunning = false;
         stopResultsUpdates();
+        if (!xmlIds.isEmpty()) {
+            SerializableManager.save(this, xmlIds, XML_IDS_FILENAME);
+        } else {
+            SerializableManager.delete(this, XML_IDS_FILENAME);
+        }
     }
 
     private void stopResultsUpdates() {
-        updateIntervalTimer.stopTimer();
+        if (updateIntervalTimer != null) updateIntervalTimer.stopTimer();
     }
 
     // *********************************************************************************************
-    // Get results from SI-Droid.
+    // Get results from SI-Droid Event.
     // *********************************************************************************************
 
     private void firstUpdateOfResults() {
-        // First update of results from SI-Droid to OFeed.
+        // First update of results from SI-Droid Event to OFeed.
         updateResults();
 
         // Recurring updates.
@@ -239,15 +285,16 @@ public class ResultsService extends Service {
     }
 
     /**
-     * Get results from SI-Droid.
+     * Get results from SI-Droid Event.
      */
     private void updateResults() {
+        if (statusListener != null) statusListener.onUpdateStart(System.currentTimeMillis());
         serverLog.add(getString(R.string.si_droid_get_request));
         httpClient.newCall(siDroidGetRequest).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 String message = e.getMessage();
-                if (message == null) message = getString(R.string.io_exception);
+                if (message == null) message = "I/O exception";
                 statusFailure(message);
                 serverLog.add(message);
             }
@@ -256,20 +303,14 @@ public class ResultsService extends Service {
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 try (ResponseBody responseBody = response.body()) {
                     if (response.isSuccessful()) {
-                        if (responseBody != null) {
-                            String responseBodyAsString = responseBody.string();
-                            if(responseBodyAsString.contains("<PersonResult>")) {
-                                // Results available.
-                                serverLog.add(getString(R.string.si_droid_results_retrieved));
-                                uploadResults(responseBodyAsString);
-                            } else {
-                                String message = getString(R.string.si_droid_no_results);
-                                statusSuccess(message);
-                                serverLog.add(message);
-                            }
+                        String responseBodyAsString = responseBody.string();
+                        if (responseBodyAsString.contains("<PersonResult>")) {
+                            // Results available.
+                            serverLog.add(getString(R.string.si_droid_results_retrieved));
+                            uploadResults(responseBodyAsString);
                         } else {
-                            String message = getString(R.string.null_response);
-                            statusFailure(message);
+                            String message = getString(R.string.si_droid_no_results);
+                            statusSuccess(message);
                             serverLog.add(message);
                         }
                     } else {
@@ -280,7 +321,7 @@ public class ResultsService extends Service {
                     }
                 } catch (IOException e) {
                     String message = e.getMessage();
-                    if (message == null) message = getString(R.string.io_exception);
+                    if (message == null) message = "I/O exception";
                     statusFailure(message);
                     serverLog.add(message);
                 }
@@ -289,66 +330,80 @@ public class ResultsService extends Service {
     }
 
     /**
-     * Upload results to OFeed.
+     * Upload results to OFeed/OResults.
      */
     private void uploadResults(String xmlContent) {
-        serverLog.add(getString(R.string.ofeed_post_request));
-
-        // Insert external id.
-        String xmlContentWithExternalId;
-        try {
-            xmlContentWithExternalId = XmlModifier.updateOrInsertIds(xmlContent);
-        } catch (Exception e) {
-            String message = getString(R.string.external_id_error);
-            statusFailure(message);
-            if (e.getMessage() != null) message += " " + e.getMessage();
-            serverLog.add(message);
-            return;
+        // Insert XML id.
+        String xmlUpload;
+        if (createXmlId) {
+            try {
+                xmlUpload = XmlModifier.updateOrInsertXmlId(xmlContent, xmlIds);
+            } catch (Exception e) {
+                String message = getString(R.string.upload_failed);
+                statusFailure(message);
+                if (e.getMessage() != null) message = e.getMessage();
+                serverLog.add(message);
+                return;
+            }
+        } else {
+            xmlUpload = xmlContent;
         }
 
-        RequestBody xmlRequestBody = RequestBody.create(xmlContentWithExternalId, XML_MEDIA_TYPE);
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("eventId", oFeedEventId)
-                .addFormDataPart("file", "result-list-iof-3.0.xml", xmlRequestBody)
-                .build();
+        Request request;
+        if (uploadTo == UPLOAD_TO_OFEED) {
+            serverLog.add(getString(R.string.ofeed_post_request));
+            RequestBody xmlRequestBody = RequestBody.create(xmlUpload, XML_MEDIA_TYPE);
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("eventId", oFeedEventId)
+                    .addFormDataPart("file", "result-list-iof-3.0.xml", xmlRequestBody)
+                    .build();
 
-        Request request = new Request.Builder()
-                .url(oFeedUrl)
-                .addHeader("User-Agent", oFeedUserAgent)
-                .addHeader("Authorization", oFeedAuthorization)
-                .addHeader("Content-Type", "text; charset=utf-8")
-                .post(requestBody)
-                .build();
+            request = new Request.Builder()
+                    .url(oFeedUrl)
+                    .addHeader("User-Agent", UserAgent)
+                    .addHeader("Authorization", oFeedAuthorization)
+                    .addHeader("Content-Type", "text; charset=utf-8")
+                    .post(requestBody)
+                    .build();
+
+        } else {
+            // Upload to OResults.
+            serverLog.add(getString(R.string.oresults_post_request));
+            RequestBody xmlRequestBody = RequestBody.create(xmlUpload, XML_MEDIA_TYPE);
+            MultipartBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("apiKey", oResultsApiKey)
+                    .addFormDataPart("file", "result-list-iof-3.0.xml", xmlRequestBody)
+                    .build();
+            request = new Request.Builder()
+                    .url(ORESULTS_URL)
+                    .addHeader("User-Agent", UserAgent)
+//                    .addHeader("Content-Type", "text; charset=utf-8")
+                    .post(requestBody)
+                    .build();
+        }
 
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 String message = e.getMessage();
-                if (message == null) message = getString(R.string.io_exception);
+                if (message == null) message = "I/O exception";
                 statusFailure(message);
                 serverLog.add(message);
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                try (ResponseBody responseBody = response.body()) {
-                    if (response.isSuccessful()) {
-                        if (responseBody != null) {
-                            String message = getString(R.string.ofeed_upload_ok);
-                            statusSuccess(message);
-                            serverLog.add(message);
-                        } else {
-                            String message = getString(R.string.null_response);
-                            statusFailure(message);
-                            serverLog.add(message);
-                        }
-                    } else {
-                        // Unsuccessful response.
-                        String message = HttpStatusCodes.getMeaning(response.code());
-                        statusFailure(message);
-                        serverLog.add(message);
-                    }
+                if (response.isSuccessful()) {
+                    String message = getString(R.string.upload_ok);
+                    statusSuccess(message);
+                    serverLog.add(message);
+                } else {
+                    // Unsuccessful response.
+                    String message = HttpStatusCodes.getMeaning(response.code());
+                    statusFailure(message);
+                    serverLog.add(message);
                 }
             }
         });
@@ -359,23 +414,26 @@ public class ResultsService extends Service {
     // *********************************************************************************************
     private static final String NOTIFICATION_CHANNEL_ID = "OFeedResultsServiceNotificationChannelId";
 
+    /**
+     * Requires android:launchMode="singleTop" in the manifest.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     private Notification createNotification() {
         NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
-                getString(R.string.ofeed_results_service_notification_title), NotificationManager.IMPORTANCE_LOW);
-        channel.setDescription(getString(R.string.ofeed_results_service_notification_text));
+                getString(R.string.notification_title), NotificationManager.IMPORTANCE_LOW);
+        channel.setDescription(getString(R.string.notification_text));
 
         NotificationManager manager = getSystemService(NotificationManager.class);
         manager.createNotificationChannel(channel);
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1001, notificationIntent,
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         return new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setOngoing(true)
-                .setContentTitle(getString(R.string.ofeed_results_service_notification_title))
-                .setContentText(getString(R.string.ofeed_results_service_notification_text))
+                .setContentTitle(getString(R.string.notification_title))
+                .setContentText(getString(R.string.notification_text))
                 .setSmallIcon(R.drawable.ofeed_notification)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
