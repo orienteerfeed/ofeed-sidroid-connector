@@ -30,6 +30,7 @@
     <string name="contributors">Bidragsgivare</string>
     <string name="do_not_show_again">Visa inte igen</string>
     <string name="license">Licens</string>
+    <string name="no_results_to_upload">Inga resultat att ladda upp.</string>
     <string name="qr_code_scanner">QR-kodskanner</string>
     <string name="reset">Reset</string>
     <string name="settings">Inställningar</string>
@@ -139,7 +140,7 @@
     * Log/trace messages.
     ******************************************************************************************** -->
     <string name="si_droid_no_results">Inga resultat ← SI-Droid.</string>
-    <string name="upload_ok">Uppladdad OK.</string>
+    <string name="uploaded_ok">Uppladdad OK.</string>
     <string name="upload_failed">Misslyckades.</string>
 
     <!--

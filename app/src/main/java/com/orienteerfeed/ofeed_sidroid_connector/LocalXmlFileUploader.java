@@ -21,7 +21,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
 /**
  * Upload XML results list from local file storage.
  */
@@ -34,13 +33,15 @@ class LocalXmlFileUploader {
      * Callback for upload of XML results list from local file storage.
      */
     interface LocalXmlFileUploaderListener {
+        int OK = 0, INFO = 1, ERROR = 3;
+
         /**
          * Callback for upload of XML results list from local file storage.
          *
-         * @param isUploaded True if the upload was successful, else false.
-         * @param message    Null if uploaded successfully, an error message if upload failed.
+         * @param status  One of {@link #OK}, {@link #INFO}, {@link #ERROR}.
+         * @param message Success message, or, an error message if upload failed.
          */
-        void onResponse(boolean isUploaded, String message);
+        void onResponse(int status, @NonNull String message);
     }
 
     // *********************************************************************************************
@@ -109,11 +110,16 @@ class LocalXmlFileUploader {
                 xmlUpload = readTextFile(activity, localXmlFile);
                 if (createXmlIds) {
                     xmlUpload = XmlModifier.updateOrInsertXmlId(xmlUpload, xmlIds);
+                    if (xmlUpload == null) {
+                        String message = activity.getString(R.string.no_results_to_upload);
+                        listener.onResponse(LocalXmlFileUploaderListener.INFO, message);
+                        return;
+                    }
                 }
             } catch (Exception e) {
                 String message = e.getMessage();
                 if (message == null) message = "Failed to create upload file";
-                listener.onResponse(false, message);
+                listener.onResponse(LocalXmlFileUploaderListener.ERROR, message);
                 return;
             }
 
@@ -137,18 +143,19 @@ class LocalXmlFileUploader {
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     String message = e.getMessage();
                     if (message == null) message = "I/O exception";
-                    listener.onResponse(false, message);
+                    listener.onResponse(LocalXmlFileUploaderListener.ERROR, message);
                     saveXmlIds();
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) {
                     if (response.isSuccessful()) {
-                        listener.onResponse(true, null);
+                        String message = activity.getString(R.string.uploaded_ok);
+                        listener.onResponse(LocalXmlFileUploaderListener.OK, message);
                     } else {
                         // Unsuccessful response.
                         String message = HttpStatusCodes.getMeaning(response.code());
-                        listener.onResponse(false, message);
+                        listener.onResponse(LocalXmlFileUploaderListener.ERROR, message);
                     }
                     saveXmlIds();
                 }
@@ -166,11 +173,16 @@ class LocalXmlFileUploader {
                 xmlUpload = readTextFile(activity, localXmlFile);
                 if (createXmlIds) {
                     xmlUpload = XmlModifier.updateOrInsertXmlId(xmlUpload, xmlIds);
+                    if (xmlUpload == null) {
+                        String message = activity.getString(R.string.no_results_to_upload);
+                        listener.onResponse(LocalXmlFileUploaderListener.INFO, message);
+                        return;
+                    }
                 }
             } catch (Exception e) {
                 String message = e.getMessage();
                 if (message == null) message = "Failed to create upload file";
-                listener.onResponse(false, message);
+                listener.onResponse(LocalXmlFileUploaderListener.ERROR, message);
                 return;
             }
 
@@ -193,18 +205,19 @@ class LocalXmlFileUploader {
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     String message = e.getMessage();
                     if (message == null) message = "I/O exception";
-                    listener.onResponse(false, message);
+                    listener.onResponse(LocalXmlFileUploaderListener.ERROR, message);
                     saveXmlIds();
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) {
                     if (response.isSuccessful()) {
-                        listener.onResponse(true, null);
+                        String message = activity.getString(R.string.uploaded_ok);
+                        listener.onResponse(LocalXmlFileUploaderListener.OK, message);
                     } else {
                         // Unsuccessful response.
                         String message = HttpStatusCodes.getMeaning(response.code());
-                        listener.onResponse(false, message);
+                        listener.onResponse(LocalXmlFileUploaderListener.ERROR, message);
                     }
                     saveXmlIds();
                 }

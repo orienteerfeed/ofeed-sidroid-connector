@@ -8,8 +8,9 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">New features</string>
-    <string name="news_message">■ Upload to OResults.
-        \n■ Upload of XML file from local storage.
+    <string name="news_message">Don\'t upload incomplete PersonResult XML elements.
+        <i>Incomplete</i> is defined as Person.Name.Given equals Result.ControlCard.
+        This occurs when a name has not yet been entered in SI-Droid Event.
     </string>
 
     <!--
@@ -41,6 +42,7 @@
     <string name="contributors">Contributors</string>
     <string name="do_not_show_again">Don\'t show this again</string>
     <string name="license">License</string>
+    <string name="no_results_to_upload">No results to upload.</string>
     <string name="qr_code_scanner">QR code scanner</string>
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
@@ -164,7 +166,7 @@
     <string name="si_droid_no_results">No results ← SI-Droid.</string>
     <string name="ofeed_post_request" translatable="false">Connector → OFeed.</string>
     <string name="oresults_post_request" translatable="false">Connector → OResults.</string>
-    <string name="upload_ok">Uploaded OK.</string>
+    <string name="uploaded_ok">Uploaded OK.</string>
     <string name="upload_failed">Failed.</string>
 
     <!--

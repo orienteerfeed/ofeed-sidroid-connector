@@ -135,29 +135,6 @@ public class Util {
         return builder.toString();
     }
 
-//    /**
-//     * Read text file from local storage.
-//     */
-//    static String readTextFileOld(Context context, Uri uri) throws IOException {
-//        InputStream is = context.getContentResolver().openInputStream(uri);
-//        if (is == null) throw new FileNotFoundException("Unable to open XML file.");
-//
-//        try (is; ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-//            byte[] data = new byte[4096];
-//            int n;
-//            while ((n = is.read(data)) != -1) {
-//                buffer.write(data, 0, n);
-//            }
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                return buffer.toString(StandardCharsets.UTF_8);
-//            } else {
-//                //noinspection StringOperationCanBeSimplified
-//                return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
-//            }
-//        }
-//    }
-
     /**
      * Read text file from local storage.
      */

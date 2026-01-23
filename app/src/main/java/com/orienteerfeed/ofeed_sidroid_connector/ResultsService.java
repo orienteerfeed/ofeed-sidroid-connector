@@ -102,11 +102,17 @@ public class ResultsService extends Service {
 
     private static final DateTimeFormatter HH_MM_SS = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM);
 
+    /**
+     * Convenience method for callback {@link ResultsServiceUpdateStatus#onUpdateSuccess(long, String)}.
+     */
     private void statusSuccess(String status) {
         String s = LocalTime.now().format(HH_MM_SS) + " " + status;
         if (statusListener != null) statusListener.onUpdateSuccess(System.currentTimeMillis(), s);
     }
 
+    /**
+     * Convenience method for callback {@link ResultsServiceUpdateStatus#onUpdateFailure(long, String)}.
+     */
     private void statusFailure(String status) {
         String s = LocalTime.now().format(HH_MM_SS) + " " + status;
         if (statusListener != null) statusListener.onUpdateFailure(System.currentTimeMillis(), s);
@@ -239,14 +245,14 @@ public class ResultsService extends Service {
         if (timeoutCallSec >= 0) clientBuilder.callTimeout(timeoutCallSec, TimeUnit.SECONDS);
         httpClient = clientBuilder.build();
 
-            // Create GET request to pull results out of SI-Droid Event.
-            siDroidGetRequest = new Request.Builder()
-                    .url(Objects.requireNonNull(siDroidUrl))
-                    .header("User-Agent", UserAgent)
-                    .get().build();
+        // Create GET request to pull results out of SI-Droid Event.
+        siDroidGetRequest = new Request.Builder()
+                .url(Objects.requireNonNull(siDroidUrl))
+                .header("User-Agent", UserAgent)
+                .get().build();
 
-            // Allow some time for the service to start before the first update of results from SI-Droid Event to OFeed takes place.
-            new SimpleTimer(1_000 * TIME_TO_FIRST_UPDATE_SEC, this::firstUpdateOfResults).startTimer();
+        // Allow some time for the service to start before the first update of results from SI-Droid Event to OFeed takes place.
+        new SimpleTimer(1_000 * TIME_TO_FIRST_UPDATE_SEC, this::firstUpdateOfResults).startTimer();
 
         resultServiceIsRunning = true;
         return Service.START_STICKY_COMPATIBILITY;
@@ -338,6 +344,12 @@ public class ResultsService extends Service {
         if (createXmlId) {
             try {
                 xmlUpload = XmlModifier.updateOrInsertXmlId(xmlContent, xmlIds);
+                if (xmlUpload == null) {
+                    String message = getString(R.string.no_results_to_upload);
+                    statusSuccess(message);
+                    serverLog.add(message);
+                    return;
+                }
             } catch (Exception e) {
                 String message = getString(R.string.upload_failed);
                 statusFailure(message);
@@ -396,7 +408,7 @@ public class ResultsService extends Service {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 if (response.isSuccessful()) {
-                    String message = getString(R.string.upload_ok);
+                    String message = getString(R.string.uploaded_ok);
                     statusSuccess(message);
                     serverLog.add(message);
                 } else {

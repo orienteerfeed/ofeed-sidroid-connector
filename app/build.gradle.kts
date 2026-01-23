@@ -1,12 +1,15 @@
+import com.android.build.api.dsl.ApplicationExtension
+
 plugins {
-    alias(libs.plugins.android.application)
+    id("com.android.application")
+    kotlin("android")
 }
 
 // Set build directory outside Android Studio development environment.
-var externalBuildDir = project.findProperty("EXTERNAL_BUILD_DIR") as String
+val externalBuildDir = project.findProperty("EXTERNAL_BUILD_DIR") as String
 layout.buildDirectory.set(File("${externalBuildDir}OFeed-SIDroid-Connector/${project.name}"))
 
-android {
+extensions.configure<ApplicationExtension> {
     namespace = "com.orienteerfeed.ofeed_sidroid_connector"
     compileSdk = 36
 
@@ -14,8 +17,8 @@ android {
         applicationId = "com.orienteerfeed.ofeed_sidroid_connector"
         minSdk = 23
         targetSdk = 36
-        versionCode = 10
-        versionName = "beta 10"  // OResults. Upload of local file.
+        versionCode = 12
+        versionName = "beta 13"  // 13=Check for nothing to upload. 12=Remove incomplete persons. 11=Czech. 10=OResults. Upload of local file.
     }
 
     buildFeatures {

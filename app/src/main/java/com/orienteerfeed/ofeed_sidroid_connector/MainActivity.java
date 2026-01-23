@@ -567,11 +567,14 @@ public class MainActivity extends AppCompatActivity {
         long startTimeMs = System.currentTimeMillis();
         uploadXmlFileAnimationStart();
         LocalXmlFileUploader uploader = new LocalXmlFileUploader(this, USER_AGENT,
-                (isUploaded, message) ->
+                (status, message) ->
                         runOnUiThread(() -> {
                             int deltaTimeMs = (int) (System.currentTimeMillis() - startTimeMs);
-                            if (isUploaded) {
-                                addStatusListItem(getString(R.string.upload_ok), R.drawable.status_ok);
+                            if (status == LocalXmlFileUploader.LocalXmlFileUploaderListener.OK) {
+                                addStatusListItem(message, R.drawable.status_ok);
+                                uploadXmlFileAnimationStop(deltaTimeMs, countdownOkIcon);
+                            } else if (status == LocalXmlFileUploader.LocalXmlFileUploaderListener.INFO) {
+                                addStatusListItem(message, R.drawable.info);
                                 uploadXmlFileAnimationStop(deltaTimeMs, countdownOkIcon);
                             } else {
                                 addStatusListItem(message, R.drawable.error_red);

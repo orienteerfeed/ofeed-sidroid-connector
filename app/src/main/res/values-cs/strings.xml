@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+    ********************************************************************************************
+    * New features.
+    * Regex to search for unquoted apostrophes: (?<!\\)\'
+    * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
+    ******************************************************************************************** -->
+    <string name="news">Nové funkce</string>
+    <string name="news_message">■ Upload to OResults.
+        \n■ Upload of XML file from local storage.
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * Contributors.
+    ******************************************************************************************** -->
+    <string-array name="about_contributors">
+        <item>Lukáš Kettner, OK Kamenice</item>
+    </string-array>
+
+    <!--
+    ********************************************************************************************
+    * General.
+    ******************************************************************************************** -->
+    <string name="about">O aplikaci</string>
+    <string name="clear_ofeed">Promazat OFeed</string>
+    <string name="cleared_ok">Promazání OK</string>
+    <string name="contributors">Spolupracovníci</string>
+    <string name="do_not_show_again">Příště již nezobrazovat</string>
+    <string name="license">Licence</string>
+    <string name="no_results_to_upload">Žádné výsledky k nahrání.</string>
+    <string name="qr_code_scanner">Čtečka QR kódu</string>
+    <string name="reset">Reset</string>
+    <string name="settings">Nastavení</string>
+    <string name="start_uploading">Spustit nahrávání</string>
+    <string name="stop_uploading">Zastavit nahrávání</string>
+    <string name="update">Aktualizovat</string>
+    <string name="upload_interval">Interval nahrávání</string>
+    <string name="upload_file">Nahrát soubor</string>
+    <string name="uploads">Nahravání</string>
+
+    <!--
+    ********************************************************************************************
+    * Time units.
+    ******************************************************************************************** -->
+    <string name="minute">min</string>
+    <string name="second">sek</string>
+
+    <!--
+    ********************************************************************************************
+    * Confirm exiting app with back button, which will stop the foreground service.
+    ******************************************************************************************** -->
+    <string name="back_button_exit_confirmation">Zastavit nahrávání a ukončit?
+        \nKlikni na <b>Home</b> pro minimalizování a pokračování nahrávání.
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * SI-Droid Event settings.
+    ******************************************************************************************** -->
+    <string name="port_number">Číslo portu</string>
+    <string name="port_number_error">Číslo portu musí být v rozmezí 1025 a 65535.</string>
+    <string name="port_number_help">Číslo portu nastavené v SI-Droid Event.
+        Otevři aplikaci a vyber <b>Nastavení</b> → <b>Výsledková služba</b> → <b>Port výsledkové služby</b>.
+        \n\nUjisti se, že checkbox <b>Zapnout výsledkovou službu</b> je zaškrtnutý.
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * OFeed settings.
+    ******************************************************************************************** -->
+    <string name="help_server">Adresa OFeed serveru (URL):
+        \n■ Použij <i>https://api.orienteerfeed.com/rest/v1/events</i>
+        \n■ <i>api.orienteerfeed.com</i> → výchozí
+        \n■ <i>xxx.yyy.zzz</i> → <i>https://xxx.yyy.zzz/rest/v1/events</i>
+        \n■ Path musí být <i>/rest/v1/events</i>
+        \n■ Android vyžaduje <i>https</i>
+    </string>
+    <string name="server_not_specified">Server není nastavený.</string>
+    <string name="server_incorrect_url">Špatná adresa serveru (URL).</string>
+    <string name="server_incorrect_path">Špatná path. URL serveru musí končit <i>/rest/v1/events</i></string>
+    <string name="server_https_required">https je vyžadováno.</string>
+    <string name="event_id">Akce Id</string>
+    <string name="event_id_is_missing">Akce Id není vyplněné.</string>
+    <string name="password">Heslo</string>
+    <string name="password_is_missing">Heslo není vyplněné.</string>
+    <string name="qr_code_scan">Skenovat</string>
+    <string name="qr_code_scan_failed">Skenování se nezdařilo.</string>
+    <string name="qr_code_invalid">Neplatný QR kód.</string>
+    <string name="qr_code_start">Musí začínat na %s</string>
+    <string name="timeouts">Timeouty</string>
+    <string name="http_timeouts">HTTP timeouty</string>
+    <string name="http_timeouts_help">Timeouty ve vteřinách. Nula znamená bez timeout.</string>
+    <string name="http_timeouts_defaults_help">Nastavit timeouty na výchozí hodnoty.</string>
+    <string name="create_xml_id">Vytvořit XML id</string>
+    <string name="xml_id_help">Nahráváné vysledky budou doplněny o unikátní id pro každého závodníka.
+        \n\nTento XML id tag je tvořen jménem závodníka a číslem čipu.
+        Kombinace "FamilyName + GivenName + SICard" se smí u akce vyskytovat právě jednou.
+        \n\nVe většině případů nech aktivované. Deaktivuj jen pokud <b>nechceš</b> doplňovat id tag do výsledky.
+    </string>
+    <string name="clear_ofeed_competitors">Tato akce odstraní všechny závodníky v OFeedu.
+        \n\nSlouží hlavně pro případ, když se objeví duplicity v OFeedu.
+        Další nahrání závodníky opět přidá.
+        \n\n<b>Nevratná akce!</b>
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * OResults settings.
+    ******************************************************************************************** -->
+    <string name="oresults_api_key">Api key</string>
+    <string name="oresults_api_key_is_missing">Api key není vyplněný.</string>
+
+    <!--
+    ********************************************************************************************
+    * Log and status.
+    ******************************************************************************************** -->
+    <string name="log">Log</string>
+    <string name="show_log">Ukázat log</string>
+    <string name="show_http_log">HTTP log</string>
+    <string name="log_is_empty">Log je prázdný.</string>
+
+    <string name="status">Status</string>
+    <string name="status_running">Běží OK</string>
+    <string name="status_stopped">Zastaveno</string>
+    <string name="status_not_configured">Není nastaveno</string>
+    <string name="si_droid_unreachable_title">SI-Droid nedostupný</string>
+    <string name="si_droid_unreachable_message">Ověř, že:
+        \n■ SI-Droid Event je spuštěný.
+        \n■ <i>Výsledková služba</i> je aktivovaná.
+        \n■ Číslo portu výsledkové služby odpovídá hodnotě portu v nastavení.
+        \n\n<b>Řešení problémů</b>
+        \nPokud se služba nečekaně vypíná, koukni na nastavení Androidu:
+        Settings → Apps → <i>Název aplikace</i> → Battery → <b>Unrestricted</b>
+        nebo <b>Allow background usage</b> (nebo něco podobného).
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * Log/trace messages.
+    ******************************************************************************************** -->
+    <string name="si_droid_no_results">Žádné výsledky ← SI-Droid.</string>
+    <string name="uploaded_ok">Úspěšně nahráno.</string>
+    <string name="upload_failed">Selhalo.</string>
+
+    <!--
+    ********************************************************************************************
+    * Help.
+    ******************************************************************************************** -->
+    <string name="help_title">Nápověda</string>
+    <string name="help_message">Aplikace získává výsledky z výsledkové služby v mobilní aplikaci
+        SI-Droid Event a nahrává je na OFeed nebo OResults.
+        \n\nZároveň je možné nahrát i xml výsledky z lokálního souboru.
+        \n\nNahrávané výsledky je možné doplnit o unikátní identifikátor pro každého závodníka.
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * Android battery restriction, which can stop the foreground service.
+    ******************************************************************************************** -->
+    <string name="battery_restriction_title">Omezení baterie</string>
+    <string name="battery_restriction">Android omezení baterie je v aplikaci aktivované.
+        Může být příčinou nefunkčního nahrávání výsledků.
+        \n\nChceš zrušit omezení baterie?
+        \n\nBude spuštěno Android nastavení aplikace, kde můžeš omezení baterie upravit →
+        <b>Allow background usage</b> nebo <b>Unrestricted</b> (nebo něco podobného).
+    </string>
+
+    <!--
+    ********************************************************************************************
+    * Notifications in the status bar. Shows that the foreground service is running.
+    ******************************************************************************************** -->
+    <string name="notification_title">Služba konektoru</string>
+    <string name="notification_text">SI-Droid Connector nahrávací služba</string>
+    <string name="notifications_permission_title">Android povolení</string>
+    <string name="notifications_permission_message">Povol prosím zobrazování notifikační ikony,
+        která signalizuje, že je nahrávání spuštěné.
+    </string>
+    <string name="notifications_permission_not_granted">Notifikační ikona nebude zobrazena.
+        Nahrávání i tak poběží.
+    </string>
+    <!--
+    ********************************************************************************************
+    * In-app update.
+    ******************************************************************************************** -->
+    <string name="update_title">Aktualizovat aplikaci</string>
+    <string name="update_available">Nová verze k dispozici.\n\nChceš stáhnout a nainstalovat z Google Play Store?</string>
+    <string name="update_ok">Aktualizace dokončena.</string>
+    <string name="update_canceled">Aktualizace zrušena.</string>
+    <string name="update_failed">Aktualizace se nezdařila.</string>
+    <string name="update_postpone_one_week">Odložit o týden</string>
+
+</resources>

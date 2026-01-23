@@ -1,6 +1,7 @@
 package com.orienteerfeed.ofeed_sidroid_connector;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,6 +12,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -22,15 +24,13 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 /**
- * Update the xml result list with ids. Each Person will get a tag
- * {@code <id>123</id>}
+ * Update the xml result list with ids. Each Person will get a tag {@code <Id>123</Id>}
  * where 123 is a unique integer identifier for this {@code <Person>}.
+ * Incomplete <PersonResult> elements will be removed.
  */
 class XmlModifier {
 
 /*
-    A key which is unique for each runner is formed by concatenating FamilyName + GivenName + ControlCard
-
     Layout of XML file retrieved from SI-Droid Event (IOF 3.0 format):
 
     <ResultList ...>
@@ -53,7 +53,7 @@ class XmlModifier {
 
             <PersonResult>
                 <Person>
-                <id>123</id>    <!-- Id will be updated or inserted. -->
+                <Id>123</Id>    <!-- Id will be updated or inserted. -->
                     <Name>
                         <Family>Smith</Family>
                         <Given>Liam</Given>
@@ -96,13 +96,20 @@ class XmlModifier {
 */
 
     /**
-     * Update or insert id tags in an IOF xml 3.0 result list.
-     * This will change each occurrence of
+     * <p>Update or insert id tags in an IOF xml 3.0 results list.</p>
+     * <p>This will change each occurrence of
      * {@code <Person><Name>...</Name></Person>} to
      * {@code <Person><Id>123</Id><Name>...</Name></Person>}
-     * where 123 is an incremental counter starting at 1.
+     * where 123 is an incremental counter starting at 1.</p>
+     * <p>Incomplete <PersonResult> elements (where given name equals control card)
+     * will be removed.</p>
+     *
+     * @param xmlInput Start list, in IOF 3.0 XML.
+     * @param xmlIds   Holder of XML ids and some event data.
+     * @return Updated results list, or null if no results to upload
+     * (which may occur if incomplete <PersonResult> elements have been removed).
      */
-    static String updateOrInsertXmlId(String xmlInput, @NonNull XmlIds xmlIds) throws Exception {
+    static @Nullable String updateOrInsertXmlId(String xmlInput, @NonNull XmlIds xmlIds) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(new InputSource(new StringReader(xmlInput)));
@@ -120,7 +127,7 @@ class XmlModifier {
                 xmlIds.setCurrentEvent(eventName, eventDateTime);
             }
         } else {
-            throw new Exception("No event data in XML file.");
+            throw new IllegalArgumentException("No event data in XML file.");
         }
 
         // Check for multiple occurrences of the same runner.
@@ -129,30 +136,42 @@ class XmlModifier {
         // same name and the same SI card.
         HashSet<String> nameCard = new HashSet<>();   // Key is "Family|Given|ControlCard"
 
+        // Remove (don't upload) incomplete PersonResult elements.
+        // "Incomplete" is defined as Person.Name.Given equals Result.ControlCard.
+        // If a name has not been entered (yet) in SI-Droid Event, it sets the
+        // given name to the SI card number. In future updates, when a real name
+        // has been set, this PersonResult will be handled and uploaded.
+        ArrayList<Element> personResultsToRemove = new ArrayList<>();
+
         // Iterate over all <ClassResult> elements.
+        int personResultsCount = 0;
         NodeList classResults = doc.getElementsByTagName("ClassResult");
         for (int i = 0; i < classResults.getLength(); i++) {
             Element classResult = (Element) classResults.item(i);
-//            String className = textOf(classResult, "Class", "Name");
+//            String className = textOf(classResult, "Class", "Name");  // Not needed now.
 
             // All <PersonResult> within this ClassResult.
             NodeList personResults = classResult.getElementsByTagName("PersonResult");
-            StringBuilder xmlIdKey = new StringBuilder();
             for (int j = 0; j < personResults.getLength(); j++) {
-                xmlIdKey.setLength(0);
                 Element personResult = (Element) personResults.item(j);
                 String family = textOf(personResult, "Person", "Name", "Family");
                 String given = textOf(personResult, "Person", "Name", "Given");
-                xmlIdKey.append(family).append("|").append(given).append("|");
                 String controlCard = textOf(personResult, "Result", "ControlCard");
-                xmlIdKey.append(controlCard);
-                String hash = hashString(xmlIdKey.toString());
+                // Check for incomplete PersonResult element.
+                if (given.equals(controlCard)) {
+                    personResultsToRemove.add(personResult);
+                    continue;
+                }
+                String key = family + "|" + given + "|" + controlCard;
+                String hash = hashString(key);
                 String xmlId = xmlIds.getXmlId(hash);
-                if (!nameCard.add(xmlIdKey.toString())) {
-                    throw new Exception("Multiple occurrences of " + given + " " + family + ", " + controlCard + ".");
+                if (!nameCard.add(key)) {
+                    String s = "Multiple occurrences of " + given + " " + family + ", " + controlCard + ".";
+                    throw new IllegalArgumentException(s);
                 }
 
-                // Insert or update <Id>hash</Id>.
+                personResultsCount++;
+                // Insert or update <Id>123</Id>.
                 Element person = firstDirectChild(personResult, "Person");
                 if (person != null) {
                     Element existingId = firstDirectChild(person, "Id");
@@ -180,6 +199,26 @@ class XmlModifier {
                 }
             }
         }
+
+
+        if (personResultsCount == 0) return null;   // No results to upload.
+
+        // Remove incomplete PersonResult elements.
+        for (Element personResult : personResultsToRemove) {
+            Node parent = personResult.getParentNode();
+            if (parent != null) parent.removeChild(personResult);
+        }
+
+        // Remove <ClassResult> elements that have become empty.
+        for (int i = classResults.getLength() - 1; i >= 0; i--) {
+            Element classResult = (Element) classResults.item(i);
+            NodeList remainingPersons = classResult.getElementsByTagName("PersonResult");
+            if (remainingPersons.getLength() == 0) {
+                Node parent = classResult.getParentNode();
+                if (parent != null) parent.removeChild(classResult);
+            }
+        }
+
         return documentToString(doc);
     }
 
@@ -213,7 +252,7 @@ class XmlModifier {
     /**
      * Hash the given string using SHA-256.
      *
-     * @return The first 8 bytes of the hash value.
+     * @return The first 8 bytes of the SHA-256 digest, hex-encoded (16 chars).
      */
     private static String hashString(String input) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
