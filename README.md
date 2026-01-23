@@ -1,10 +1,10 @@
 # OFeed SI-Droid Connector
 
-This Android app uploads result lists from [SI-Droid Event](https://play.google.com/store/apps/details?id=se.joja.sidroid.event.full) to [OFeed](https://orienteerfeed.com/).
+This Android app uploads result lists from [SI-Droid Event](https://play.google.com/store/apps/details?id=se.joja.sidroid.event.full) to [OFeed](https://orienteerfeed.com/) or [OResult](https://oresults.eu/).
 
 ## Features
 
-- Uploads result lists from SI-Droid Event to OFeed.
+- Uploads result lists from SI-Droid Event to OFeed or OResults.
 - Uses [IOF Data Standard 3.0](https://orienteering.sport/iof/it/data-standard-3-0/).
 - Supports OFeed QR codes for easy configuration.
 
