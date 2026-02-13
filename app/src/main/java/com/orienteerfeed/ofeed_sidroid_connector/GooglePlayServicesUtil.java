@@ -71,7 +71,7 @@ public class GooglePlayServicesUtil {
     }
 
     /**
-     * Trigger a background download and an install of the {@link GmsBarcodeScanning} module
+     * Trigger a background download and an installation of the {@link GmsBarcodeScanning} module
      * from Google Play Services, if not already installed.
      * https://developers.google.com/android/guides/module-install-apis?hl=en#send_an_urgent_module_install_request
      *

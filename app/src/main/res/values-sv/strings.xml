@@ -8,8 +8,10 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nya funktioner</string>
-    <string name="news_message">■ Upload to OResults.
-        \n■ Upload of XML file from local storage.
+    <string name="news_message">Support of:
+        \n■ App link (deep link)
+        \n■ Share link.
+        \n■ Paste link.
     </string>
 
     <!--
@@ -27,10 +29,12 @@
     <string name="about">Om</string>
     <string name="clear_ofeed">Rensa OFeed</string>
     <string name="cleared_ok">Rensat OK</string>
+    <string name="clip_board_is_empty">Urklipp är tomt.</string>
     <string name="contributors">Bidragsgivare</string>
     <string name="do_not_show_again">Visa inte igen</string>
     <string name="license">Licens</string>
     <string name="no_results_to_upload">Inga resultat att ladda upp.</string>
+    <string name="paste">Klistra in</string>
     <string name="qr_code_scanner">QR-kodskanner</string>
     <string name="reset">Reset</string>
     <string name="settings">Inställningar</string>
@@ -71,17 +75,18 @@
     ********************************************************************************************
     * OFeed settings.
     ******************************************************************************************** -->
-    <string name="help_server">OFeed serveradress (URL):
+    <string name="ofeed_settings_updated_ok">OFeed-inställningarna uppdaterade.</string>
+    <string name="server_not_specified">Server inte angiven.</string>
+    <string name="server_incorrect_url">Felaktig serveradress (URL).</string>
+    <string name="server_incorrect_path">Felaktig path. Serverns URL måste sluta med <i>/rest/v1/events</i></string>
+    <string name="server_https_required">https krävs.</string>
+    <string name="server_help">OFeed serveradress (URL):
         \n■ Default <i>https://api.orienteerfeed.com/rest/v1/events</i>
         \n■ <i>api.orienteerfeed.com</i> → default
         \n■ <i>xxx.yyy.zzz</i> → <i>https://xxx.yyy.zzz/rest/v1/events</i>
         \n■ Måste sluta med <i>/rest/v1/events</i>
         \n■ Android kräver <i>https</i>
     </string>
-    <string name="server_not_specified">Server inte angiven.</string>
-    <string name="server_incorrect_url">Felaktig serveradress (URL).</string>
-    <string name="server_incorrect_path">Felaktig path. Serverns URL måste sluta med <i>/rest/v1/events</i></string>
-    <string name="server_https_required">https krävs.</string>
     <string name="event_id">Event-id</string>
     <string name="event_id_is_missing">Even-id saknas.</string>
     <string name="password">Lösen</string>
@@ -89,7 +94,8 @@
     <string name="qr_code_scan">Skanna</string>
     <string name="qr_code_scan_failed">Skanningen misslyckades.</string>
     <string name="qr_code_invalid">Ogiltig QR-kod.</string>
-    <string name="qr_code_start">Måste börja med %s</string>
+    <string name="qr_code_start">Måste börja med\n■ https://stigning.se/ofeed eller\n■ https://stigning.se/connector.</string>
+    <string name="ofeed_link_invalid">Ogiltig OFeed-länk.</string>
     <string name="timeouts">Timeouter</string>
     <string name="http_timeouts">HTTP timeouter</string>
     <string name="http_timeouts_help">Tidsgränser i sekunder. Noll innebär ingen timeout.</string>

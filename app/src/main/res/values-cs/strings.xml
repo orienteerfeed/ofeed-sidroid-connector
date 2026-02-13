@@ -8,8 +8,10 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nové funkce</string>
-    <string name="news_message">■ Upload to OResults.
-        \n■ Upload of XML file from local storage.
+    <string name="news_message">Support of:
+        \n■ App link (deep link).
+        \n■ Share link.
+        \n■ Paste link.
     </string>
 
     <!--
@@ -27,10 +29,12 @@
     <string name="about">O aplikaci</string>
     <string name="clear_ofeed">Promazat OFeed</string>
     <string name="cleared_ok">Promazání OK</string>
+    <string name="clip_board_is_empty">Schránka je prázdná.</string>
     <string name="contributors">Spolupracovníci</string>
     <string name="do_not_show_again">Příště již nezobrazovat</string>
     <string name="license">Licence</string>
     <string name="no_results_to_upload">Žádné výsledky k nahrání.</string>
+    <string name="paste">Vložit</string>
     <string name="qr_code_scanner">Čtečka QR kódu</string>
     <string name="reset">Reset</string>
     <string name="settings">Nastavení</string>
@@ -71,17 +75,18 @@
     ********************************************************************************************
     * OFeed settings.
     ******************************************************************************************** -->
-    <string name="help_server">Adresa OFeed serveru (URL):
+    <string name="ofeed_settings_updated_ok">Nastavení OFeed aktualizováno.</string>
+    <string name="server_not_specified">Server není nastavený.</string>
+    <string name="server_incorrect_url">Špatná adresa serveru (URL).</string>
+    <string name="server_incorrect_path">Špatná path. URL serveru musí končit <i>/rest/v1/events</i></string>
+    <string name="server_https_required">https je vyžadováno.</string>
+    <string name="server_help">Adresa OFeed serveru (URL):
         \n■ Použij <i>https://api.orienteerfeed.com/rest/v1/events</i>
         \n■ <i>api.orienteerfeed.com</i> → výchozí
         \n■ <i>xxx.yyy.zzz</i> → <i>https://xxx.yyy.zzz/rest/v1/events</i>
         \n■ Path musí být <i>/rest/v1/events</i>
         \n■ Android vyžaduje <i>https</i>
     </string>
-    <string name="server_not_specified">Server není nastavený.</string>
-    <string name="server_incorrect_url">Špatná adresa serveru (URL).</string>
-    <string name="server_incorrect_path">Špatná path. URL serveru musí končit <i>/rest/v1/events</i></string>
-    <string name="server_https_required">https je vyžadováno.</string>
     <string name="event_id">Akce Id</string>
     <string name="event_id_is_missing">Akce Id není vyplněné.</string>
     <string name="password">Heslo</string>
@@ -89,7 +94,8 @@
     <string name="qr_code_scan">Skenovat</string>
     <string name="qr_code_scan_failed">Skenování se nezdařilo.</string>
     <string name="qr_code_invalid">Neplatný QR kód.</string>
-    <string name="qr_code_start">Musí začínat na %s</string>
+    <string name="qr_code_start">Musí začínat na\n■ https://stigning.se/ofeed nebo\n■ https://stigning.se/connector.</string>
+    <string name="ofeed_link_invalid">Neplatný odkaz OFeed.</string>
     <string name="timeouts">Timeouty</string>
     <string name="http_timeouts">HTTP timeouty</string>
     <string name="http_timeouts_help">Timeouty ve vteřinách. Nula znamená bez timeout.</string>

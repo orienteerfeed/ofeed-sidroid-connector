@@ -8,9 +8,10 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">New features</string>
-    <string name="news_message">Don\'t upload incomplete PersonResult XML elements.
-        <i>Incomplete</i> is defined as Person.Name.Given equals Result.ControlCard.
-        This occurs when a name has not yet been entered in SI-Droid Event.
+    <string name="news_message">Support of:
+        \n■ App link (deep link)
+        \n■ Share link.
+        \n■ Paste link.
     </string>
 
     <!--
@@ -39,10 +40,12 @@
     <string name="about">About</string>
     <string name="clear_ofeed">Clear OFeed</string>
     <string name="cleared_ok">Cleared OK</string>
+    <string name="clip_board_is_empty">The clipboard is empty.</string>
     <string name="contributors">Contributors</string>
     <string name="do_not_show_again">Don\'t show this again</string>
     <string name="license">License</string>
     <string name="no_results_to_upload">No results to upload.</string>
+    <string name="paste">Paste</string>
     <string name="qr_code_scanner">QR code scanner</string>
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
@@ -83,17 +86,18 @@
     ********************************************************************************************
     * OFeed settings.
     ******************************************************************************************** -->
-    <string name="help_server">OFeed server address (URL):
+    <string name="ofeed_settings_updated_ok">OFeed settings updated.</string>
+    <string name="server_not_specified">Server not specified.</string>
+    <string name="server_incorrect_url">Incorrect server address (URL).</string>
+    <string name="server_incorrect_path">Incorrect path. Server URL must end with <i>/rest/v1/events</i></string>
+    <string name="server_https_required">https required.</string>
+    <string name="server_help">OFeed server address (URL):
         \n■ Default <i>https://api.orienteerfeed.com/rest/v1/events</i>
         \n■ <i>api.orienteerfeed.com</i> → default
         \n■ <i>xxx.yyy.zzz</i> → <i>https://xxx.yyy.zzz/rest/v1/events</i>
         \n■ Path must be <i>/rest/v1/events</i>
         \n■ Android requires <i>https</i>
     </string>
-    <string name="server_not_specified">Server not specified.</string>
-    <string name="server_incorrect_url">Incorrect server address (URL).</string>
-    <string name="server_incorrect_path">Incorrect path. Server URL must end with <i>/rest/v1/events</i></string>
-    <string name="server_https_required">https required.</string>
     <string name="event_id">Event id</string>
     <string name="event_id_is_missing">Event id is missing.</string>
     <string name="password">Password</string>
@@ -101,7 +105,8 @@
     <string name="qr_code_scan">Scan</string>
     <string name="qr_code_scan_failed">The scanning failed.</string>
     <string name="qr_code_invalid">Invalid QR code.</string>
-    <string name="qr_code_start">Must start with %s</string>
+    <string name="qr_code_start">Must start with\n■ https://stigning.se/ofeed or\n■ https://stigning.se/connector.</string>
+    <string name="ofeed_link_invalid">Invalid OFeed link.</string>
     <string name="timeouts" tools:ignore="MissingTranslation">Timeouts</string>
     <string name="http_timeouts" tools:ignore="MissingTranslation">HTTP timeouts</string>
     <string name="http_timeouts_help" tools:ignore="MissingTranslation">Timeouts in seconds. Zero means no timeout.</string>
@@ -221,8 +226,7 @@
     * License.
     ******************************************************************************************** -->
     <string name="license_apache" translatable="false">Apache 2.0</string>
-    <string name="license_ok_http" translatable="false">
-        <b>Open Source License</b>
+    <string name="license_ok_http" translatable="false"><b>Open Source License</b>
         \nThis application uses the following open-source software:
         \n\n<b>OkHttp</b>
         \nCopyright © 2019 Square, Inc.

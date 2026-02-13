@@ -9,6 +9,7 @@ import android.util.Base64;
 import android.widget.NumberPicker;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -60,16 +61,24 @@ public class Util {
     }
 
     /**
-     * Parse OFeed credentials, typically retrieved from a QR code formatted as an app link.
-     * Note: Parameter auth=basic is ignored.
+     * Start of OFeed link (deep link, or pasted link).
+     */
+    private static final String URL_START_1 = "https://stigning.se/ofeed", URL_START_2 = "https://stigning.se/connector";
+
+    /**
+     * <p>Parse OFeed credentials, typically retrieved from a QR code formatted as an app link (deep link):</p>
+     * <ul><li>https://stigning.se/ofeed?url=xxx&auth=basic&id=yyy&pwd=zzz</li>
+     * <li>https://stigning.se/connector?url=xxx&auth=basic&id=yyy&pwd=zzz</li></ul>
+     * <p>Parameter auth=basic is ignored.</p>
      *
-     * @param credentials OFeed credentials, formatted as https://stigning.se/ofeed?url=xxx&auth=basic&id=yyy&pwd=zzz
+     * @param credentials OFeed credentials. Must start with {@link #URL_START_1} or {@link #URL_START_2}.
      * @return Array of {serverUrl, eventId, password}, or, array of {errorMessage} if the credentials could not be parsed.
      * @noinspection JavadocLinkAsPlainText
      */
     static @NonNull String[] parseOFeedCredentials(Context context, @NonNull String credentials) {
-        final String urlStart = "https://stigning.se/ofeed";
-        if (!credentials.startsWith(urlStart)) return new String[]{context.getString(R.string.qr_code_start, urlStart)};
+        if (!credentials.startsWith(URL_START_1) && !credentials.startsWith(URL_START_2)) {
+            return new String[]{context.getString(R.string.qr_code_start)};
+        }
         try {
             Uri uri = Uri.parse(credentials);
             // Server URL.
@@ -89,6 +98,24 @@ public class Util {
             if (message == null) message = "Error parsing OFeed credentials.";
             return new String[]{message};
         }
+    }
+
+    /**
+     * Find URL within a larger text mass, eg, "Open this event in the app: https://stigning.se/ofeed ...".
+     *
+     * @return The URL, or null if not found.
+     * @noinspection JavadocLinkAsPlainText
+     */
+    @Nullable
+    static String extractUrl(@NonNull String text) {
+        int i = Math.max(text.indexOf(URL_START_1), text.indexOf(URL_START_2));
+        if (i == -1) return null;
+        text = text.substring(i);
+
+        i = text.indexOf(" ");
+        if (i != -1) text = text.substring(0, i);
+
+        return text;
     }
 
     /**

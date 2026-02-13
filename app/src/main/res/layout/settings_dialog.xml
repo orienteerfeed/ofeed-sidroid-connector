@@ -49,7 +49,6 @@
             android:id="@+id/settings_upload_http_timeouts"
             style="@style/button_style"
             android:text="@string/timeouts"
-            android:gravity="center"
             app:layout_constraintStart_toEndOf="@+id/settings_upload_interval"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/settings_upload_interval" />
@@ -180,16 +179,25 @@
             app:layout_constraintTop_toTopOf="@id/settings_ofeed_event_password"
             app:layout_constraintBottom_toBottomOf="@id/settings_ofeed_event_password" />
         <Button
-            android:id="@+id/settings_ofeed_qr_code"
+            android:id="@+id/settings_ofeed_scan_qr_code"
             style="@style/button_style"
             android:layout_marginTop="8dp"
             android:text="@string/qr_code_scan"
-            android:gravity="center"
             android:drawableLeft="@drawable/qr_code"
             tools:ignore="RtlHardcoded"
             android:drawablePadding="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/settings_ofeed_event_password" />
+        <Button
+            android:id="@+id/settings_ofeed_paste_link"
+            style="@style/button_style"
+            android:text="@string/paste"
+            android:drawableLeft="@drawable/paste"
+            tools:ignore="RtlHardcoded"
+            android:drawablePadding="8dp"
+            app:layout_constraintStart_toEndOf="@id/settings_ofeed_scan_qr_code"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/settings_ofeed_scan_qr_code" />
 
         <!--
         ********************************************************************************************

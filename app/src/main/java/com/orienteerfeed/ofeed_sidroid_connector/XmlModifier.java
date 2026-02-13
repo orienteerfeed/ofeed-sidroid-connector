@@ -24,7 +24,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 /**
- * Update the xml result list with ids. Each Person will get a tag {@code <Id>123</Id>}
+ * Update the XML result list with ids. Each Person will get a tag {@code <Id>123</Id>}
  * where 123 is a unique integer identifier for this {@code <Person>}.
  * Incomplete <PersonResult> elements will be removed.
  */
@@ -43,7 +43,8 @@ class XmlModifier {
             ...
         </Event>
 
-        <ClassResult>            <Class>
+        <ClassResult>
+            <Class>
                 <Name>Easy</Name>
             </Class>
             <Course>
@@ -96,7 +97,7 @@ class XmlModifier {
 */
 
     /**
-     * <p>Update or insert id tags in an IOF xml 3.0 results list.</p>
+     * <p>Update or insert id tags in an IOF XML 3.0 results list.</p>
      * <p>This will change each occurrence of
      * {@code <Person><Name>...</Name></Person>} to
      * {@code <Person><Id>123</Id><Name>...</Name></Person>}

@@ -26,6 +26,7 @@ import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.UPLOAD_TO_OF
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.USER_AGENT;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsService.XML_IDS_FILENAME;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsService.resultServiceIsRunning;
+import static com.orienteerfeed.ofeed_sidroid_connector.Util.parseOFeedCredentials;
 
 import android.Manifest;
 import android.app.Activity;
@@ -53,6 +54,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -143,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 else if (itemId == R.id.main_menu_clear_ofeed) clearOFeed();
                 else if (itemId == R.id.main_menu_log) showLog();
                 else if (itemId == R.id.main_menu_http_log) showHttpLog();
-                else if (itemId == R.id.main_menu_help) showDialog(R.string.help_title, R.string.help_message);
+                else if (itemId == R.id.main_menu_help) showDialogLargeText(R.string.help_title, R.string.help_message);
                 else if (itemId == R.id.main_menu_license) new LicenseDialog(this).show();
                 else if (itemId == R.id.main_menu_about) new AboutDialog(this).show();
                 else return false;
@@ -157,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         serviceStatusIcon = findViewById(R.id.main_service_status_icon);
         serviceStatusHelp = findViewById(R.id.main_service_status_help);
         serviceStatusHelp.setOnClickListener(v ->
-                showDialog(R.string.si_droid_unreachable_title, R.string.si_droid_unreachable_message));
+                showDialogLargeText(R.string.si_droid_unreachable_title, R.string.si_droid_unreachable_message));
         updateServiceState();
         // Status list.
         RecyclerView statusListRecyclerView = findViewById(R.id.main_status_recycler_view);
@@ -190,10 +192,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onNewIntent(@NonNull Intent intent) {
+        super.onNewIntent(intent);
+        // App link from QR code. Store new intent, if not getIntent() will return the old one.
+        setIntent(intent);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         checkBatteryRestriction();
         monitorServiceStateStart();
+
+        // Deep link scanned by camera.
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        if (action != null && action.equals(Intent.ACTION_VIEW)) {
+            Uri uri = intent.getData();
+            if (uri != null) {
+                appLinkCommon(uri.toString());
+            }
+        }
 
         // In-app update.
         inAppUpdateResumeIfStalled();
@@ -319,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         String siDroidUrl = String.format(Locale.US, SI_DROID_URL, prefs.siDroidPort);
         String oFeedUrl = getEndpointUpload();
         if (oFeedUrl == null) {
-            showDialog(R.string.ofeed, R.string.server_incorrect_path);
+            showDialogLargeText(R.string.ofeed, R.string.server_incorrect_path);
             return;
         }
         serviceManager = new ResultsServiceManager(this, prefs.uploadTo, siDroidUrl,
@@ -446,7 +465,7 @@ public class MainActivity extends AppCompatActivity {
     private void deleteOFeedCompetitors() {
         String url = getOFeedEndpointDelete();
         if (url == null) {
-            showDialog(R.string.ofeed, R.string.server_incorrect_path);
+            showDialogLargeText(R.string.ofeed, R.string.server_incorrect_path);
             return;
         }
 
@@ -511,6 +530,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ********************************************************************************************
+    // App link/QR code/Share.
+    // ********************************************************************************************
+    private void appLinkCommon(@Nullable String qrCode) {
+        if (qrCode == null) return;
+        String[] credentials = parseOFeedCredentials(this, qrCode);
+        if (credentials.length != 3) {
+            showDialog(R.string.qr_code_invalid, credentials[0] + "\n\n" + qrCode);
+            return;
+        }
+
+        // Remove trailing "/" from server URL, if present.
+        String s = credentials[0];
+        if (s.endsWith("/")) s = s.substring(0, s.length() - 1);
+
+        // Set the OFeed event.
+        prefs.oFeedUrl = s;
+        prefs.oFeedEventId = credentials[1];
+        prefs.oFeedEventPassword = credentials[2];
+        prefs.uploadTo = UPLOAD_TO_OFEED;
+        prefs.save();
+        showSnackbar(R.string.ofeed_settings_updated_ok);
+    }
+
+    // ********************************************************************************************
     // Settings.
     // ********************************************************************************************
     private void settings() {
@@ -534,7 +577,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ********************************************************************************************
-    // Upload xml results file from local storage to OFeed/OResults, once only.
+    // Upload XML results file from local storage to OFeed/OResults, once only.
     // ********************************************************************************************
 
     private void uploadXmlFileFromDisk() {
@@ -585,7 +628,7 @@ public class MainActivity extends AppCompatActivity {
         if (prefs.uploadTo == UPLOAD_TO_OFEED) {
             String oFeedUrl = getEndpointUpload();
             if (oFeedUrl == null) {
-                showDialog(R.string.ofeed, R.string.server_incorrect_path);
+                showDialogLargeText(R.string.ofeed, R.string.server_incorrect_path);
                 return;
             }
             uploader.setOFeedParams(oFeedUrl, prefs.oFeedEventId, prefs.oFeedEventPassword);
@@ -641,17 +684,17 @@ public class MainActivity extends AppCompatActivity {
         if (serviceManager != null) {
             String log = serviceManager.getLog();
             if (!log.isEmpty()) {
-                showLogDialog(R.string.log, log);
+                showDialog(R.string.log, log);
                 return;
             }
         }
         // Try the log that was saved when stopping the service manager.
         if (resultServiceLogSaved != null && !resultServiceLogSaved.isEmpty()) {
-            showLogDialog(R.string.log, resultServiceLogSaved);
+            showDialog(R.string.log, resultServiceLogSaved);
             return;
         }
         // No log available.
-        showSnackbarEmptyLog();
+        showSnackbar(R.string.log_is_empty);
     }
 
     private void showHttpLog() {
@@ -659,22 +702,22 @@ public class MainActivity extends AppCompatActivity {
         if (serviceManager != null) {
             String log = serviceManager.getHttpLog();
             if (!log.isEmpty()) {
-                showLogDialog(R.string.show_http_log, log.replace("\n", "\n\n"));
+                showDialog(R.string.show_http_log, log.replace("\n", "\n\n"));
                 return;
             }
         }
         // Try the log that was saved when stopping the service manager.
         if (resultServiceHttpLogSaved != null && !resultServiceHttpLogSaved.isEmpty()) {
-            showLogDialog(R.string.show_http_log, resultServiceHttpLogSaved.replace("\n", "\n\n"));
+            showDialog(R.string.show_http_log, resultServiceHttpLogSaved.replace("\n", "\n\n"));
             return;
         }
         // No log available.
-        showSnackbarEmptyLog();
+        showSnackbar(R.string.log_is_empty);
     }
 
-    private void showSnackbarEmptyLog() {
+    private void showSnackbar(int textResId) {
         View root = findViewById(android.R.id.content);
-        Snackbar snackbar = Snackbar.make(root, R.string.log_is_empty, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(root, textResId, Snackbar.LENGTH_LONG);
         TextView tv = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         snackbar.show();
@@ -714,12 +757,12 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (permissions.length == 0 || grantResults.length == 0) {
-                // Cancelled by user.
+                // Canceled by user.
                 finish();
             } else {
                 for (int result : grantResults) {
                     if (result == PackageManager.PERMISSION_DENIED) {
-                        showDialog(R.string.notifications_permission_title, R.string.notifications_permission_not_granted);
+                        showDialogLargeText(R.string.notifications_permission_title, R.string.notifications_permission_not_granted);
                     }
                 }
             }
@@ -749,7 +792,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Show alert dialog with OK button and larger text.
      */
-    private void showDialog(int titleResId, int messageResId) {
+    private void showDialogLargeText(int titleResId, int messageResId) {
         AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setTitle(titleResId)
                 .setMessage(messageResId)
@@ -761,7 +804,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Show alert dialog with OK button and default text (more compact).
      */
-    private void showLogDialog(int titleResId, String message) {
+    private void showDialog(int titleResId, String message) {
         new MaterialAlertDialogBuilder(this)
                 .setTitle(titleResId)
                 .setMessage(message)
@@ -850,7 +893,7 @@ public class MainActivity extends AppCompatActivity {
                         msgResId = R.string.update_failed;
                     }
                     if (msgResId != 0) {
-                        showDialog(R.string.update_title, msgResId);
+                        showDialogLargeText(R.string.update_title, msgResId);
                     }
                 });
     }

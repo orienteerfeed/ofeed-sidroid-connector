@@ -21,7 +21,7 @@ class HttpStatusCodes {
     }
 
     /**
-     * Translation of an HTTP status code to to the corresponding meaning in plain text.
+     * Translation of an HTTP status code to the corresponding meaning in plain text.
      *
      * @param code The status code to be translated.
      * @return The meaning for the given code formatted as "code (meaning).", or, "code." if the given code could not be found.

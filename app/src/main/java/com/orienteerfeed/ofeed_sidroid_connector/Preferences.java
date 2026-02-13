@@ -11,7 +11,7 @@ public class Preferences {
 
     /**
      * Format string for URL of SI-Droid Event.
-     * To allow HTTP in Android, see network security configuration file in xml folder.
+     * To allow HTTP in Android, see network security configuration file in XML folder.
      */
     static final String SI_DROID_URL = "http://localhost:%d/reports/ResultsIof30Xml";
 
@@ -37,7 +37,7 @@ public class Preferences {
     private static final String KEY_PREFERENCES_VERSION = "PREFERENCES_VERSION";
 
     /**
-     * Version of this preferences storage.
+     * Version of this preference storage.
      * Not retrieved unless needed, eg, to detect if a conversion from a previous version is required.
      *
      * @noinspection unused
@@ -100,7 +100,7 @@ public class Preferences {
 
     // Base URL: https://api.orienteerfeed.com/rest/v1
     // Upload                                          /upload/iof
-    // Delete                                          /events/%s/competitors"
+    // Delete                                          /events/%s/competitors
 
     /**
      * OFeed URL as entered or scanned by the user, eg, "https://api.orienteerfeed.com/rest/v1".

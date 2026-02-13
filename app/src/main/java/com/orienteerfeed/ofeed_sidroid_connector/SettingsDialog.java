@@ -5,12 +5,16 @@ import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.DEFAULT_OFEE
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.DEFAULT_OFEED_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.UPLOAD_TO_OFEED;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.UPLOAD_TO_ORESULTS;
+import static com.orienteerfeed.ofeed_sidroid_connector.Util.extractUrl;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.parseOFeedCredentials;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.setupNumberPicker;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.string2Int;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.timeFormatter;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -116,7 +120,7 @@ class SettingsDialog {
             oFeedServer.setText(prefs.oFeedUrl);
         }
         layout.findViewById(R.id.settings_ofeed_server_help).setOnClickListener(v ->
-                showDialog(R.string.help_server));
+                showDialog(R.string.server_help));
 
         // OFeed event id.
         oFeedEventId = layout.findViewById(R.id.settings_ofeed_event_id);
@@ -142,8 +146,12 @@ class SettingsDialog {
         });
 
         // Scan QR code.
-        Button scanQrCodeButton = layout.findViewById(R.id.settings_ofeed_qr_code);
-        scanQrCodeButton.setOnClickListener(v -> scanQrCode());
+        Button scanQrCodeButton = layout.findViewById(R.id.settings_ofeed_scan_qr_code);
+        scanQrCodeButton.setOnClickListener(v -> appLinkScanOFeedQrCode());
+
+        // Paste link.
+        Button pasteButton = layout.findViewById(R.id.settings_ofeed_paste_link);
+        pasteButton.setOnClickListener(v -> appLinkPasteOFeedQrCode());
 
         // OResults api key.
         EditText oResultsApiKey = layout.findViewById(R.id.settings_oresults_api_key);
@@ -237,7 +245,7 @@ class SettingsDialog {
             } else {
                 // OResults tab.
                 String newApiKey = oResultsApiKey.getText().toString().trim();
-                if(newApiKey.isEmpty()) {
+                if (newApiKey.isEmpty()) {
                     showDialog(R.string.oresults_api_key_is_missing);
                     return;
                 }
@@ -335,34 +343,14 @@ class SettingsDialog {
     }
 
     //**********************************************************************************************
-    // Scan QR code.
+    // App link: Scan QR code, paste app link.
     //**********************************************************************************************
-    private void scanQrCode() {
+    private void appLinkScanOFeedQrCode() {
         GmsBarcodeScanning.getClient(activity)
                 .startScan()
                 .addOnSuccessListener(barcode -> {
                     String rawValue = barcode.getRawValue();
-                    if (rawValue != null) {
-                        String[] credentials = parseOFeedCredentials(activity, rawValue);
-                        if (credentials.length == 3) {
-                            try {
-                                String[] parsedUrl = parseUrl(credentials[0]);
-                                if (isDefaultUrl(parsedUrl)) {
-                                    oFeedServer.setText((parsedUrl[1]));
-                                } else {
-                                    oFeedServer.setText(credentials[0]);
-                                }
-                                oFeedEventId.setText(credentials[1]);
-                                oFeedEventPassword.setText(credentials[2]);
-                            } catch (MalformedURLException e) {
-                                String message = e.getMessage() + "\n" + credentials[0] + "\n\n" + rawValue;
-                                showDialog(message);
-                            }
-                        } else {
-                            String message = activity.getString(R.string.qr_code_invalid) + "\n" + credentials[0] + "\n\n" + rawValue;
-                            showDialog(message);
-                        }
-                    }
+                    if (rawValue != null) appLinkCommon(rawValue);
                 })
 //                .addOnCanceledListener(() -> errorDialog("Cancelled."))
                 .addOnFailureListener(e -> {
@@ -370,6 +358,52 @@ class SettingsDialog {
                     if (message == null) message = activity.getString(R.string.qr_code_scan_failed);
                     showDialog(message);
                 });
+    }
+
+    private void appLinkPasteOFeedQrCode() {
+        ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cm == null || !cm.hasPrimaryClip()) {
+            showDialog(R.string.clip_board_is_empty);
+            return;
+        }
+        ClipData clip = cm.getPrimaryClip();
+        if (clip == null || clip.getItemCount() == 0) {
+            showDialog(R.string.clip_board_is_empty);
+            return;
+        }
+        CharSequence cs = clip.getItemAt(0).coerceToText(activity);
+        if (cs == null) {
+            showDialog(R.string.clip_board_is_empty);
+            return;
+        }
+        String qrCode = extractUrl(cs.toString().trim());
+        if (qrCode == null || qrCode.isEmpty()) {
+            showDialog(R.string.clip_board_is_empty);
+            return;
+        }
+        appLinkCommon(qrCode);
+    }
+
+    private void appLinkCommon(String appLink) {
+        String[] credentials = parseOFeedCredentials(activity, appLink);
+        if (credentials.length == 3) {
+            try {
+                String[] parsedUrl = parseUrl(credentials[0]);
+                if (isDefaultUrl(parsedUrl)) {
+                    oFeedServer.setText((parsedUrl[1]));
+                } else {
+                    oFeedServer.setText(credentials[0]);
+                }
+                oFeedEventId.setText(credentials[1]);
+                oFeedEventPassword.setText(credentials[2]);
+            } catch (MalformedURLException e) {
+                String message = e.getMessage() + "\n" + credentials[0] + "\n\n" + appLink;
+                showDialog(message);
+            }
+        } else {
+            String message = activity.getString(R.string.qr_code_invalid) + "\n" + credentials[0] + "\n\n" + appLink;
+            showDialog(message);
+        }
     }
 
     //**********************************************************************************************
@@ -482,7 +516,7 @@ class SettingsDialog {
     //**********************************************************************************************
     private static final int[] oFeedTabResIds = {R.id.settings_ofeed_selected, R.id.settings_ofeed_server,
             R.id.settings_ofeed_server_help, R.id.settings_ofeed_event_id, R.id.settings_ofeed_event_password,
-            R.id.settings_ofeed_password_visibility, R.id.settings_ofeed_qr_code};
+            R.id.settings_ofeed_password_visibility, R.id.settings_ofeed_scan_qr_code};
     private static final int[] oResultsTabResIds = {R.id.settings_oresults_selected, R.id.settings_oresults_api_key};
     private static View[] oFeedTab, oResultsTab;
 
