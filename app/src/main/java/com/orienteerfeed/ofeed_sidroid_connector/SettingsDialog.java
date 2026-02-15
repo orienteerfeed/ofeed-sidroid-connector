@@ -129,20 +129,18 @@ class SettingsDialog {
         // OFeed event password.
         oFeedEventPassword = layout.findViewById(R.id.settings_ofeed_event_password);
         oFeedEventPassword.setText(prefs.oFeedEventPassword);
-        // Toggle password visibility.
+        // Password visibility.
         ImageView eventPasswordVisibility = layout.findViewById(R.id.settings_ofeed_password_visibility);
-        boolean[] eventPasswordIsVisible = {false};
+        eventPasswordVisibility.setSelected(false);
         eventPasswordVisibility.setOnClickListener(v -> {
-            int passwordIconResId;
-            if (eventPasswordIsVisible[0]) {
+            boolean isVisible = eventPasswordVisibility.isSelected();
+            eventPasswordVisibility.setSelected(!isVisible);
+            if (isVisible) {
                 oFeedEventPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                passwordIconResId = R.drawable.visibility_off;
             } else {
                 oFeedEventPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                passwordIconResId = R.drawable.visibility;
             }
-            eventPasswordVisibility.setImageResource(passwordIconResId);
-            eventPasswordIsVisible[0] = !eventPasswordIsVisible[0];
+
         });
 
         // Scan QR code.
@@ -363,22 +361,22 @@ class SettingsDialog {
     private void appLinkPasteOFeedQrCode() {
         ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm == null || !cm.hasPrimaryClip()) {
-            showDialog(R.string.clip_board_is_empty);
+            showDialog(R.string.ofeed_link_invalid);
             return;
         }
         ClipData clip = cm.getPrimaryClip();
         if (clip == null || clip.getItemCount() == 0) {
-            showDialog(R.string.clip_board_is_empty);
+            showDialog(R.string.ofeed_link_invalid);
             return;
         }
         CharSequence cs = clip.getItemAt(0).coerceToText(activity);
         if (cs == null) {
-            showDialog(R.string.clip_board_is_empty);
+            showDialog(R.string.ofeed_link_invalid);
             return;
         }
         String qrCode = extractUrl(cs.toString().trim());
         if (qrCode == null || qrCode.isEmpty()) {
-            showDialog(R.string.clip_board_is_empty);
+            showDialog(R.string.ofeed_link_invalid);
             return;
         }
         appLinkCommon(qrCode);
@@ -516,7 +514,7 @@ class SettingsDialog {
     //**********************************************************************************************
     private static final int[] oFeedTabResIds = {R.id.settings_ofeed_selected, R.id.settings_ofeed_server,
             R.id.settings_ofeed_server_help, R.id.settings_ofeed_event_id, R.id.settings_ofeed_event_password,
-            R.id.settings_ofeed_password_visibility, R.id.settings_ofeed_scan_qr_code};
+            R.id.settings_ofeed_password_visibility, R.id.settings_ofeed_scan_qr_code, R.id.settings_ofeed_paste_link};
     private static final int[] oResultsTabResIds = {R.id.settings_oresults_selected, R.id.settings_oresults_api_key};
     private static View[] oFeedTab, oResultsTab;
 

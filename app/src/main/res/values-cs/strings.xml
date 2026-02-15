@@ -8,10 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nové funkce</string>
-    <string name="news_message">Support of:
-        \n■ App link (deep link).
-        \n■ Share link.
-        \n■ Paste link.
+    <string name="news_message">\n■ Error message when <i>Clear OFeed</i> fails.
     </string>
 
     <!--
@@ -29,12 +26,11 @@
     <string name="about">O aplikaci</string>
     <string name="clear_ofeed">Promazat OFeed</string>
     <string name="cleared_ok">Promazání OK</string>
-    <string name="clip_board_is_empty">Schránka je prázdná.</string>
     <string name="contributors">Spolupracovníci</string>
     <string name="do_not_show_again">Příště již nezobrazovat</string>
     <string name="license">Licence</string>
     <string name="no_results_to_upload">Žádné výsledky k nahrání.</string>
-    <string name="paste">Vložit</string>
+    <string name="paste_link">Vložit odkaz</string>
     <string name="qr_code_scanner">Čtečka QR kódu</string>
     <string name="reset">Reset</string>
     <string name="settings">Nastavení</string>
@@ -91,7 +87,7 @@
     <string name="event_id_is_missing">Akce Id není vyplněné.</string>
     <string name="password">Heslo</string>
     <string name="password_is_missing">Heslo není vyplněné.</string>
-    <string name="qr_code_scan">Skenovat</string>
+    <string name="qr_code_scan">Skenovat QR kód</string>
     <string name="qr_code_scan_failed">Skenování se nezdařilo.</string>
     <string name="qr_code_invalid">Neplatný QR kód.</string>
     <string name="qr_code_start">Musí začínat na\n■ https://stigning.se/ofeed nebo\n■ https://stigning.se/connector.</string>

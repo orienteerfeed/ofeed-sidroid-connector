@@ -8,10 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nya funktioner</string>
-    <string name="news_message">Support of:
-        \n■ App link (deep link)
-        \n■ Share link.
-        \n■ Paste link.
+    <string name="news_message">\n■ Error message when <i>Clear OFeed</i> fails.
     </string>
 
     <!--
@@ -29,12 +26,11 @@
     <string name="about">Om</string>
     <string name="clear_ofeed">Rensa OFeed</string>
     <string name="cleared_ok">Rensat OK</string>
-    <string name="clip_board_is_empty">Urklipp är tomt.</string>
     <string name="contributors">Bidragsgivare</string>
     <string name="do_not_show_again">Visa inte igen</string>
     <string name="license">Licens</string>
     <string name="no_results_to_upload">Inga resultat att ladda upp.</string>
-    <string name="paste">Klistra in</string>
+    <string name="paste_link">Klistra in länk</string>
     <string name="qr_code_scanner">QR-kodskanner</string>
     <string name="reset">Reset</string>
     <string name="settings">Inställningar</string>
@@ -91,7 +87,7 @@
     <string name="event_id_is_missing">Even-id saknas.</string>
     <string name="password">Lösen</string>
     <string name="password_is_missing">Lösen saknas.</string>
-    <string name="qr_code_scan">Skanna</string>
+    <string name="qr_code_scan">Skanna QR-kod</string>
     <string name="qr_code_scan_failed">Skanningen misslyckades.</string>
     <string name="qr_code_invalid">Ogiltig QR-kod.</string>
     <string name="qr_code_start">Måste börja med\n■ https://stigning.se/ofeed eller\n■ https://stigning.se/connector.</string>

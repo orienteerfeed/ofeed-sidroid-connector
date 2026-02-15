@@ -170,6 +170,8 @@ public class ResultsService extends Service {
      */
     public static final int TIME_TO_FIRST_UPDATE_SEC = 3;
 
+    private static final String IO_EXCEPTION = "I/O exception.";
+
     // *********************************************************************************************
     // Binder that is given to the client.
     // *********************************************************************************************
@@ -299,8 +301,7 @@ public class ResultsService extends Service {
         httpClient.newCall(siDroidGetRequest).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                String message = e.getMessage();
-                if (message == null) message = "I/O exception";
+                String message = e.getMessage() != null ? e.getMessage() : IO_EXCEPTION;
                 statusFailure(message);
                 serverLog.add(message);
             }
@@ -326,8 +327,7 @@ public class ResultsService extends Service {
                         serverLog.add(message);
                     }
                 } catch (IOException e) {
-                    String message = e.getMessage();
-                    if (message == null) message = "I/O exception";
+                    String message = e.getMessage() != null ? e.getMessage() : IO_EXCEPTION;
                     statusFailure(message);
                     serverLog.add(message);
                 }
@@ -351,9 +351,9 @@ public class ResultsService extends Service {
                     return;
                 }
             } catch (Exception e) {
-                String message = getString(R.string.upload_failed);
+                String message = e.getMessage();
+                if (message == null) message = getString(R.string.upload_failed);
                 statusFailure(message);
-                if (e.getMessage() != null) message = e.getMessage();
                 serverLog.add(message);
                 return;
             }
@@ -399,8 +399,7 @@ public class ResultsService extends Service {
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                String message = e.getMessage();
-                if (message == null) message = "I/O exception";
+                String message = e.getMessage() != null ? e.getMessage() : IO_EXCEPTION;
                 statusFailure(message);
                 serverLog.add(message);
             }

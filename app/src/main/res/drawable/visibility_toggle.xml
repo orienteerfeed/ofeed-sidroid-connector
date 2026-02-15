@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:enterFadeDuration="180"
+    android:exitFadeDuration="180">
+    <item android:state_selected="true"  android:drawable="@drawable/visibility_on"/>
+    <item android:drawable="@drawable/visibility_off"/>
+</selector>

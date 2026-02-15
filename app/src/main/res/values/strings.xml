@@ -8,10 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">New features</string>
-    <string name="news_message">Support of:
-        \n■ App link (deep link)
-        \n■ Share link.
-        \n■ Paste link.
+    <string name="news_message">\n■ Update of settings dialogue.
     </string>
 
     <!--
@@ -40,12 +37,11 @@
     <string name="about">About</string>
     <string name="clear_ofeed">Clear OFeed</string>
     <string name="cleared_ok">Cleared OK</string>
-    <string name="clip_board_is_empty">The clipboard is empty.</string>
     <string name="contributors">Contributors</string>
     <string name="do_not_show_again">Don\'t show this again</string>
     <string name="license">License</string>
     <string name="no_results_to_upload">No results to upload.</string>
-    <string name="paste">Paste</string>
+    <string name="paste_link">Paste link</string>
     <string name="qr_code_scanner">QR code scanner</string>
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
@@ -102,7 +98,7 @@
     <string name="event_id_is_missing">Event id is missing.</string>
     <string name="password">Password</string>
     <string name="password_is_missing">Password is missing.</string>
-    <string name="qr_code_scan">Scan</string>
+    <string name="qr_code_scan">Scan QR code</string>
     <string name="qr_code_scan_failed">The scanning failed.</string>
     <string name="qr_code_invalid">Invalid QR code.</string>
     <string name="qr_code_start">Must start with\n■ https://stigning.se/ofeed or\n■ https://stigning.se/connector.</string>

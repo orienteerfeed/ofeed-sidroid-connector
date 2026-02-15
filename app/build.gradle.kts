@@ -17,8 +17,8 @@ extensions.configure<ApplicationExtension> {
         applicationId = "com.orienteerfeed.ofeed_sidroid_connector"
         minSdk = 23
         targetSdk = 36
-        versionCode = 14
-        versionName = "beta-15"  // 15=Library update. 14=App link/share/paste. 13=Check for nothing to upload. 12=Remove incomplete persons. 11=Czech. 10=OResults. Upload of local file.
+        versionCode = 16
+        versionName = "beta-16"  // 16=Settings updates. 15=Clear OFeed error message. 14=App link/share/paste. 13=Check for nothing to upload. 12=Remove incomplete persons. 11=Czech. 10=OResults. Upload of local file.
     }
 
     buildFeatures {
