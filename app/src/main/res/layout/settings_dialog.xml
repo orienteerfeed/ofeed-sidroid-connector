@@ -93,7 +93,7 @@
             android:importantForAutofill="no"
             app:layout_constraintStart_toEndOf="@id/settings_captions_barrier"
             app:layout_constraintEnd_toStartOf="@id/settings_si_droid_port_help"
-            app:layout_constraintTop_toBottomOf="@id/settings_create_xml_id" /> />
+            app:layout_constraintTop_toBottomOf="@id/settings_create_xml_id" />
         <ImageView
             android:id="@+id/settings_si_droid_port_help"
             android:layout_width="wrap_content"
