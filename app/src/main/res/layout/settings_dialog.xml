@@ -19,14 +19,6 @@
         android:layout_marginTop="8dp"
         tools:ignore="ContentDescription" >
 
-        <View
-            android:id="@+id/settings_middle_of_screen"
-            android:layout_width="1dp"
-            android:layout_height="1dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
         <!--
         ********************************************************************************************
         * General settings.
@@ -52,24 +44,27 @@
             app:layout_constraintStart_toEndOf="@+id/settings_upload_interval"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/settings_upload_interval" />
+
         <TextView
             android:id="@+id/settings_create_xml_id_caption"
             style="@style/medium_bold_wrap_content"
-            android:layout_marginTop="16dp"
             android:text="@string/create_xml_id"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/settings_upload_interval" />
-        <com.google.android.material.checkbox.MaterialCheckBox
+            app:layout_constraintTop_toTopOf="@id/settings_create_xml_id"
+            app:layout_constraintBottom_toBottomOf="@id/settings_create_xml_id" />
+        <ImageView
             android:id="@+id/settings_create_xml_id"
-            style="@style/medium_bold_wrap_content"
-            app:layout_constraintStart_toEndOf="@id/settings_create_xml_id_caption"
-            app:layout_constraintTop_toTopOf="@id/settings_create_xml_id_caption"
-            app:layout_constraintBottom_toBottomOf="@id/settings_create_xml_id_caption" />
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="16dp"
+            app:srcCompat="@drawable/check_box_toggle"
+            app:layout_constraintStart_toEndOf="@id/settings_captions_barrier"
+            app:layout_constraintTop_toBottomOf="@id/settings_upload_interval" />
         <ImageView
             android:id="@+id/settings_create_xml_id_help"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             app:srcCompat="@drawable/help"
             app:layout_constraintStart_toEndOf="@id/settings_create_xml_id"
             app:layout_constraintTop_toTopOf="@id/settings_create_xml_id"
@@ -85,28 +80,36 @@
             android:layout_marginTop="16dp"
             android:text="@string/si_droid"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/settings_create_xml_id" />
+            app:layout_constraintBaseline_toBaselineOf="@id/settings_si_droid_port" />
 
         <EditText
             android:id="@+id/settings_si_droid_port"
             style="@style/medium_0_wrap"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
             android:ellipsize="none"
             android:inputType="number"
             android:hint="@string/port_number"
             android:singleLine="true"
             android:importantForAutofill="no"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/settings_captions_barrier"
             app:layout_constraintEnd_toStartOf="@id/settings_si_droid_port_help"
-            app:layout_constraintTop_toBottomOf="@id/settings_si_droid_title" />
+            app:layout_constraintTop_toBottomOf="@id/settings_create_xml_id" /> />
         <ImageView
             android:id="@+id/settings_si_droid_port_help"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/help"
-            app:layout_constraintEnd_toEndOf="@id/settings_middle_of_screen"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/settings_si_droid_port"
             app:layout_constraintBottom_toBottomOf="@id/settings_si_droid_port" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/settings_captions_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierMargin="16dp"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="settings_create_xml_id_caption,settings_si_droid_title" />
 
         <!--
         ********************************************************************************************
@@ -178,38 +181,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/settings_ofeed_event_password"
             app:layout_constraintBottom_toBottomOf="@id/settings_ofeed_event_password" />
+
         <Button
             android:id="@+id/settings_ofeed_scan_qr_code"
             style="@style/button_style"
-            android:layout_width="0dp"
             android:layout_marginTop="8dp"
             android:text="@string/qr_code_scan"
-            android:drawableLeft="@drawable/qr_code"
             tools:ignore="RtlHardcoded"
             android:drawablePadding="8dp"
-            app:layout_constraintWidth_min="wrap"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/settings_buttons_barrier"
             app:layout_constraintTop_toBottomOf="@id/settings_ofeed_event_password" />
         <Button
             android:id="@+id/settings_ofeed_paste_link"
             style="@style/button_style"
-            android:layout_width="0dp"
-            android:layout_marginTop="8dp"
             android:text="@string/paste_link"
-            android:drawableLeft="@drawable/paste"
             tools:ignore="RtlHardcoded"
             android:drawablePadding="8dp"
-            app:layout_constraintWidth_min="wrap"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/settings_buttons_barrier"
-            app:layout_constraintTop_toBottomOf="@id/settings_ofeed_scan_qr_code" />
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/settings_buttons_barrier"
+            app:layout_constraintStart_toEndOf="@id/settings_ofeed_scan_qr_code"
+            app:layout_constraintEnd_toStartOf="@+id/settings_ofeed_login_details_help"
+            app:layout_constraintBaseline_toBaselineOf="@id/settings_ofeed_scan_qr_code" />
+        <ImageView
+            android:id="@+id/settings_ofeed_login_details_help"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:barrierDirection="end"
-            app:constraint_referenced_ids="settings_ofeed_scan_qr_code,settings_ofeed_paste_link"/>
+            android:layout_marginStart="8dp"
+            app:srcCompat="@drawable/help"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/settings_ofeed_paste_link"
+            app:layout_constraintBottom_toBottomOf="@id/settings_ofeed_paste_link" />
 
         <!--
         ********************************************************************************************

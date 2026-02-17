@@ -8,7 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nové funkce</string>
-    <string name="news_message">\n■ Error message when <i>Clear OFeed</i> fails.
+    <string name="news_message">\n■ Layout changes of the Settings dialogue.
     </string>
 
     <!--
@@ -31,7 +31,6 @@
     <string name="license">Licence</string>
     <string name="no_results_to_upload">Žádné výsledky k nahrání.</string>
     <string name="paste_link">Vložit odkaz</string>
-    <string name="qr_code_scanner">Čtečka QR kódu</string>
     <string name="reset">Reset</string>
     <string name="settings">Nastavení</string>
     <string name="start_uploading">Spustit nahrávání</string>
@@ -87,11 +86,13 @@
     <string name="event_id_is_missing">Akce Id není vyplněné.</string>
     <string name="password">Heslo</string>
     <string name="password_is_missing">Heslo není vyplněné.</string>
-    <string name="qr_code_scan">Skenovat QR kód</string>
+    <string name="qr_code_scan">Skenovat QR</string>
+    <string name="qr_code_scanner">Čtečka QR kódu</string>
     <string name="qr_code_scan_failed">Skenování se nezdařilo.</string>
     <string name="qr_code_invalid">Neplatný QR kód.</string>
     <string name="qr_code_start">Musí začínat na\n■ https://stigning.se/ofeed nebo\n■ https://stigning.se/connector.</string>
     <string name="ofeed_link_invalid">Neplatný odkaz OFeed.</string>
+    <string name="clipboard_is_empty">Schránka je prázdná.</string>
     <string name="timeouts">Timeouty</string>
     <string name="http_timeouts">HTTP timeouty</string>
     <string name="http_timeouts_help">Timeouty ve vteřinách. Nula znamená bez timeout.</string>

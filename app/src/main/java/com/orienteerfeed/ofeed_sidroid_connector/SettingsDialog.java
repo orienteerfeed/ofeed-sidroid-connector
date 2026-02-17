@@ -27,7 +27,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
-import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 
@@ -94,8 +93,10 @@ class SettingsDialog {
         httpTimeoutsButton.setOnClickListener(v -> new SettingsHttpTimeoutsDialog(activity, prefs).show());
 
         // Create id.
-        MaterialCheckBox createXmlId = layout.findViewById(R.id.settings_create_xml_id);
-        createXmlId.setChecked(prefs.createXmlId);
+        ImageView createXmlId = layout.findViewById(R.id.settings_create_xml_id);
+        createXmlId.setSelected(prefs.createXmlId);
+        createXmlId.setOnClickListener( v->
+                createXmlId.setSelected(!createXmlId.isSelected()));
         layout.findViewById(R.id.settings_create_xml_id_help).setOnClickListener(v ->
                 showDialog(R.string.xml_id_help));
 
@@ -145,11 +146,15 @@ class SettingsDialog {
 
         // Scan QR code.
         Button scanQrCodeButton = layout.findViewById(R.id.settings_ofeed_scan_qr_code);
-        scanQrCodeButton.setOnClickListener(v -> appLinkScanOFeedQrCode());
+        scanQrCodeButton.setOnClickListener(v -> scanOFeedQrCode());
 
         // Paste link.
         Button pasteButton = layout.findViewById(R.id.settings_ofeed_paste_link);
-        pasteButton.setOnClickListener(v -> appLinkPasteOFeedQrCode());
+        pasteButton.setOnClickListener(v -> pasteOFeedLink());
+
+        // Help OFeed login details (scan QR code, paste link).
+        layout.findViewById(R.id.settings_ofeed_login_details_help).setOnClickListener(v ->
+                showDialog(R.string.login_details_help));
 
         // OResults api key.
         EditText oResultsApiKey = layout.findViewById(R.id.settings_oresults_api_key);
@@ -250,7 +255,7 @@ class SettingsDialog {
                 prefs.oResultsApiKey = newApiKey;
                 prefs.uploadTo = UPLOAD_TO_ORESULTS;
             }
-            prefs.createXmlId = createXmlId.isChecked();
+            prefs.createXmlId = createXmlId.isSelected();
             prefs.siDroidPort = newPort;
             prefs.save();
             dialog.dismiss();
@@ -341,9 +346,9 @@ class SettingsDialog {
     }
 
     //**********************************************************************************************
-    // App link: Scan QR code, paste app link.
+    // App link: Scan QR code, paste link.
     //**********************************************************************************************
-    private void appLinkScanOFeedQrCode() {
+    private void scanOFeedQrCode() {
         GmsBarcodeScanning.getClient(activity)
                 .startScan()
                 .addOnSuccessListener(barcode -> {
@@ -358,28 +363,30 @@ class SettingsDialog {
                 });
     }
 
-    private void appLinkPasteOFeedQrCode() {
+    private void pasteOFeedLink() {
         ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm == null || !cm.hasPrimaryClip()) {
-            showDialog(R.string.ofeed_link_invalid);
+            showDialog(R.string.clipboard_is_empty);
             return;
         }
-        ClipData clip = cm.getPrimaryClip();
-        if (clip == null || clip.getItemCount() == 0) {
-            showDialog(R.string.ofeed_link_invalid);
+        ClipData clipData = cm.getPrimaryClip();
+        if (clipData == null || clipData.getItemCount() == 0) {
+            showDialog(R.string.clipboard_is_empty);
             return;
         }
-        CharSequence cs = clip.getItemAt(0).coerceToText(activity);
+        CharSequence cs = clipData.getItemAt(0).coerceToText(activity);
         if (cs == null) {
-            showDialog(R.string.ofeed_link_invalid);
+            showDialog(R.string.clipboard_is_empty);
             return;
         }
-        String qrCode = extractUrl(cs.toString().trim());
-        if (qrCode == null || qrCode.isEmpty()) {
-            showDialog(R.string.ofeed_link_invalid);
+        String clip = cs.toString().trim();
+        String appLink = extractUrl(clip);
+        if (appLink == null || appLink.isEmpty()) {
+            String s = activity.getString(R.string.ofeed_link_invalid) + "\n\n" + clip;
+            showDialog(s);
             return;
         }
-        appLinkCommon(qrCode);
+        appLinkCommon(appLink);
     }
 
     private void appLinkCommon(String appLink) {
@@ -514,7 +521,8 @@ class SettingsDialog {
     //**********************************************************************************************
     private static final int[] oFeedTabResIds = {R.id.settings_ofeed_selected, R.id.settings_ofeed_server,
             R.id.settings_ofeed_server_help, R.id.settings_ofeed_event_id, R.id.settings_ofeed_event_password,
-            R.id.settings_ofeed_password_visibility, R.id.settings_ofeed_scan_qr_code, R.id.settings_ofeed_paste_link};
+            R.id.settings_ofeed_password_visibility,
+            R.id.settings_ofeed_scan_qr_code, R.id.settings_ofeed_paste_link, R.id.settings_ofeed_login_details_help};
     private static final int[] oResultsTabResIds = {R.id.settings_oresults_selected, R.id.settings_oresults_api_key};
     private static View[] oFeedTab, oResultsTab;
 

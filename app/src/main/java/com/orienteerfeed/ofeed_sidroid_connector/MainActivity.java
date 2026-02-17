@@ -183,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
         countdownOkIcon = findViewById(R.id.main_countdown_ok_icon);
         countdownErrorIcon = findViewById(R.id.main_countdown_error_icon);
 
-
         if (!hasNotificationsPermission()) requestNotificationsPermission();
         // In-app update.
         inAppUpdateCallback = inAppUpdateRegisterCallback();    // Must be called from onCreate().

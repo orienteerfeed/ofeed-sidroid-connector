@@ -8,7 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">New features</string>
-    <string name="news_message">\n■ Update of settings dialogue.
+    <string name="news_message">\n■ Layout changes of the Settings dialogue.
     </string>
 
     <!--
@@ -42,7 +42,6 @@
     <string name="license">License</string>
     <string name="no_results_to_upload">No results to upload.</string>
     <string name="paste_link">Paste link</string>
-    <string name="qr_code_scanner">QR code scanner</string>
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
     <string name="start_uploading">Start uploading</string>
@@ -98,11 +97,13 @@
     <string name="event_id_is_missing">Event id is missing.</string>
     <string name="password">Password</string>
     <string name="password_is_missing">Password is missing.</string>
-    <string name="qr_code_scan">Scan QR code</string>
+    <string name="qr_code_scan">Scan QR</string>
+    <string name="qr_code_scanner">QR code scanner</string>
     <string name="qr_code_scan_failed">The scanning failed.</string>
     <string name="qr_code_invalid">Invalid QR code.</string>
     <string name="qr_code_start">Must start with\n■ https://stigning.se/ofeed or\n■ https://stigning.se/connector.</string>
     <string name="ofeed_link_invalid">Invalid OFeed link.</string>
+    <string name="clipboard_is_empty">Clipboard is empty.</string>
     <string name="timeouts" tools:ignore="MissingTranslation">Timeouts</string>
     <string name="http_timeouts" tools:ignore="MissingTranslation">HTTP timeouts</string>
     <string name="http_timeouts_help" tools:ignore="MissingTranslation">Timeouts in seconds. Zero means no timeout.</string>
@@ -125,6 +126,21 @@
         \n\nThis cleanup can be used if duplicates have appeared in OFeed.
         The next upload will restore the competitors.
         \n\n<b>Cannot be undone!</b>
+    </string>
+    <string name="login_details_help">Login details are required to access OFeed.
+        Server address, event id and password can be entered in various ways:
+        \n\n<b>Scan QR code</b>
+        \n■ Open the camera on your device and point it at the QR code. Tap on the popup link.
+        The app will now start with your login details filled in.
+        \n■ The QR code can also be scanned from the app\'s Settings.
+        \n\n<b>Share link</b>
+        \n■ Long press an OFeed link (text), select the entire link, then tap <i>Share</i>.
+        In the share popup menu, tap on the app. The app will now start with your login details filled in.
+        \n\n<b>Copy-paste link</b>
+        \n■ Long press an OFeed link (text), select the entire link, then tap <i>Copy</i>.
+        Manually launch the app, go to app\'s Settings, then tap <i>Paste link</i> to fill in the login details.
+        \n\n<b>Manual setup</b>
+        \n■ Enter the login details manually in the app\'s Settings.
     </string>
 
     <!--
