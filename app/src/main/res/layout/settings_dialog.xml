@@ -7,7 +7,7 @@
 
     <!--
     ********************************************************************************************
-    * O Feed settings.
+    * OFeed settings.
     ******************************************************************************************** -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,7 +31,7 @@
             app:layout_constraintTop_toTopOf="parent" />
         <Button
             android:id="@+id/settings_upload_interval"
-            style="@style/button_style"
+            style="@style/button_style_settings"
             android:layout_marginTop="8dp"
             android:text="30 sec"
             tools:ignore="HardcodedText"
@@ -39,7 +39,7 @@
             app:layout_constraintTop_toBottomOf="@id/settings_upload_interval_title" />
         <Button
             android:id="@+id/settings_upload_http_timeouts"
-            style="@style/button_style"
+            style="@style/button_style_settings"
             android:text="@string/timeouts"
             app:layout_constraintStart_toEndOf="@+id/settings_upload_interval"
             app:layout_constraintEnd_toEndOf="parent"
@@ -184,22 +184,22 @@
 
         <Button
             android:id="@+id/settings_ofeed_scan_qr_code"
-            style="@style/button_style"
+            style="@style/button_style_settings"
             android:layout_marginTop="8dp"
             android:text="@string/qr_code_scan"
             tools:ignore="RtlHardcoded"
-            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/qr_code"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/settings_ofeed_event_password" />
         <Button
             android:id="@+id/settings_ofeed_paste_link"
-            style="@style/button_style"
-            android:text="@string/paste_link"
+            style="@style/button_style_settings"
+            android:text="@string/paste"
             tools:ignore="RtlHardcoded"
-            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/paste"
             app:layout_constraintStart_toEndOf="@id/settings_ofeed_scan_qr_code"
             app:layout_constraintEnd_toStartOf="@+id/settings_ofeed_login_details_help"
-            app:layout_constraintBaseline_toBaselineOf="@id/settings_ofeed_scan_qr_code" />
+            app:layout_constraintBottom_toBottomOf="@id/settings_ofeed_scan_qr_code" />
         <ImageView
             android:id="@+id/settings_ofeed_login_details_help"
             android:layout_width="wrap_content"

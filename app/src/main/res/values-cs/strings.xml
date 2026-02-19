@@ -8,7 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nové funkce</string>
-    <string name="news_message">\n■ Layout changes of the Settings dialogue.
+    <string name="news_message">\n■ Added help dialog for scan/paste OFeed link.
     </string>
 
     <!--
@@ -30,7 +30,7 @@
     <string name="do_not_show_again">Příště již nezobrazovat</string>
     <string name="license">Licence</string>
     <string name="no_results_to_upload">Žádné výsledky k nahrání.</string>
-    <string name="paste_link">Vložit odkaz</string>
+    <string name="paste">Vložit</string>
     <string name="reset">Reset</string>
     <string name="settings">Nastavení</string>
     <string name="start_uploading">Spustit nahrávání</string>
@@ -86,7 +86,7 @@
     <string name="event_id_is_missing">Akce Id není vyplněné.</string>
     <string name="password">Heslo</string>
     <string name="password_is_missing">Heslo není vyplněné.</string>
-    <string name="qr_code_scan">Skenovat QR</string>
+    <string name="qr_code_scan">Skenovat</string>
     <string name="qr_code_scanner">Čtečka QR kódu</string>
     <string name="qr_code_scan_failed">Skenování se nezdařilo.</string>
     <string name="qr_code_invalid">Neplatný QR kód.</string>
@@ -107,6 +107,15 @@
         \n\nSlouží hlavně pro případ, když se objeví duplicity v OFeedu.
         Další nahrání závodníky opět přidá.
         \n\n<b>Nevratná akce!</b>
+    </string>
+    <string name="login_details_help_scan">Skenovat QR kód OFeed.</string>
+    <string name="login_details_help_paste">Vložit textový odkaz OFeed.</string>
+    <string name="login_details_help">The QR code and the
+        link contain the server URL, event id, and password.
+        \n<b>Skenovat QR kód</b> – Use your device\'s camera to scan the QR code.
+        \n<b>Vložit odkaz</b> – Copy the link, open app\'s settings, and then paste it.
+        \n<b>Sdílet odkaz</b> – Press and hold the link and select <i>Share</i>.
+        In the popup menu, tap on the Connector app.
     </string>
 
     <!--

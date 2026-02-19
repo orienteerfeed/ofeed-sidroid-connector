@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <!--
+    ********************************************************************************************
+    * Help OFeed link.
+    ******************************************************************************************** -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/settings_login_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        tools:ignore="ContentDescription" >
+
+        <TextView
+            android:id="@+id/settings_login_details_scan"
+            style="@style/medium_wrap_content"
+            android:text="@string/login_details_help_scan"
+            app:drawableLeftCompat="@drawable/qr_code"
+            android:drawablePadding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/settings_login_details_paste"
+            style="@style/medium_wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/login_details_help_paste"
+            app:drawableLeftCompat="@drawable/paste"
+            android:drawablePadding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_login_details_scan" />
+
+        <TextView
+            android:id="@+id/settings_login_details_xx"
+            style="@style/medium_wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/login_details_help"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_login_details_paste" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

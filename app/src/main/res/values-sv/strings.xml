@@ -8,7 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nya funktioner</string>
-    <string name="news_message">\n■ Layout changes of the Settings dialogue.
+    <string name="news_message">\n■ Lagt till hjälpdialog för skanna/klistra in OFeed länk.
     </string>
 
     <!--
@@ -30,7 +30,7 @@
     <string name="do_not_show_again">Visa inte igen</string>
     <string name="license">Licens</string>
     <string name="no_results_to_upload">Inga resultat att ladda upp.</string>
-    <string name="paste_link">Klistra in länk</string>
+    <string name="paste">Klistra in</string>
     <string name="reset">Reset</string>
     <string name="settings">Inställningar</string>
     <string name="start_uploading">Starta uppladdning</string>
@@ -86,7 +86,7 @@
     <string name="event_id_is_missing">Even-id saknas.</string>
     <string name="password">Lösen</string>
     <string name="password_is_missing">Lösen saknas.</string>
-    <string name="qr_code_scan">Skanna QR</string>
+    <string name="qr_code_scan">Skanna</string>
     <string name="qr_code_scanner">QR-kodskanner</string>
     <string name="qr_code_scan_failed">Skanningen misslyckades.</string>
     <string name="qr_code_invalid">Ogiltig QR-kod.</string>
@@ -107,6 +107,14 @@
         \n\nDenna rensning kan användas om dubbletter har dykt upp i OFeed.
         Nästa uppladdning kommer att återställa deltagarna.
         \n\n<b>Kan inte ångras!</b>
+    </string>
+    <string name="login_details_help_scan">Skanna OFeed QR code.</string>
+    <string name="login_details_help_paste">Klistra in OFeed textlänk.</string>
+    <string name="login_details_help">QR-koden/länken innehåller server-URL, tävlings-id
+        och lösenord.
+        \n<b>Skanna QR-kod</b> – Använd enhetens kamera för att skanna QR-koden.
+        \n<b>Klistra in länk</b> – Kopiera länken, öppna appens inställningar och klistra sedan in den.
+        \n<b>Dela länk</b> – Långtryck på länken och välj <i>Dela</i>. I popup-menyn, klicka på Connector-appen.
     </string>
 
     <!--

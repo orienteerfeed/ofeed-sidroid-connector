@@ -153,8 +153,15 @@ class SettingsDialog {
         pasteButton.setOnClickListener(v -> pasteOFeedLink());
 
         // Help OFeed login details (scan QR code, paste link).
-        layout.findViewById(R.id.settings_ofeed_login_details_help).setOnClickListener(v ->
-                showDialog(R.string.login_details_help));
+        layout.findViewById(R.id.settings_ofeed_login_details_help).setOnClickListener(v -> {
+            View helpLayout = activity.getLayoutInflater().inflate(R.layout.settings_ofeed_link_help, null);
+            AlertDialog dialog = new MaterialAlertDialogBuilder(activity)
+                    .setView(helpLayout)
+                    .setTitle(R.string.settings)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            setDialogTextSize(dialog);
+        });
 
         // OResults api key.
         EditText oResultsApiKey = layout.findViewById(R.id.settings_oresults_api_key);
