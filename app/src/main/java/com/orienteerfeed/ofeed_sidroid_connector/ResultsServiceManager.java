@@ -22,15 +22,15 @@ public class ResultsServiceManager {
     // *********************************************************************************************
     private final Activity activity;
     private final int uploadTo;
-    private final String oFeedUrl, eventId, authorization, siDroidUrl, oResultsApiKey, userAgent;
+    private final String oFeedUploadUrl, eventId, authorization, siDroidUrl, oResultsApiKey, userAgent;
     private final int updateIntervalSec;
     private final int[] timeoutsSec;
     private final boolean createXmlId;
     private final ResultsService.ResultsServiceUpdateStatus statusListener;
 
     private ResultsService resultsService;
-    private Intent oFeedResultsServiceIntent;
-    private boolean oFeedResultsServiceIsBound = false;
+    private Intent resultsServiceIntent;
+    private boolean resultsServiceIsBound = false;
 
     /**
      * Package name of this application.
@@ -40,7 +40,7 @@ public class ResultsServiceManager {
      * Key for value passed as intent extras to {@link ResultsService}.
      */
     static final String RESULTS_SERVICE_KEY_SI_DROID_URL = pn + "siDroidUrl", RESULTS_SERVICE_KEY_UPLOAD_TO = pn + "uploadTo",
-            RESULTS_SERVICE_KEY_OFEED_URL = pn + "url", RESULTS_SERVICE_KEY_OFEED_EVENT_ID = pn + "eventId",
+            RESULTS_SERVICE_KEY_OFEED_UPLOAD_URL = pn + "uploadUrl", RESULTS_SERVICE_KEY_OFEED_EVENT_ID = pn + "eventId",
             RESULTS_SERVICE_KEY_OFEED_AUTHORIZATION = pn + "authorization", RESULTS_SERVICE_KEY_USER_AGENT = pn + "userAgent",
             RESULTS_SERVICE_KEY_UPDATE_INTERVAL_SEC = pn + "updateIntervalSec", RESULTS_SERVICE_KEY_ORESULTS_API_KEY = pn + "apiKey",
             RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CONNECT_SEC = pn + "timeoutConnectSec", RESULTS_SERVICE_KEY_HTTP_TIMEOUT_READ_SEC = pn + "timeoutReadSec",
@@ -52,17 +52,17 @@ public class ResultsServiceManager {
     // *********************************************************************************************
 
     /**
-     * Manager for {@link ResultsService} when uploading to OFeed.
+     * Manager for {@link ResultsService} when uploading to OFeed/OResults.
      *
      * @param activity          Reference to activity.
      * @param uploadTo          One of {@link Preferences#UPLOAD_TO_OFEED}, {@link Preferences#UPLOAD_TO_ORESULTS}.
      * @param siDroidUrl        URL of SI-Droid Event results service, eg, "http://localhost:8080/reports/ResultsIof30Xml".
-     * @param oFeedUrl          Base URL of O Feed event, eg, https://api.orienteerfeed.com/rest/v1/upload/iof.
+     * @param oFeedUploadUrl    Base URL of O Feed event, eg, https://api.orienteerfeed.com/rest/v1/upload/iof.
      * @param eventId           O Feed event id, eg, cm1tqvqkh0006qk3mjig95qw1.
      * @param eventPassword     O Feed event password.
      * @param oResultsApiKey    OResults api key.
      * @param userAgent         SI Droid OFeed Connector user agent. Included in the HTTP request header to O Feed.
-     * @param updateIntervalSec Time between uploads from SI Droid Event to OFeed (sec). Must be greater than zero.
+     * @param updateIntervalSec Time between uploads from SI Droid Event to OFeed/OResults (sec). Must be greater than zero.
      * @param timeoutsSec       Timeouts in seconds for OkHttpClient, as array {connect, read, write, call}.
      *                          A value of -1 means default timeout.
      * @param createXmlId       Create and insert an id tag into the XML results list before uploading.
@@ -70,7 +70,7 @@ public class ResultsServiceManager {
      * @noinspection JavadocLinkAsPlainText
      */
     ResultsServiceManager(Activity activity, int uploadTo, String siDroidUrl,
-                          String oFeedUrl, String eventId, String eventPassword,
+                          String oFeedUploadUrl, String eventId, String eventPassword,
                           String oResultsApiKey, String userAgent, int updateIntervalSec, int[] timeoutsSec,
                           boolean createXmlId,
                           @NonNull ResultsService.ResultsServiceUpdateStatus statusListener) {
@@ -78,7 +78,7 @@ public class ResultsServiceManager {
         this.activity = activity;
         this.uploadTo = uploadTo;
         this.siDroidUrl = siDroidUrl;
-        this.oFeedUrl = oFeedUrl;
+        this.oFeedUploadUrl = oFeedUploadUrl;
         this.eventId = eventId;
         authorization = "Basic " + base64EncodeToString(eventId + ":" + eventPassword);
         this.oResultsApiKey = oResultsApiKey;
@@ -92,39 +92,39 @@ public class ResultsServiceManager {
     // *********************************************************************************************
     // Methods.
     // *********************************************************************************************
-    void startOFeedResultsService() {
-        oFeedResultsServiceIntent = new Intent(activity, ResultsService.class);
+    void startResultsService() {
+        resultsServiceIntent = new Intent(activity, ResultsService.class);
 
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_UPLOAD_TO, uploadTo);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_SI_DROID_URL, siDroidUrl);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_OFEED_URL, oFeedUrl);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_OFEED_EVENT_ID, eventId);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_OFEED_AUTHORIZATION, authorization);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_USER_AGENT, userAgent);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_UPDATE_INTERVAL_SEC, updateIntervalSec);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_ORESULTS_API_KEY, oResultsApiKey);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CONNECT_SEC, timeoutsSec[0]);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_READ_SEC, timeoutsSec[1]);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_WRITE_SEC, timeoutsSec[2]);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CALL_SEC, timeoutsSec[3]);
-        oFeedResultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_CREATE_XML_ID, createXmlId);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_UPLOAD_TO, uploadTo);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_SI_DROID_URL, siDroidUrl);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_OFEED_UPLOAD_URL, oFeedUploadUrl);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_OFEED_EVENT_ID, eventId);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_OFEED_AUTHORIZATION, authorization);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_USER_AGENT, userAgent);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_UPDATE_INTERVAL_SEC, updateIntervalSec);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_ORESULTS_API_KEY, oResultsApiKey);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CONNECT_SEC, timeoutsSec[0]);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_READ_SEC, timeoutsSec[1]);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_WRITE_SEC, timeoutsSec[2]);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CALL_SEC, timeoutsSec[3]);
+        resultsServiceIntent.putExtra(RESULTS_SERVICE_KEY_CREATE_XML_ID, createXmlId);
 
-        ContextCompat.startForegroundService(activity, oFeedResultsServiceIntent);
+        ContextCompat.startForegroundService(activity, resultsServiceIntent);
     }
 
-    void stopOFeedResultsService() {
-        activity.stopService(oFeedResultsServiceIntent);
+    void stopResultsService() {
+        activity.stopService(resultsServiceIntent);
     }
 
-    void bindOFeedResultsService() {
-        activity.bindService(oFeedResultsServiceIntent, oFeedResultsServiceConnection, Context.BIND_AUTO_CREATE);
+    void bindResultsService() {
+        activity.bindService(resultsServiceIntent, resultsServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    void unbindOFeedResultsService() {
-        if (oFeedResultsServiceIsBound) {
-            activity.unbindService(oFeedResultsServiceConnection);
+    void unbindResultsService() {
+        if (resultsServiceIsBound) {
+            activity.unbindService(resultsServiceConnection);
             resultsService.setResultsServiceStatus(null);
-            oFeedResultsServiceIsBound = false;
+            resultsServiceIsBound = false;
         }
     }
 
@@ -132,7 +132,7 @@ public class ResultsServiceManager {
      * Get the application level log.
      */
     String getLog() {
-        if (oFeedResultsServiceIsBound) {
+        if (resultsServiceIsBound) {
             return resultsService.getServerLog();
         } else {
             return "";
@@ -143,31 +143,27 @@ public class ResultsServiceManager {
      * Get the HTTP log produced by OkHttp HTTP client.
      */
     String getHttpLog() {
-        if (oFeedResultsServiceIsBound) {
+        if (resultsServiceIsBound) {
             return resultsService.getHttpLog();
         } else {
             return "";
         }
     }
 
-    private final ServiceConnection oFeedResultsServiceConnection = new ServiceConnection() {
+    private final ServiceConnection resultsServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             // Get service instance.
-            ResultsService.OFeedResultsBinder binder = (ResultsService.OFeedResultsBinder) service;
+            ResultsService.resultsServiceBinder binder = (ResultsService.resultsServiceBinder) service;
             resultsService = binder.getService();
             resultsService.setResultsServiceStatus(statusListener);
-            oFeedResultsServiceIsBound = true;
+            resultsServiceIsBound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            oFeedResultsServiceIsBound = false;
+            resultsServiceIsBound = false;
         }
     };
-
-    // ********************************************************************************************
-    // Utility methods.
-    // ********************************************************************************************
 
 }

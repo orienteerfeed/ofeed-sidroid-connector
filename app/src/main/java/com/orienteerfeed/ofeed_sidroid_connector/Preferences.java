@@ -148,7 +148,17 @@ public class Preferences {
     /**
      * URL for uploading results to OResults.
      */
-    static final String ORESULTS_URL = "https://api.oresults.eu/results";
+    static final String ORESULTS_RESULTS_URL = "https://api.oresults.eu/results";
+    /**
+     * URL for getting event name from OResults.
+     * Must be concatenated with {@link #oResultsApiKey} to form the complete URL.
+     */
+    static final String ORESULTS_GET_EVENT_URL = "https://api.oresults.eu/events/";
+    /**
+     * URL for deleting competitors from OResults.
+     * Format string, OResults eventId (string) must be inserted.
+     */
+    static final String ORESULTS_START_LISTS_URL  = "https://api.oresults.eu/events/%s/start-lists";
 
     /**
      * Values for {@link #uploadTo}.

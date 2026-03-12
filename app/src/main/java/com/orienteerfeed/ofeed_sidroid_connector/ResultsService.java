@@ -1,7 +1,8 @@
 package com.orienteerfeed.ofeed_sidroid_connector;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.ORESULTS_URL;
+import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.ORESULTS_GET_EVENT_URL;
+import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.ORESULTS_RESULTS_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.UPLOAD_TO_OFEED;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_CREATE_XML_ID;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_HTTP_TIMEOUT_CALL_SEC;
@@ -10,7 +11,7 @@ import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RE
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_HTTP_TIMEOUT_WRITE_SEC;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_OFEED_AUTHORIZATION;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_OFEED_EVENT_ID;
-import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_OFEED_URL;
+import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_OFEED_UPLOAD_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_ORESULTS_API_KEY;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_SI_DROID_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsServiceManager.RESULTS_SERVICE_KEY_UPDATE_INTERVAL_SEC;
@@ -23,6 +24,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -33,7 +36,10 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -48,11 +54,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
- * Foreground service which retrieves results from SI-Droid Event and uploads them to OFeed.
+ * Foreground service which retrieves results from SI-Droid Event and uploads them to OFeed/OResults.
  */
 public class ResultsService extends Service {
 
@@ -62,7 +67,7 @@ public class ResultsService extends Service {
 
     /**
      * Callback for updating the main user interface with the status of the update
-     * of results from SI-Droid Event to OFeed.
+     * of results from SI-Droid Event to OFeed/OResults.
      */
     public interface ResultsServiceUpdateStatus {
         /**
@@ -87,6 +92,18 @@ public class ResultsService extends Service {
          * @param status Status message.
          */
         void onUpdateFailure(long timeMs, String status);
+
+        /**
+         * A featured imgage has been downloaded for this event.
+         */
+        void onOFeedFeaturedImage(Bitmap image);
+
+        /**
+         * Event info have been downloaded.
+         *
+         * @param oResultsId Only valid for OResults. OFeed will use -1.
+         */
+        void onEvent(String name, int oResultsId);
     }
 
     // *********************************************************************************************
@@ -151,7 +168,7 @@ public class ResultsService extends Service {
     private OkHttpClient httpClient;
     private ResultsServiceUpdateStatus statusListener = null;
     private int uploadTo;
-    private String oFeedUrl, oFeedEventId, oFeedAuthorization, oResultsApiKey, UserAgent;
+    private String oFeedUploadUrl, oFeedEventId, oFeedAuthorization, oResultsApiKey, UserAgent;
     private int updateIntervalMillisec;
     private boolean createXmlId;
     private static final MediaType XML_MEDIA_TYPE = MediaType.parse("text/xml; charset=utf-8");
@@ -166,7 +183,7 @@ public class ResultsService extends Service {
 
     /**
      * Allow some time for the service to start before the first update of results
-     * from SI-Droid Event to OFeed takes place.
+     * from SI-Droid Event to OFeed/OResults takes place.
      */
     public static final int TIME_TO_FIRST_UPDATE_SEC = 3;
 
@@ -175,9 +192,9 @@ public class ResultsService extends Service {
     // *********************************************************************************************
     // Binder that is given to the client.
     // *********************************************************************************************
-    private final IBinder oFeedResultsBinder = new OFeedResultsBinder();
+    private final IBinder resultsServiceBinder = new resultsServiceBinder();
 
-    public class OFeedResultsBinder extends Binder {
+    public class resultsServiceBinder extends Binder {
         ResultsService getService() {
             // Return this instance of ResultsService so manager can call public methods.
             return ResultsService.this;
@@ -187,7 +204,7 @@ public class ResultsService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return oFeedResultsBinder;
+        return resultsServiceBinder;
     }
 
     // *********************************************************************************************
@@ -224,7 +241,7 @@ public class ResultsService extends Service {
         // Get params.
         uploadTo = intent.getIntExtra(RESULTS_SERVICE_KEY_UPLOAD_TO, 0);
         String siDroidUrl = intent.getStringExtra(RESULTS_SERVICE_KEY_SI_DROID_URL);
-        oFeedUrl = intent.getStringExtra(RESULTS_SERVICE_KEY_OFEED_URL);
+        oFeedUploadUrl = intent.getStringExtra(RESULTS_SERVICE_KEY_OFEED_UPLOAD_URL);
         oFeedEventId = intent.getStringExtra(RESULTS_SERVICE_KEY_OFEED_EVENT_ID);
         oFeedAuthorization = intent.getStringExtra(RESULTS_SERVICE_KEY_OFEED_AUTHORIZATION);
         UserAgent = intent.getStringExtra(RESULTS_SERVICE_KEY_USER_AGENT);
@@ -253,7 +270,10 @@ public class ResultsService extends Service {
                 .header("User-Agent", UserAgent)
                 .get().build();
 
-        // Allow some time for the service to start before the first update of results from SI-Droid Event to OFeed takes place.
+        getEventName();
+        if (uploadTo == UPLOAD_TO_OFEED) getOFeedFeaturedImage();
+
+        // Allow some time for the service to start before the first update of results from SI-Droid Event to OFeed/OResults takes place.
         new SimpleTimer(1_000 * TIME_TO_FIRST_UPDATE_SEC, this::firstUpdateOfResults).startTimer();
 
         resultServiceIsRunning = true;
@@ -277,11 +297,11 @@ public class ResultsService extends Service {
     }
 
     // *********************************************************************************************
-    // Get results from SI-Droid Event.
+    // Get results from SI-Droid Event and upload them to OFeed/OResults.
     // *********************************************************************************************
 
     private void firstUpdateOfResults() {
-        // First update of results from SI-Droid Event to OFeed.
+        // First update of results from SI-Droid Event to OFeed/OResults.
         updateResults();
 
         // Recurring updates.
@@ -308,9 +328,9 @@ public class ResultsService extends Service {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                try (ResponseBody responseBody = response.body()) {
-                    if (response.isSuccessful()) {
-                        String responseBodyAsString = responseBody.string();
+                try (Response r = response) {
+                    if (r.isSuccessful()) {
+                        String responseBodyAsString = r.body().string();
                         if (responseBodyAsString.contains("<PersonResult>")) {
                             // Results available.
                             serverLog.add(getString(R.string.si_droid_results_retrieved));
@@ -322,7 +342,7 @@ public class ResultsService extends Service {
                         }
                     } else {
                         // Unsuccessful response.
-                        String message = HttpStatusCodes.getMeaning(response.code());
+                        String message = HttpStatusCodes.getMeaning(r.code());
                         statusFailure(message);
                         serverLog.add(message);
                     }
@@ -372,7 +392,7 @@ public class ResultsService extends Service {
                     .build();
 
             request = new Request.Builder()
-                    .url(oFeedUrl)
+                    .url(oFeedUploadUrl)
                     .addHeader("User-Agent", UserAgent)
                     .addHeader("Authorization", oFeedAuthorization)
                     .addHeader("Content-Type", "text; charset=utf-8")
@@ -389,7 +409,7 @@ public class ResultsService extends Service {
                     .addFormDataPart("file", "result-list-iof-3.0.xml", xmlRequestBody)
                     .build();
             request = new Request.Builder()
-                    .url(ORESULTS_URL)
+                    .url(ORESULTS_RESULTS_URL)
                     .addHeader("User-Agent", UserAgent)
 //                    .addHeader("Content-Type", "text; charset=utf-8")
                     .post(requestBody)
@@ -406,24 +426,171 @@ public class ResultsService extends Service {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (response.isSuccessful()) {
-                    String message = getString(R.string.uploaded_ok);
-                    statusSuccess(message);
-                    serverLog.add(message);
-                } else {
-                    // Unsuccessful response.
-                    String message = HttpStatusCodes.getMeaning(response.code());
-                    statusFailure(message);
-                    serverLog.add(message);
+                try (Response r = response) {
+                    if (r.isSuccessful()) {
+                        String message = getString(R.string.uploaded_ok);
+                        statusSuccess(message);
+                        serverLog.add(message);
+                    } else {
+                        // Unsuccessful response.
+                        String message = HttpStatusCodes.getMeaning(r.code());
+                        statusFailure(message);
+                        serverLog.add(message);
+                    }
                 }
             }
         });
     }
 
     // *********************************************************************************************
+    // Get info about the event from OFeed/OResults.
+    // *********************************************************************************************
+
+    /**
+     * Get featured image from OFeed. This method fails silently.
+     */
+    private void getOFeedFeaturedImage() {
+        String oFeedEventUrl = getOFeedEventUrl();
+        if (oFeedEventUrl == null) return;
+        String oFeedFeaturedImageEndpoint = oFeedEventUrl + "/image";
+        Request oFeedGetRequest = new Request.Builder()
+                .url(Objects.requireNonNull(oFeedFeaturedImageEndpoint))
+                .header("User-Agent", UserAgent)
+                .get().build();
+
+        httpClient.newCall(oFeedGetRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                Bitmap image = null;
+                try (Response r = response) {
+                    if (r.isSuccessful()) {
+                        InputStream inputStream = r.body().byteStream();
+                        image = BitmapFactory.decodeStream(inputStream);
+                    }
+                    if (statusListener != null) statusListener.onOFeedFeaturedImage(image);
+                }
+            }
+        });
+    }
+
+    /**
+     * Get event name. This method fails silently.
+     */
+    private void getEventName() {
+        if (uploadTo == UPLOAD_TO_OFEED) {
+            String oFeedEventEndpoint = getOFeedEventUrl();
+            if (oFeedEventEndpoint == null) return;
+            Request oFeedGetRequest = new Request.Builder()
+                    .url(Objects.requireNonNull(oFeedEventEndpoint))
+                    .header("User-Agent", UserAgent)
+                    .get().build();
+
+            httpClient.newCall(oFeedGetRequest).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) {
+                    try (Response r = response) {
+                        String name = "";
+                        if (r.isSuccessful()) {
+                            Gson gson = new Gson();
+                            OFeedEvent event = gson.fromJson(r.body().string(), OFeedEvent.class);
+                            name = event.results.data.name;
+                            if (name == null) name = "";
+                            name = name.trim();
+                        }
+                        if (statusListener != null) statusListener.onEvent(name, -1);
+                    } catch (IOException ignored) {
+                    }
+                }
+            });
+
+        } else {
+            // OResults.
+            String oResultsEventEndpoint = ORESULTS_GET_EVENT_URL + oResultsApiKey;
+            Request oFeedGetRequest = new Request.Builder()
+                    .url(Objects.requireNonNull(oResultsEventEndpoint))
+                    .header("User-Agent", UserAgent)
+                    .get().build();
+
+            httpClient.newCall(oFeedGetRequest).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) {
+                    try (Response r = response) {
+                        String name = "";
+                        int id = -1;
+                        if (r.isSuccessful()) {
+                            Gson gson = new Gson();
+                            OResultsEvent event = gson.fromJson(r.body().string(), OResultsEvent.class);
+                            id = event.id;
+                            name = event.name;
+                            if (name == null) name = "";
+                            name = name.trim();
+                        }
+                        if (statusListener != null) statusListener.onEvent(name, id);
+                    } catch (IOException ignored) {
+                    }
+                }
+            });
+        }
+    }
+
+    // *********************************************************************************************
+    // Classes used by Gson when parsing Json. Also see proguard-rulese.pro.
+    // *********************************************************************************************
+
+    @SuppressWarnings("unused")
+    private static class OFeedEvent {
+//        String message;
+//        Boolean error;
+//        Integer code;
+        OFeedResults results;
+    }
+
+    @SuppressWarnings("unused")
+    private static class OFeedResults {
+        OFeedData data;
+    }
+
+    @SuppressWarnings("unused")
+    private static class OFeedData {
+        String name;
+//        String organizer;
+    }
+
+    @SuppressWarnings("unused")
+    private static class OResultsEvent {
+        Integer id;
+        String name;
+//        String organizer;
+    }
+
+    /**
+     * Convert upload endpoint {@link #oFeedUploadUrl} to get endpoint .
+     *
+     * @return https://api.orienteerfeed.com/rest/v1/events/eventId, where eventId = {@link #oFeedEventId}.
+     */
+    @SuppressWarnings("JavadocLinkAsPlainText")
+    private @Nullable String getOFeedEventUrl() {
+        if (!oFeedUploadUrl.endsWith("/upload/iof")) return null;
+        int i = oFeedUploadUrl.lastIndexOf("/upload/iof");
+        return oFeedUploadUrl.substring(0, i) + "/events/" + oFeedEventId;
+    }
+
+    // *********************************************************************************************
     // Notification to tell user that this service is active in the foreground.
     // *********************************************************************************************
-    private static final String NOTIFICATION_CHANNEL_ID = "OFeedResultsServiceNotificationChannelId";
+    private static final String NOTIFICATION_CHANNEL_ID = "ResultsServiceNotificationChannelId";
 
     /**
      * Requires android:launchMode="singleTop" in the manifest.
@@ -445,7 +612,7 @@ public class ResultsService extends Service {
                 .setOngoing(true)
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
-                .setSmallIcon(R.drawable.ofeed_notification)
+                .setSmallIcon(R.drawable.results_service_notification)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();

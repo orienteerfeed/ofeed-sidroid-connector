@@ -3,9 +3,11 @@ package com.orienteerfeed.ofeed_sidroid_connector;
 import static android.webkit.URLUtil.isHttpsUrl;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 
 import androidx.annotation.NonNull;
@@ -180,5 +182,28 @@ public class Util {
             }
         }
         return sb.toString();
+    }
+
+
+
+    static void bottomCenterDrawable(ImageView bg) {
+        if (bg.getDrawable() == null) return;
+        float vw = bg.getWidth() - bg.getPaddingLeft() - bg.getPaddingRight();
+        float vh = bg.getHeight() - bg.getPaddingTop() - bg.getPaddingBottom();
+        float dw = bg.getDrawable().getIntrinsicWidth();
+        float dh = bg.getDrawable().getIntrinsicHeight();
+        if (vw <= 0 || vh <= 0 || dw <= 0 || dh <= 0) return;
+
+//        float scale = Math.min(1f, Math.min(vw / dw, vh / dh));   // No upscaling.
+        float scale = Math.min(vw / dw, vh / dh);   // Allow upscaling.
+        float scaledWidth = dw * scale;
+        float scaledHeight = dh * scale;
+        float dx = bg.getPaddingLeft() + (vw - scaledWidth) / 2f; // center horizontally
+        float dy = bg.getPaddingTop() + (vh - scaledHeight);      // bottom align
+
+        Matrix matrix = new Matrix();
+        matrix.setScale(scale, scale);
+        matrix.postTranslate(dx, dy);
+        bg.setImageMatrix(matrix);
     }
 }

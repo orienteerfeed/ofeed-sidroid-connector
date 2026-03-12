@@ -8,8 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nové funkce</string>
-    <string name="news_message">\n■ Added help dialog for scan/paste OFeed link.
-    </string>
+    <string name="news_message">První veřejné vydání.</string>
 
     <!--
     ********************************************************************************************
@@ -110,12 +109,11 @@
     </string>
     <string name="login_details_help_scan">Skenovat QR kód OFeed.</string>
     <string name="login_details_help_paste">Vložit textový odkaz OFeed.</string>
-    <string name="login_details_help">The QR code and the
-        link contain the server URL, event id, and password.
-        \n<b>Skenovat QR kód</b> – Use your device\'s camera to scan the QR code.
-        \n<b>Vložit odkaz</b> – Copy the link, open app\'s settings, and then paste it.
-        \n<b>Sdílet odkaz</b> – Press and hold the link and select <i>Share</i>.
-        In the popup menu, tap on the Connector app.
+    <string name="login_details_help">QR kód i odkaz obsahují URL serveru, id akce a heslo.
+        \n<b>Skenovat QR kód</b> – Foťákem jednoduše naskenuj QR kód.
+        \n<b>Vložit odkaz</b> – Zkopíruj odkaz, otevři nastavení aplikace a odkaz vlož.
+        \n<b>Sdílet odkaz</b> – Klikni dlouze na odkaz a vyber <i>Sdílet</i>.
+        Následně v menu vyber aplikaci Connector.
     </string>
 
     <!--

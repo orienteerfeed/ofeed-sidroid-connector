@@ -8,8 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">New features</string>
-    <string name="news_message">\n■ Added help dialog for scan/paste OFeed link.
-    </string>
+    <string name="news_message">First public release.</string>
 
     <!--
     ********************************************************************************************
@@ -28,6 +27,7 @@
     <string name="app_title_oresults_connector" translatable="false">OResults Connector</string>
 
     <string name="ofeed" translatable="false">OFeed</string>
+<!--    <string name="oresults" translatable="false">OResults</string>-->
     <string name="si_droid" translatable="false">SI-Droid Event</string>
 
     <!--

@@ -20,12 +20,14 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static android.webkit.URLUtil.isHttpsUrl;
 import static com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED;
+import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.ORESULTS_START_LISTS_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.SI_DROID_PING_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.SI_DROID_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.UPLOAD_TO_OFEED;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.USER_AGENT;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsService.XML_IDS_FILENAME;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsService.resultServiceIsRunning;
+import static com.orienteerfeed.ofeed_sidroid_connector.Util.bottomCenterDrawable;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.parseOFeedCredentials;
 
 import android.Manifest;
@@ -35,6 +37,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private Preferences prefs;
     private ResultsServiceManager serviceManager;
     private Button startServiceButton;
-    private TextView serviceStatus;
+    private TextView eventName, serviceStatus;
     private ImageView serviceStatusIcon, serviceStatusHelp;
     private SimpleTimer serviceStateTimer;
     // Status list.
@@ -97,10 +100,12 @@ public class MainActivity extends AppCompatActivity {
     // Progress indicator which shows the countdown towards next upload of results.
     private CountdownIndicator countdownIndicator;
     private TextView countdownIndicatorText;
-    private ImageView countdownUploadIcon, countdownOkIcon, countdownErrorIcon;
+    private ImageView countdownUploadIcon, countdownOkIcon, countdownErrorIcon, oFeedFeaturedImage;
     private Animatable countdownUploadIconAnimation;
     // Log.
     private String resultServiceLogSaved, resultServiceHttpLogSaved;
+    // OResults event id.
+    private int oResultsEventId = -1;
 
     // ********************************************************************************************
     // Lifecycle.
@@ -153,7 +158,8 @@ public class MainActivity extends AppCompatActivity {
             });
             setAppTitle();
         });
-
+        eventName = findViewById(R.id.main_event_name);
+        oFeedFeaturedImage = findViewById(R.id.main_ofeed_featured_image);
         startServiceButton = findViewById(R.id.main_start_button);
         serviceStatus = findViewById(R.id.main_service_status);
         serviceStatusIcon = findViewById(R.id.main_service_status_icon);
@@ -227,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopOFeedResultsService();
+        stopResultsService();
     }
 
     private void catchBackButtonAndConfirmExit() {
@@ -308,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                             startServiceButton.setEnabled(true);
                             startServiceButton.setOnClickListener(v -> {
                                 startServiceButton.setEnabled(false); // Disable until service has started.
-                                startOFeedResultsService();
+                                startResultsService();
                             });
                         } else {
                             serviceStatus.setText(R.string.si_droid_unreachable_title);
@@ -322,26 +328,26 @@ public class MainActivity extends AppCompatActivity {
             serviceStatus.setText(R.string.status_running);
             serviceStatusIcon.setImageResource(R.drawable.status_ok);
             startServiceButton.setText(R.string.stop_uploading);
-            startServiceButton.setOnClickListener(v -> stopOFeedResultsService());
+            startServiceButton.setOnClickListener(v -> stopResultsService());
         }
     }
 
     // ********************************************************************************************
-    // OFeed results service.
+    // Results service.
     // ********************************************************************************************
 
-    private void startOFeedResultsService() {
+    private void startResultsService() {
         resultServiceLogSaved = null;
         resultServiceHttpLogSaved = null;
 
         String siDroidUrl = String.format(Locale.US, SI_DROID_URL, prefs.siDroidPort);
-        String oFeedUrl = getEndpointUpload();
-        if (oFeedUrl == null) {
+        String oFeedUploadUrl = getOFeedEndpointUpload();
+        if (oFeedUploadUrl == null) {
             showDialogLargeText(R.string.ofeed, R.string.server_incorrect_path);
             return;
         }
         serviceManager = new ResultsServiceManager(this, prefs.uploadTo, siDroidUrl,
-                oFeedUrl, prefs.oFeedEventId, prefs.oFeedEventPassword, prefs.oResultsApiKey, USER_AGENT, prefs.uploadIntervalSec,
+                oFeedUploadUrl, prefs.oFeedEventId, prefs.oFeedEventPassword, prefs.oResultsApiKey, USER_AGENT, prefs.uploadIntervalSec,
                 new int[]{prefs.httpConnectTimeoutSec, prefs.httpReadTimeoutSec, prefs.httpWriteTimeoutSec, prefs.httpCallTimeoutSec},
                 prefs.createXmlId,
                 new ResultsService.ResultsServiceUpdateStatus() {
@@ -384,22 +390,39 @@ public class MainActivity extends AppCompatActivity {
                             addStatusListItem(status, R.drawable.error_red);
                         });
                     }
+
+                    @Override
+                    public void onOFeedFeaturedImage(Bitmap image) {
+                        runOnUiThread(() -> {
+                            oFeedFeaturedImage.setImageBitmap(image);
+                            bottomCenterDrawable(oFeedFeaturedImage);
+                        });
+                    }
+
+                    @Override
+                    public void onEvent(String name, int oResultsId) {
+                        runOnUiThread(() -> {
+                            eventName.setText(name);
+                            oResultsEventId = oResultsId;
+                        });
+
+                    }
                 });
         // Start the service.
-        serviceManager.startOFeedResultsService();
-        serviceManager.bindOFeedResultsService();
+        serviceManager.startResultsService();
+        serviceManager.bindResultsService();
         // Animate first countdown.
         countdownIndicatorText.setVisibility(VISIBLE);
         countdownIndicator.start(ResultsService.TIME_TO_FIRST_UPDATE_SEC);
     }
 
-    private void stopOFeedResultsService() {
+    private void stopResultsService() {
         countdownUploadAnimationStop();
         if (serviceManager != null) {
             resultServiceLogSaved = serviceManager.getLog();
             resultServiceHttpLogSaved = serviceManager.getHttpLog();
-            serviceManager.unbindOFeedResultsService();
-            serviceManager.stopOFeedResultsService();
+            serviceManager.unbindResultsService();
+            serviceManager.stopResultsService();
         }
     }
 
@@ -416,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
      * @return ".../rest/v1/upload/iof", or
      * null if {@link Preferences#oFeedUrl} does not end with "/rest/v1/events".
      */
-    private String getEndpointUpload() {
+    private String getOFeedEndpointUpload() {
         if (!prefs.oFeedUrl.endsWith("/rest/v1/events")) return null;
         int i = prefs.oFeedUrl.lastIndexOf("/events");
         return prefs.oFeedUrl.substring(0, i) + "/upload/iof";
@@ -443,13 +466,14 @@ public class MainActivity extends AppCompatActivity {
      */
     private void clearOFeed() {
         boolean wasRunning = resultServiceIsRunning;
-        if (resultServiceIsRunning) stopOFeedResultsService();
+        if (resultServiceIsRunning) stopResultsService();
         AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.clear_ofeed)
                 .setMessage(R.string.clear_ofeed_competitors)
                 .setPositiveButton(android.R.string.ok, (d, which) -> deleteOFeedCompetitors())
+//                .setPositiveButton(android.R.string.ok, (d, which) -> deleteOResultsCompetitors())    // TODO.
                 .setNegativeButton(android.R.string.cancel, (d, which) -> {
-                    if (wasRunning) startOFeedResultsService();
+                    if (wasRunning) startResultsService();
                 })
                 .setCancelable(false)
                 .show();
@@ -469,6 +493,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
         new OFeedClear(url, prefs.oFeedEventId, prefs.oFeedEventPassword, USER_AGENT, (isCleared, message) ->
+                runOnUiThread(() -> {
+                    String status = LocalTime.now().format(HH_MM_SS) + " ";
+                    int iconResId;
+                    if (isCleared) {
+                        SerializableManager.delete(this, XML_IDS_FILENAME);
+                        iconResId = R.drawable.status_ok;
+                        status += getString(R.string.cleared_ok);
+                    } else {
+                        iconResId = R.drawable.error_red;
+                        status += message;
+                    }
+                    addStatusListItem(status, iconResId);
+                })).delete();
+    }
+
+    /**
+     * Do the actual deletion of OResults competitors.
+     */
+    private void deleteOResultsCompetitors() {
+        String deleteEndpoint = String.format(Locale.US, ORESULTS_START_LISTS_URL, oResultsEventId);
+
+        new OResultsClear(deleteEndpoint, USER_AGENT, (isCleared, message) ->
                 runOnUiThread(() -> {
                     String status = LocalTime.now().format(HH_MM_SS) + " ";
                     int iconResId;
@@ -556,7 +602,9 @@ public class MainActivity extends AppCompatActivity {
     // Settings.
     // ********************************************************************************************
     private void settings() {
-        stopOFeedResultsService();
+        stopResultsService();
+        eventName.setText("");
+        oFeedFeaturedImage.setImageBitmap(null);
         new SettingsDialog(this, prefs, this::updateServiceState).show();
     }
 
@@ -604,7 +652,7 @@ public class MainActivity extends AppCompatActivity {
     );
 
     private void uploadXmlFile(Uri localXmlFile) {
-        if (resultServiceIsRunning) stopOFeedResultsService();
+        if (resultServiceIsRunning) stopResultsService();
 
         long startTimeMs = System.currentTimeMillis();
         uploadXmlFileAnimationStart();
@@ -625,7 +673,7 @@ public class MainActivity extends AppCompatActivity {
                         }));
 
         if (prefs.uploadTo == UPLOAD_TO_OFEED) {
-            String oFeedUrl = getEndpointUpload();
+            String oFeedUrl = getOFeedEndpointUpload();
             if (oFeedUrl == null) {
                 showDialogLargeText(R.string.ofeed, R.string.server_incorrect_path);
                 return;

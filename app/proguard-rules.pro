@@ -19,3 +19,14 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Avoid R8 minification/reflection issues when using Gson to parse Json.
+-keep class com.orienteerfeed.ofeed_sidroid_connector.ResultsService$OFeedEvent { *; }
+-keep class com.orienteerfeed.ofeed_sidroid_connector.ResultsService$OFeedResults { *; }
+-keep class com.orienteerfeed.ofeed_sidroid_connector.ResultsService$OFeedData { *; }
+-keep class com.orienteerfeed.ofeed_sidroid_connector.ResultsService$OResultsEvent { *; }
+
+-keep class com.orienteerfeed.ofeed_sidroid_connector.GetEventName$OFeedEvent { *; }
+-keep class com.orienteerfeed.ofeed_sidroid_connector.GetEventName$OFeedResults { *; }
+-keep class com.orienteerfeed.ofeed_sidroid_connector.GetEventName$OFeedData { *; }
+-keep class com.orienteerfeed.ofeed_sidroid_connector.GetEventName$OResultsEvent { *; }

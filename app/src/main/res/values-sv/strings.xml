@@ -8,8 +8,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nya funktioner</string>
-    <string name="news_message">\n■ Lagt till hjälpdialog för skanna/klistra in OFeed länk.
-    </string>
+    <string name="news_message">Första publika versionen.</string>
 
     <!--
     ********************************************************************************************

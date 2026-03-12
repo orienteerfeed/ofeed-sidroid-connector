@@ -1,6 +1,6 @@
 package com.orienteerfeed.ofeed_sidroid_connector;
 
-import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.ORESULTS_URL;
+import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.ORESULTS_RESULTS_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.ResultsService.XML_IDS_FILENAME;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.base64EncodeToString;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.readTextFile;
@@ -194,7 +194,7 @@ class LocalXmlFileUploader {
                     .build();
 
             Request request = new Request.Builder()
-                    .url(ORESULTS_URL)
+                    .url(ORESULTS_RESULTS_URL)
                     .addHeader("User-Agent", userAgent)
 //                    .addHeader("Content-Type", "text; charset=utf-8")
                     .post(requestBody)

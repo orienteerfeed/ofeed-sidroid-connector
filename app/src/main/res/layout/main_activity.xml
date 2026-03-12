@@ -22,16 +22,34 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
+    <ImageView
+        android:id="@+id/main_ofeed_featured_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="0.2"
+        android:scaleType="matrix"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_status_caption"
+        app:layout_constraintBottom_toBottomOf="parent" />
+    <TextView
+        android:id="@+id/main_event_name"
+        style="@style/medium_wrap_content"
+        android:layout_width="0dp"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_toolbar" />
     <TextView
         android:id="@+id/main_service_status_caption"
         style="@style/medium_bold_wrap_content"
         android:textSize="24sp"
         android:text="@string/status"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/main_event_name" />
 
     <ImageView
         android:id="@+id/main_service_status_icon"

@@ -181,6 +181,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/settings_ofeed_event_password"
             app:layout_constraintBottom_toBottomOf="@id/settings_ofeed_event_password" />
+        <TextView
+            android:id="@+id/settings_ofeed_event_name"
+            style="@style/medium_0_wrap"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/settings_ofeed_server_help"
+            app:layout_constraintTop_toBottomOf="@id/settings_ofeed_event_password" />
 
         <Button
             android:id="@+id/settings_ofeed_scan_qr_code"
@@ -190,7 +197,7 @@
             tools:ignore="RtlHardcoded"
             android:drawableLeft="@drawable/qr_code"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/settings_ofeed_event_password" />
+            app:layout_constraintTop_toBottomOf="@id/settings_ofeed_event_name" />
         <Button
             android:id="@+id/settings_ofeed_paste_link"
             style="@style/button_style_settings"
@@ -245,6 +252,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/settings_ofeed_server_help"
             app:layout_constraintTop_toBottomOf="@id/settings_ofeed_selected" />
+        <TextView
+            android:id="@+id/settings_oresults_event_name"
+            style="@style/medium_0_wrap"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/settings_ofeed_server_help"
+            app:layout_constraintTop_toBottomOf="@id/settings_oresults_api_key" />
+        <ImageView
+            android:id="@+id/settings_www"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="32dp"
+            app:srcCompat="@drawable/www"
+            app:layout_constraintStart_toEndOf="@id/settings_oresults_title"
+            app:layout_constraintTop_toTopOf="@id/settings_oresults_title"
+            app:layout_constraintBottom_toBottomOf="@id/settings_oresults_title" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

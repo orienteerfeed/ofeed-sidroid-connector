@@ -5,6 +5,7 @@ import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.DEFAULT_OFEE
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.DEFAULT_OFEED_URL;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.UPLOAD_TO_OFEED;
 import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.UPLOAD_TO_ORESULTS;
+import static com.orienteerfeed.ofeed_sidroid_connector.Preferences.USER_AGENT;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.extractUrl;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.parseOFeedCredentials;
 import static com.orienteerfeed.ofeed_sidroid_connector.Util.setupNumberPicker;
@@ -15,6 +16,8 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -58,9 +61,12 @@ class SettingsDialog {
 
     // Keep old values to restore changes, if user cancels this dialog.
     private int oldUploadIntervalSec, oldHttpConnectTimeoutSec, oldHttpReadTimeoutSec, oldHttpWriteTimeoutSec, oldHttpCallTimeoutSec;
+    private String oldOFeedUrl;
 
     // These are shared with the QR code scanner.
     private EditText oFeedServer, oFeedEventId, oFeedEventPassword;
+
+    private int oResultsEventId = 0;
 
     //**********************************************************************************************
     // Constructor.
@@ -95,7 +101,7 @@ class SettingsDialog {
         // Create id.
         ImageView createXmlId = layout.findViewById(R.id.settings_create_xml_id);
         createXmlId.setSelected(prefs.createXmlId);
-        createXmlId.setOnClickListener( v->
+        createXmlId.setOnClickListener(v ->
                 createXmlId.setSelected(!createXmlId.isSelected()));
         layout.findViewById(R.id.settings_create_xml_id_help).setOnClickListener(v ->
                 showDialog(R.string.xml_id_help));
@@ -106,8 +112,41 @@ class SettingsDialog {
         layout.findViewById(R.id.settings_si_droid_port_help).setOnClickListener(v ->
                 showDialog(R.string.port_number_help));
 
+        // www.
+        layout.findViewById(R.id.settings_www).setOnClickListener(v -> {
+            String url;
+            if (isActiveOFeedTab()) {
+                try {
+                    // OFeed url as entered by user, eg, https://api.orienterfeed.com/rest/v1/events
+                    url = assembleOFeedUrl(oFeedServer.getText().toString().trim());
+                    // Remove api. subdomain and entire path: https://api.orienterfeed.com
+                    Uri uri = Uri.parse(url);
+                    String scheme = uri.getScheme();                // https
+                    String host = uri.getHost();                    // api.server.com
+                    if (host != null && host.startsWith("api.")) {
+                        host = host.substring(4);         // remove api.
+                    }
+                    uri = new Uri.Builder()
+                            .scheme(scheme)
+                            .authority(host)
+                            .build();
+                    url = uri.toString();
+                } catch (MalformedURLException e) {
+                    showDialog(e.getMessage());
+                    return;
+                }
+                String eventId = oFeedEventId.getText().toString().trim();
+                if (!eventId.isEmpty()) url += "/events/" + eventId;
+            } else {
+                url = "https://oresults.eu";
+                if (oResultsEventId != 0) url += "/events/" + oResultsEventId;
+            }
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            activity.startActivity(intent);
+        });
+
         // OFeed server.
-        String oldOFeedUrl = prefs.oFeedUrl;
+        oldOFeedUrl = prefs.oFeedUrl;
         oFeedServer = layout.findViewById(R.id.settings_ofeed_server);
         try {
             String[] parsedUrl = parseUrl(prefs.oFeedUrl);
@@ -167,6 +206,41 @@ class SettingsDialog {
         EditText oResultsApiKey = layout.findViewById(R.id.settings_oresults_api_key);
         oResultsApiKey.setText(prefs.oResultsApiKey);
 
+        // Get event names from OFeed/OResults servers.
+        TextView oFeedEventName = layout.findViewById(R.id.settings_ofeed_event_name);
+        TextView oResultsEventName = layout.findViewById(R.id.settings_oresults_event_name);
+        // Prepare http get connection to OFeed/OResults servers.
+        GetEventName getEventName = new GetEventName(USER_AGENT, new GetEventName.GetEventNameListener() {
+            @Override
+            public void onOFeedEventName(@NonNull String eventName) {
+                activity.runOnUiThread(() -> oFeedEventName.setText(eventName));
+            }
+
+            @Override
+            public void onOResultsEventName(@NonNull String eventName, int eventId) {
+                activity.runOnUiThread(() -> {
+                    oResultsEventName.setText(eventName);
+                    oResultsEventId = eventId;
+                });
+            }
+        });
+        // Monitor user input and issue a call to the server if the user stops typing or leaves the input field.
+        TextChangeWatcher oFeedEventIdWatcher = new TextChangeWatcher(oFeedEventId, eventId -> {
+            try {
+                String newOFeedUrl = assembleOFeedUrl(oFeedServer.getText().toString().trim());
+                if (!eventId.isEmpty()) getEventName.getOFeedEventName(newOFeedUrl + "/" + eventId);
+            } catch (MalformedURLException ignored) {
+            }
+        });
+        TextChangeWatcher oResultsApiKeyWatcher = new TextChangeWatcher(oResultsApiKey, apiKey -> {
+            if (!apiKey.isEmpty()) getEventName.getOResultsEventName(apiKey);
+        });
+        // Get initial event names.
+        if (!prefs.oFeedEventId.isEmpty()) {
+            getEventName.getOFeedEventName(prefs.oFeedUrl + "/" + prefs.oFeedEventId);
+        }
+        if (!prefs.oResultsApiKey.isEmpty()) getEventName.getOResultsEventName(prefs.oResultsApiKey);
+
         // OFeed and OResults tabs.
         initTabAnimations(layout);
         showActiveTab();
@@ -187,6 +261,10 @@ class SettingsDialog {
                     prefs.httpReadTimeoutSec = oldHttpReadTimeoutSec;
                     prefs.httpWriteTimeoutSec = oldHttpWriteTimeoutSec;
                     prefs.httpCallTimeoutSec = oldHttpCallTimeoutSec;
+                    // Clean up.
+                    oFeedEventIdWatcher.detach();
+                    oResultsApiKeyWatcher.detach();
+                    getEventName.cancelOngoingCall();
                     // Done.
                     listener.onSettingsDialogClosed();
                 })
@@ -205,33 +283,12 @@ class SettingsDialog {
 
             if (isActiveOFeedTab()) {
                 // OFeed server.
-                String newOFeedUrl = oFeedServer.getText().toString().trim();
-                if (newOFeedUrl.isEmpty()) {
-                    // Empty URL, assume default.
-                    newOFeedUrl = DEFAULT_OFEED_URL;
-                } else if (newOFeedUrl.equals(DEFAULT_OFEED_HOST)) {
-                    // Default host.
-                    newOFeedUrl = DEFAULT_OFEED_URL;
-                } else if (!newOFeedUrl.equals(oldOFeedUrl)) {
-                    // New URL. User has updated the server URL.
-                    try {
-                        String[] parsedNewOFeedUrl = parseUrl(newOFeedUrl);
-                        // Protocol, parseUrl() always returns "https".
-                        // Host.
-                        if (parsedNewOFeedUrl[1].isEmpty()) parsedNewOFeedUrl[1] = DEFAULT_OFEED_HOST;
-                        // Path.
-                        if (parsedNewOFeedUrl[2].isEmpty()) parsedNewOFeedUrl[2] = DEFAULT_OFEED_PATH;
-                        if (parsedNewOFeedUrl[2].endsWith("/")) parsedNewOFeedUrl[2] =
-                                parsedNewOFeedUrl[2].substring(0, parsedNewOFeedUrl[2].length() - 1);
-                        if (!parsedNewOFeedUrl[2].endsWith("/rest/v1/events")) {
-                            showDialog(R.string.server_incorrect_path);
-                            return;
-                        }
-                        newOFeedUrl = parsedNewOFeedUrl[0] + "://" + parsedNewOFeedUrl[1] + parsedNewOFeedUrl[2];
-                    } catch (MalformedURLException e) {
-                        showDialog(e.getMessage());
-                        return;
-                    }
+                String newOFeedUrl;
+                try {
+                    newOFeedUrl = assembleOFeedUrl(oFeedServer.getText().toString().trim());
+                } catch (MalformedURLException e) {
+                    showDialog(e.getMessage());
+                    return;
                 }
 
                 // Event id.
@@ -265,10 +322,47 @@ class SettingsDialog {
             prefs.createXmlId = createXmlId.isSelected();
             prefs.siDroidPort = newPort;
             prefs.save();
-            dialog.dismiss();
+            // Clean up.
+            oFeedEventIdWatcher.detach();
+            oResultsApiKeyWatcher.detach();
+            getEventName.cancelOngoingCall();
             // Done.
+            dialog.dismiss();
             listener.onSettingsDialogClosed();
         });
+    }
+
+    /**
+     * Assemble a valid URL from the OFeed server entered by the user.
+     *
+     * @param newOFeedUrl New URL entered by the user.
+     * @return Complete and valid URL for OFeed.
+     * @throws MalformedURLException Failed to assemble a valid URL.
+     */
+    private String assembleOFeedUrl(String newOFeedUrl) throws MalformedURLException {
+        // OFeed server.
+        if (newOFeedUrl.isEmpty()) {
+            // Empty URL, assume default.
+            return DEFAULT_OFEED_URL;
+        } else if (newOFeedUrl.equals(DEFAULT_OFEED_HOST)) {
+            // Default host.
+            return DEFAULT_OFEED_URL;
+        } else if (!newOFeedUrl.equals(oldOFeedUrl)) {
+            // New URL. User has updated the server URL.
+            String[] parsedNewOFeedUrl = parseUrl(newOFeedUrl);
+            // Protocol, parseUrl() always returns "https".
+            // Host.
+            if (parsedNewOFeedUrl[1].isEmpty()) parsedNewOFeedUrl[1] = DEFAULT_OFEED_HOST;
+            // Path.
+            if (parsedNewOFeedUrl[2].isEmpty()) parsedNewOFeedUrl[2] = DEFAULT_OFEED_PATH;
+            if (parsedNewOFeedUrl[2].endsWith("/")) parsedNewOFeedUrl[2] =
+                    parsedNewOFeedUrl[2].substring(0, parsedNewOFeedUrl[2].length() - 1);
+            if (!parsedNewOFeedUrl[2].endsWith("/rest/v1/events")) {
+                throw new MalformedURLException(activity.getString(R.string.server_incorrect_path));
+            }
+            return parsedNewOFeedUrl[0] + "://" + parsedNewOFeedUrl[1] + parsedNewOFeedUrl[2];
+        }
+        return newOFeedUrl;
     }
 
     //**********************************************************************************************
@@ -527,10 +621,11 @@ class SettingsDialog {
     // Animate OFeed/OResults tabs.
     //**********************************************************************************************
     private static final int[] oFeedTabResIds = {R.id.settings_ofeed_selected, R.id.settings_ofeed_server,
-            R.id.settings_ofeed_server_help, R.id.settings_ofeed_event_id, R.id.settings_ofeed_event_password,
-            R.id.settings_ofeed_password_visibility,
+            R.id.settings_ofeed_server_help, R.id.settings_ofeed_event_id, R.id.settings_ofeed_event_name,
+            R.id.settings_ofeed_event_password, R.id.settings_ofeed_password_visibility,
             R.id.settings_ofeed_scan_qr_code, R.id.settings_ofeed_paste_link, R.id.settings_ofeed_login_details_help};
-    private static final int[] oResultsTabResIds = {R.id.settings_oresults_selected, R.id.settings_oresults_api_key};
+    private static final int[] oResultsTabResIds = {R.id.settings_oresults_selected,
+            R.id.settings_oresults_api_key, R.id.settings_oresults_event_name};
     private static View[] oFeedTab, oResultsTab;
 
     private void initTabAnimations(View layout) {
