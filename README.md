@@ -1,41 +1,28 @@
-# OFeed SI-Droid Connector
+# SI-Droid Connector
 
 This Android app uploads result lists from [SI-Droid Event](https://play.google.com/store/apps/details?id=se.joja.sidroid.event.full) to [OFeed](https://orienteerfeed.com/) or [OResult](https://oresults.eu/).
 
 ## Features
 
-- Uploads result lists from SI-Droid Event to OFeed or OResults.
+- Uploads results lists from SI-Droid Event to OFeed or OResults.
+- Uploads results lists from local file to OFeed or OResults.
 - Uses [IOF Data Standard 3.0](https://orienteering.sport/iof/it/data-standard-3-0/).
 - Supports OFeed QR codes for easy configuration.
 
 ## Installation
-It is not yet available on Google Play (we are in testing period), so you can download it from https://stigning.se/download/connector.apk and install it by opening the downloaded file (may require several confirmations).
+Available on Google [Play Store](https://play.google.com/store/apps/details?id=com.orienteerfeed.ofeed_sidroid_connector).
 
 ## Development
 
 ### Prerequisites
 
-- Android Studio
-- Android 7+ (minSDK 24, targetSDK 35)
-- Java 11
-
-### Installation
-
-1. Clone this repository:
-
-```bash
-   git clone https://github.com/orienteerfeed/ofeed-sidroid-connector.git
-```
-
-2. Open the project in Android Studio
-
-3. Let Gradle sync and build the project
-
-4. Run the app on a connected device
+- Android Studio.
+- Android 6+.
+- Java 11.
 
 ### Built With
 
-- [OkHttp](https://square.github.io/okhttp/) - Networking library
+- [OkHttp](https://square.github.io/okhttp/) - Networking library.
 
 ## License
 

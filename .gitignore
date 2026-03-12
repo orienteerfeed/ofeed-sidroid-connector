@@ -21,3 +21,4 @@ local.properties
 *.tmp
 *.swp
 *.swo
+/app/release/app-release.aab
