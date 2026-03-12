@@ -8,6 +8,9 @@ This Android app uploads result lists from [SI-Droid Event](https://play.google.
 - Uses [IOF Data Standard 3.0](https://orienteering.sport/iof/it/data-standard-3-0/).
 - Supports OFeed QR codes for easy configuration.
 
+## Installation
+It is not yet available on Google Play (we are in testing period), so you can download it from https://stigning.se/download/connector.apk and install it by opening the downloaded file (may require several confirmations).
+
 ## Development
 
 ### Prerequisites
