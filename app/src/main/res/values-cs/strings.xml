@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!--
     ********************************************************************************************
     * New features.
@@ -9,7 +8,6 @@
     ******************************************************************************************** -->
     <string name="news">Nové funkce</string>
     <string name="news_message">První veřejné vydání.</string>
-
     <!--
     ********************************************************************************************
     * Contributors.
@@ -17,7 +15,6 @@
     <string-array name="about_contributors">
         <item>Lukáš Kettner, OK Kamenice</item>
     </string-array>
-
     <!--
     ********************************************************************************************
     * General.
@@ -38,14 +35,12 @@
     <string name="upload_interval">Interval nahrávání</string>
     <string name="upload_file">Nahrát soubor</string>
     <string name="uploads">Nahravání</string>
-
     <!--
     ********************************************************************************************
     * Time units.
     ******************************************************************************************** -->
     <string name="minute">min</string>
     <string name="second">sek</string>
-
     <!--
     ********************************************************************************************
     * Confirm exiting app with back button, which will stop the foreground service.
@@ -53,7 +48,6 @@
     <string name="back_button_exit_confirmation">Zastavit nahrávání a ukončit?
         \nKlikni na <b>Home</b> pro minimalizování a pokračování nahrávání.
     </string>
-
     <!--
     ********************************************************************************************
     * SI-Droid Event settings.
@@ -64,7 +58,6 @@
         Otevři aplikaci a vyber <b>Nastavení</b> → <b>Výsledková služba</b> → <b>Port výsledkové služby</b>.
         \n\nUjisti se, že checkbox <b>Zapnout výsledkovou službu</b> je zaškrtnutý.
     </string>
-
     <!--
     ********************************************************************************************
     * OFeed settings.
@@ -109,20 +102,13 @@
     </string>
     <string name="login_details_help_scan">Skenovat QR kód OFeed.</string>
     <string name="login_details_help_paste">Vložit textový odkaz OFeed.</string>
-    <string name="login_details_help">QR kód i odkaz obsahují URL serveru, id akce a heslo.
-        \n<b>Skenovat QR kód</b> – Foťákem jednoduše naskenuj QR kód.
-        \n<b>Vložit odkaz</b> – Zkopíruj odkaz, otevři nastavení aplikace a odkaz vlož.
-        \n<b>Sdílet odkaz</b> – Klikni dlouze na odkaz a vyber <i>Sdílet</i>.
-        Následně v menu vyber aplikaci Connector.
-    </string>
-
+    <string name="login_details_help">Pro přístup k OFeedu jsou vyžadovány přihlašovací údaje. Adresu serveru, ID akce a heslo. Lze zadat různými způsoby:\n\n<b>Naskenuj QR kód</b>\n■ Otevři fotoaparát ve svém zařízení a namiř jej na QR kód. Klepni na vyskakovací odkaz. Aplikace se nyní spustí s vyplněnými přihlašovacími údaji.\n■ QR kód lze naskenovat také v nastavení aplikace. \n\n<b>Sdílej odkaz</b>\n■ Dlouze stiskni odkaz OFeed (text), vyber celý odkaz a klepni na <i>Sdílet</i>. V rozbalovací nabídce sdílení klepni na aplikaci. Aplikace se nyní spustí s vyplněnými přihlašovacími údaji.\n\n<b>Kopírovat a vložit odkaz</b> \n■ Dlouze stiskni odkaz OFeed (text), vyber celý odkaz a klepněte na <i>Kopírovat</i>. Ručně spusť aplikaci, přejdi do nastavení aplikace a klepni na <i>Vložit odkaz</i>, aby se vyplnily přihlašovací údaje.\n\n<b>Ruční nastavení</b>\n■ Ručně zadej přihlašovací údaje v nastavení aplikace.</string>
     <!--
     ********************************************************************************************
     * OResults settings.
     ******************************************************************************************** -->
     <string name="oresults_api_key">Api key</string>
     <string name="oresults_api_key_is_missing">Api key není vyplněný.</string>
-
     <!--
     ********************************************************************************************
     * Log and status.
@@ -131,7 +117,6 @@
     <string name="show_log">Ukázat log</string>
     <string name="show_http_log">HTTP log</string>
     <string name="log_is_empty">Log je prázdný.</string>
-
     <string name="status">Status</string>
     <string name="status_running">Běží OK</string>
     <string name="status_stopped">Zastaveno</string>
@@ -146,7 +131,6 @@
         Settings → Apps → <i>Název aplikace</i> → Battery → <b>Unrestricted</b>
         nebo <b>Allow background usage</b> (nebo něco podobného).
     </string>
-
     <!--
     ********************************************************************************************
     * Log/trace messages.
@@ -154,7 +138,6 @@
     <string name="si_droid_no_results">Žádné výsledky ← SI-Droid.</string>
     <string name="uploaded_ok">Úspěšně nahráno.</string>
     <string name="upload_failed">Selhalo.</string>
-
     <!--
     ********************************************************************************************
     * Help.
@@ -165,7 +148,6 @@
         \n\nZároveň je možné nahrát i xml výsledky z lokálního souboru.
         \n\nNahrávané výsledky je možné doplnit o unikátní identifikátor pro každého závodníka.
     </string>
-
     <!--
     ********************************************************************************************
     * Android battery restriction, which can stop the foreground service.
@@ -177,7 +159,6 @@
         \n\nBude spuštěno Android nastavení aplikace, kde můžeš omezení baterie upravit →
         <b>Allow background usage</b> nebo <b>Unrestricted</b> (nebo něco podobného).
     </string>
-
     <!--
     ********************************************************************************************
     * Notifications in the status bar. Shows that the foreground service is running.
@@ -201,5 +182,12 @@
     <string name="update_canceled">Aktualizace zrušena.</string>
     <string name="update_failed">Aktualizace se nezdařila.</string>
     <string name="update_postpone_one_week">Odložit o týden</string>
-
+    <string name="http_timeout_call_help" tools:ignore="MissingTranslation">Time limit for a complete call.</string>
+    <string name="http_timeout_read" tools:ignore="MissingTranslation">Read timeout</string>
+    <string name="http_timeout_write_help" tools:ignore="MissingTranslation">Max time between two data packets when sending request to server.</string>
+    <string name="http_timeout_connect_help" tools:ignore="MissingTranslation">Max time period to establish a connection with host.</string>
+    <string name="http_timeout_read_help" tools:ignore="MissingTranslation">Max time between two data packets when waiting for server\'s response.</string>
+    <string name="http_timeout_connect" tools:ignore="MissingTranslation">Connect timeout</string>
+    <string name="http_timeout_write" tools:ignore="MissingTranslation">Write timeout</string>
+    <string name="http_timeout_call" tools:ignore="MissingTranslation">Call timeout</string>
 </resources>
