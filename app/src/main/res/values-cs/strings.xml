@@ -150,15 +150,4 @@
     <string name="http_timeout_connect" tools:ignore="MissingTranslation">Connect timeout</string>
     <string name="http_timeout_write" tools:ignore="MissingTranslation">Write timeout</string>
     <string name="http_timeout_call" tools:ignore="MissingTranslation">Call timeout</string>
-    <string name="license_apache" translatable="false"></string>
-    <string name="ofeed_post_request" translatable="false"></string>
-    <string name="si_droid_results_retrieved" translatable="false"></string>
-    <string name="si_droid" translatable="false"></string>
-    <string name="app_title_oresults_connector" translatable="false"></string>
-    <string name="license_ok_http" translatable="false"></string>
-    <string name="ofeed" translatable="false"></string>
-    <string name="oresults_post_request" translatable="false"></string>
-    <string name="si_droid_get_request" translatable="false"></string>
-    <string name="app_name" translatable="false"></string>
-    <string name="app_title_ofeed_connector" translatable="false"></string>
 </resources>
