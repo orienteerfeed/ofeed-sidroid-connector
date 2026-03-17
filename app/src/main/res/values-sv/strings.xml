@@ -83,7 +83,7 @@
     <string name="clear_ofeed_competitors">Detta kommer att radera alla deltagare i OFeed. \n\nDenna rensning kan användas om dubbletter har dykt upp i OFeed. Nästa uppladdning kommer att återställa deltagarna. \n\n<b>Kan inte ångras!</b></string>
     <string name="login_details_help_scan">Skanna OFeed QR code.</string>
     <string name="login_details_help_paste">Klistra in OFeed textlänk.</string>
-    <string name="login_details_help"></string>
+    <string name="login_details_help"/>
     <!--
     ********************************************************************************************
     * OResults settings.
@@ -142,23 +142,23 @@
     <string name="update_canceled">Uppdateringen avbröts.</string>
     <string name="update_failed">Uppdateringen misslyckades.</string>
     <string name="update_postpone_one_week">Skjut upp en vecka</string>
-    <string name="http_timeout_call_help" tools:ignore="MissingTranslation"></string>
-    <string name="http_timeout_read" tools:ignore="MissingTranslation"></string>
-    <string name="license_apache" translatable="false"></string>
-    <string name="ofeed_post_request" translatable="false"></string>
-    <string name="http_timeout_write_help" tools:ignore="MissingTranslation"></string>
-    <string name="si_droid_results_retrieved" translatable="false"></string>
-    <string name="http_timeout_connect_help" tools:ignore="MissingTranslation"></string>
-    <string name="si_droid" translatable="false"></string>
-    <string name="http_timeout_read_help" tools:ignore="MissingTranslation"></string>
-    <string name="app_title_oresults_connector" translatable="false"></string>
-    <string name="http_timeout_connect" tools:ignore="MissingTranslation"></string>
-    <string name="license_ok_http" translatable="false"></string>
-    <string name="http_timeout_write" tools:ignore="MissingTranslation"></string>
-    <string name="ofeed" translatable="false"></string>
-    <string name="oresults_post_request" translatable="false"></string>
-    <string name="http_timeout_call" tools:ignore="MissingTranslation"></string>
-    <string name="si_droid_get_request" translatable="false"></string>
-    <string name="app_name" translatable="false"></string>
-    <string name="app_title_ofeed_connector" translatable="false"></string>
+    <string name="http_timeout_call_help" tools:ignore="MissingTranslation"/>
+    <string name="http_timeout_read" tools:ignore="MissingTranslation"/>
+    <string name="license_apache" translatable="false"/>
+    <string name="ofeed_post_request" translatable="false"/>
+    <string name="http_timeout_write_help" tools:ignore="MissingTranslation"/>
+    <string name="si_droid_results_retrieved" translatable="false"/>
+    <string name="http_timeout_connect_help" tools:ignore="MissingTranslation"/>
+    <string name="si_droid" translatable="false"/>
+    <string name="http_timeout_read_help" tools:ignore="MissingTranslation"/>
+    <string name="app_title_oresults_connector" translatable="false"/>
+    <string name="http_timeout_connect" tools:ignore="MissingTranslation"/>
+    <string name="license_ok_http" translatable="false"/>
+    <string name="http_timeout_write" tools:ignore="MissingTranslation"/>
+    <string name="ofeed" translatable="false"/>
+    <string name="oresults_post_request" translatable="false"/>
+    <string name="http_timeout_call" tools:ignore="MissingTranslation"/>
+    <string name="si_droid_get_request" translatable="false"/>
+    <string name="app_name" translatable="false"/>
+    <string name="app_title_ofeed_connector" translatable="false"/>
 </resources>
