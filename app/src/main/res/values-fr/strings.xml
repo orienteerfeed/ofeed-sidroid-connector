@@ -1,3 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="news">Nouvelles fonctionnalités</string>
+    <string name="news_message">Première version publique.</string>
+    <string name="about">A propos de</string>
+    <string name="clear_ofeed">Effacer OFeed</string>
+    <string name="cleared_ok">Effacement réussi!</string>
+    <string name="contributors">Contributeurs</string>
+    <string name="do_not_show_again">Ne plus afficher</string>
+    <string name="license">Licence</string>
+    <string name="no_results_to_upload">Aucun résultat à soumettre.</string>
+    <string name="paste">Coller</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="settings">Paramètres</string>
+    <string name="start_uploading">Démarrer le chargement</string>
+    <string name="stop_uploading">Arrêt du chargement</string>
+    <string name="update">Mettre à jour</string>
+    <string name="upload_interval">Intervalle de mise à jour</string>
+    <string name="upload_file">Charger un fichier</string>
+    <string name="uploads">Chargements</string>
+    <string name="minute">min</string>
+    <string name="second">sec</string>
+    <string name="back_button_exit_confirmation">Arrêter le chargement et quitter? \nPressez<b>Accueil</b> pour quitter l\'application et poursuivre le chargement.</string>
+    <string name="port_number">Numéro de port</string>
+    <string name="port_number_error">Le numéro de port doit être compris entre 1024 et 65535.</string>
+    <string name="port_number_help">Le numéro de port est défini par SI-Droid Event. Ouvrez cette application et sélectionnez <b>Settings</b>→<b>Result Service</b>→<b>Result Service Port</b>. \n\nAssurez-vous que <b>Use the builtin result service</b> est activé.</string>
+    <string name="ofeed_settings_updated_ok">Paramètres OFeed chargés.</string>
+    <string name="server_not_specified">Serveur non spécifié.</string>
+    <string name="server_incorrect_url">Adresse de serveur incorrecte (URL).</string>
 </resources>
