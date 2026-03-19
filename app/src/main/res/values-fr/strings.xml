@@ -27,4 +27,15 @@
     <string name="ofeed_settings_updated_ok">Paramètres OFeed chargés.</string>
     <string name="server_not_specified">Serveur non spécifié.</string>
     <string name="server_incorrect_url">Adresse de serveur incorrecte (URL).</string>
+    <string name="server_incorrect_path">Chemin d\'accès incorrect. L\'URL de serveur doit se terminer par <i>/rest/v1/events</i></string>
+    <string name="server_https_required">https requis.</string>
+    <string name="server_help">L\'adresse du serveur OFeed :</string>
+    <string name="event_id">ID d\'évènement</string>
+    <string name="event_id_is_missing">ID d\'évènement manquant.</string>
+    <string name="password">Mot de passe</string>
+    <string name="password_is_missing">Il manque le mot de passe.</string>
+    <string name="qr_code_scan">Scanner</string>
+    <string name="qr_code_scanner">Scanneur de QR Code</string>
+    <string name="qr_code_scan_failed">Echec de scan.</string>
+    <string name="qr_code_invalid">QR Code invalide.</string>
 </resources>
