@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="news">Nouvelles fonctionnalités</string>
     <string name="news_message">Première version publique.</string>
     <string name="about">A propos de</string>
@@ -38,4 +38,37 @@
     <string name="qr_code_scanner">Scanneur de QR Code</string>
     <string name="qr_code_scan_failed">Echec de scan.</string>
     <string name="qr_code_invalid">QR Code invalide.</string>
+    <string name="qr_code_start">Doit démarrer par\n■ https://stigning.se/ofeed ou\n■ https://stigning.se/connector.</string>
+    <string name="ofeed_link_invalid">Lien OFeed invalide.</string>
+    <string name="clipboard_is_empty">Presse-papier vide.</string>
+    <string name="timeouts">Expirations</string>
+    <string name="http_timeouts" tools:ignore="MissingTranslation">Délais d\'expiration HTTP</string>
+    <string name="http_timeouts_help" tools:ignore="MissingTranslation">Délai d\'expiration en secondes. Zéro signifie pas d\'expiration.</string>
+    <string name="http_timeouts_defaults_help" tools:ignore="MissingTranslation">Réinitialiser les délais d\'expiration aux valeurs par défaut.</string>
+    <string name="http_timeout_connect" tools:ignore="MissingTranslation">Expiration de la connexion</string>
+    <string name="http_timeout_connect_help" tools:ignore="MissingTranslation">Intervalle de temps maximum pour établir une connexion avec l\'hôte.</string>
+    <string name="http_timeout_read" tools:ignore="MissingTranslation">Délai d\'expiration de lecture</string>
+    <string name="http_timeout_read_help" tools:ignore="MissingTranslation">Intervalle de temps maximum entre 2 paquets de données lors de l\'attente de réponse du serveur.</string>
+    <string name="http_timeout_write" tools:ignore="MissingTranslation">Délai d\'expiration d\'écriture</string>
+    <string name="http_timeout_write_help" tools:ignore="MissingTranslation">Intervalle de temps maximum entre 2 paquets lors de l\'envoi d\'une requête au serveur.</string>
+    <string name="http_timeout_call" tools:ignore="MissingTranslation">Expiration de l\'appel</string>
+    <string name="http_timeout_call_help" tools:ignore="MissingTranslation">Limite de temps pour un appel complet.</string>
+    <string name="create_xml_id">Créer un id XML</string>
+    <string name="xml_id_help">Le chargement de la liste de résultats sera mis à jour avec un identifiant unique pour chaque participant.\n\nCet id XML est construit à partir de chaque nom de participant et numéro SportIdent. La combinaison de \"Nom+Prénom+SportIdent\" ne peut apparaître qu\'une fois par compétition.\n\nDevrait normalement être activé. Désactivez <b>not</b> modifie la liste de résultats.</string>
+    <string name="clear_ofeed_competitors">Cela va supprimer tous les participants de cette compétition dans OFeed.\n\nCet effacement peut être utilisé si des données dupliquées apparaissent dans OFeed. Le prochain chargement restaurera les participants.\n\n<b>Ne peut pas être annulé!</b></string>
+    <string name="login_details_help_scan">Scanner le QRCode OFeed.</string>
+    <string name="login_details_help_paste">Coller le lien OFeed.</string>
+    <string name="login_details_help">Le QR code et le lien contiennent l\'URL de serveur, l\'id de compétition et le mot de passe.\n<b>Scanner le QR code</b> - Utilisez votre appareil photo pour scanner le QR code.\n<b>Coller le lien</b> - Copiez le lien, ouvrez les paramètres de l\'application, et collez.\n<b>Partager le lien</b> - Sélectionnez et maintenez le lien, et sélectionnez <i>Partager</i>. Dans le menu contextuel, choisissez Connector app.</string>
+    <string name="oresults_api_key">Api key</string>
+    <string name="oresults_api_key_is_missing">Il manque l\'Api key.</string>
+    <string name="log">Journal</string>
+    <string name="show_log">Visualiser les journaux</string>
+    <string name="show_http_log">Journal HTTP</string>
+    <string name="log_is_empty">Le journal est vide.</string>
+    <string name="status">Statut</string>
+    <string name="status_running">Course OK</string>
+    <string name="status_stopped">Stoppé</string>
+    <string name="status_not_configured">Non configuré</string>
+    <string name="si_droid_unreachable_title">SI-Droid inaccessible</string>
+    <string name="si_droid_unreachable_message">Assurez vous que:\n■ SI-Droid Event est en cours d\'exécution.\n■ Son <i>Result Service</i> est actif.\n■ Son numéro de port correspond aux paramètres de cette application.\n\n<b>Dépannage</b>\nSi un service s\'arrête de manière inopinée, vérifiez les paramètres Android \u0020→ \u0020Apps \u0020→ <i>App Name</i> → Batterie \u0020→ <b>Non restreint</b> ou <b> permettre l\'usage en arrière plan</b> (ou libellé équivalent).</string>
 </resources>
