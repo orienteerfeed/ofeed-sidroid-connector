@@ -7,7 +7,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nya funktioner</string>
-    <string name="news_message">\n■ Layout changes of the Settings dialogue.</string>
+    <string name="news_message">Första offentliga släpp.</string>
     <!--
     ********************************************************************************************
     * Contributors.
@@ -67,7 +67,7 @@
     <string name="event_id_is_missing">Even-id saknas.</string>
     <string name="password">Lösen</string>
     <string name="password_is_missing">Lösen saknas.</string>
-    <string name="qr_code_scan">Skanna QR</string>
+    <string name="qr_code_scan">Skanna</string>
     <string name="qr_code_scanner">QR-kodskanner</string>
     <string name="qr_code_scan_failed">Skanningen misslyckades.</string>
     <string name="qr_code_invalid">Ogiltig QR-kod.</string>
@@ -141,4 +141,12 @@
     <string name="update_canceled">Uppdateringen avbröts.</string>
     <string name="update_failed">Uppdateringen misslyckades.</string>
     <string name="update_postpone_one_week">Skjut upp en vecka</string>
+    <string name="http_timeout_connect" tools:ignore="MissingTranslation">Anslutningstimeout</string>
+    <string name="http_timeout_connect_help" tools:ignore="MissingTranslation">Maximal tidsperiod för att upprätta en anslutning med värden.</string>
+    <string name="http_timeout_read" tools:ignore="MissingTranslation">Läsningstidsgräns</string>
+    <string name="http_timeout_read_help" tools:ignore="MissingTranslation">Maximal tid mellan två datapaket vid väntan på serverns svar.</string>
+    <string name="http_timeout_write" tools:ignore="MissingTranslation">Skriv timeout</string>
+    <string name="http_timeout_write_help" tools:ignore="MissingTranslation">Maximal tid mellan två datapaket vid sändning av begäran till servern.</string>
+    <string name="http_timeout_call" tools:ignore="MissingTranslation">Samtalstidsgräns</string>
+    <string name="http_timeout_call_help" tools:ignore="MissingTranslation">Tidsgräns för ett komplett samtal.</string>
 </resources>
