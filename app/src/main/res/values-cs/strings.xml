@@ -7,7 +7,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nové funkce</string>
-    <string name="news_message">\n■ Layout changes of the Settings dialogue.</string>
+    <string name="news_message">První oficiální verze.</string>
     <!--
     ********************************************************************************************
     * Contributors.
@@ -67,7 +67,7 @@
     <string name="event_id_is_missing">Akce Id není vyplněné.</string>
     <string name="password">Heslo</string>
     <string name="password_is_missing">Heslo není vyplněné.</string>
-    <string name="qr_code_scan">Skenovat QR</string>
+    <string name="qr_code_scan">Skenovat</string>
     <string name="qr_code_scanner">Čtečka QR kódu</string>
     <string name="qr_code_scan_failed">Skenování se nezdařilo.</string>
     <string name="qr_code_invalid">Neplatný QR kód.</string>
