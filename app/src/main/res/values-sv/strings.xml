@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!--
     ********************************************************************************************
     * New features.
@@ -8,8 +7,7 @@
     * Regex for single backslash: \\[a-mo-zA-MO-Z0-9]
     ******************************************************************************************** -->
     <string name="news">Nya funktioner</string>
-    <string name="news_message">Första publika versionen.</string>
-
+    <string name="news_message">Första offentliga släpp.</string>
     <!--
     ********************************************************************************************
     * Contributors.
@@ -17,7 +15,6 @@
     <string-array name="about_contributors">
         <item>Lukáš Kettner, OK Kamenice.</item>
     </string-array>
-
     <!--
     ********************************************************************************************
     * General.
@@ -38,33 +35,24 @@
     <string name="upload_file">Ladda upp fil</string>
     <string name="upload_interval">Uppladdningsintervall</string>
     <string name="uploads">Uppladdningar</string>
-
     <!--
     ********************************************************************************************
     * Time units.
     ******************************************************************************************** -->
     <string name="minute">min</string>
     <string name="second">sek</string>
-
     <!--
     ********************************************************************************************
     * Confirm exiting app with back button, which will stop the foreground service.
     ******************************************************************************************** -->
-    <string name="back_button_exit_confirmation">Sluta ladda upp och avsluta?
-        \nKlicka på <b>Hem</b> för att lämna appen och fortsätta ladda upp.
-    </string>
-
+    <string name="back_button_exit_confirmation">Sluta ladda upp och avsluta? \nKlicka på <b>Hem</b> för att lämna appen och fortsätta ladda upp.</string>
     <!--
     ********************************************************************************************
     * SI-Droid Event settings.
     ******************************************************************************************** -->
     <string name="port_number">Portnummer</string>
     <string name="port_number_error">Portnumret måste vara mellan 1025 och 65535.</string>
-    <string name="port_number_help">Portnumret definieras av SI-Droid Event.
-        Öppna den appen och välj <i>Settings</i> => <i>Result Service</i> => <i>Result Service Port</i>.
-        \n\nSe också till att <i>Use the builtin result service</i> är påslagen.
-    </string>
-
+    <string name="port_number_help">Portnumret definieras av SI-Droid Event. Öppna den appen och välj <i>Settings</i> =&gt; <i>Result Service</i> =&gt; <i>Result Service Port</i>. \n\nSe också till att <i>Use the builtin result service</i> är påslagen.</string>
     <!--
     ********************************************************************************************
     * OFeed settings.
@@ -74,13 +62,7 @@
     <string name="server_incorrect_url">Felaktig serveradress (URL).</string>
     <string name="server_incorrect_path">Felaktig path. Serverns URL måste sluta med <i>/rest/v1/events</i></string>
     <string name="server_https_required">https krävs.</string>
-    <string name="server_help">OFeed serveradress (URL):
-        \n■ Default <i>https://api.orienteerfeed.com/rest/v1/events</i>
-        \n■ <i>api.orienteerfeed.com</i> → default
-        \n■ <i>xxx.yyy.zzz</i> → <i>https://xxx.yyy.zzz/rest/v1/events</i>
-        \n■ Måste sluta med <i>/rest/v1/events</i>
-        \n■ Android kräver <i>https</i>
-    </string>
+    <string name="server_help">OFeed serveradress (URL): \n■ Default <i>https://api.orienteerfeed.com/rest/v1/events</i> \n■ <i>api.orienteerfeed.com</i> → default \n■ <i>xxx.yyy.zzz</i> → <i>https://xxx.yyy.zzz/rest/v1/events</i> \n■ Måste sluta med <i>/rest/v1/events</i> \n■ Android kräver <i>https</i></string>
     <string name="event_id">Event-id</string>
     <string name="event_id_is_missing">Even-id saknas.</string>
     <string name="password">Lösen</string>
@@ -97,32 +79,16 @@
     <string name="http_timeouts_help">Tidsgränser i sekunder. Noll innebär ingen timeout.</string>
     <string name="http_timeouts_defaults_help">Återställ timeouterna till förvalda värden.</string>
     <string name="create_xml_id">Skapa XML-id</string>
-    <string name="xml_id_help">Den uppladdade resultatlistan kommer att uppdateras med ett unikt id för varje deltagare.
-        \n\nDetta id bildas av varje deltagares namn och bricknummer.
-        Kombinationen \”Efternamn + Förnamn + bricknummer\” får endast förekomma en gång i tävlingen.
-        \n\nSka normalt vara aktiverad. Avmarkera för att <b>inte</b> modifiera resultatlistan.
-    </string>
-    <string name="clear_ofeed_competitors">Detta kommer att radera alla deltagare i OFeed.
-        \n\nDenna rensning kan användas om dubbletter har dykt upp i OFeed.
-        Nästa uppladdning kommer att återställa deltagarna.
-        \n\n<b>Kan inte ångras!</b>
-    </string>
+    <string name="xml_id_help">Den uppladdade resultatlistan kommer att uppdateras med ett unikt id för varje deltagare. \n\nDetta id bildas av varje deltagares namn och bricknummer. Kombinationen Efternamn + Förnamn + bricknummer får endast förekomma en gång i tävlingen. \n\nSka normalt vara aktiverad. Avmarkera för att <b>inte</b> modifiera resultatlistan.</string>
+    <string name="clear_ofeed_competitors">Detta kommer att radera alla deltagare i OFeed. \n\nDenna rensning kan användas om dubbletter har dykt upp i OFeed. Nästa uppladdning kommer att återställa deltagarna. \n\n<b>Kan inte ångras!</b></string>
     <string name="login_details_help_scan">Skanna OFeed QR code.</string>
     <string name="login_details_help_paste">Klistra in OFeed textlänk.</string>
-    <string name="login_details_help">QR-koden/länken innehåller server-URL, tävlings-id
-        och lösenord.
-        \n<b>Skanna QR-kod</b> – Använd enhetens kamera för att skanna QR-koden.
-        \n<b>Klistra in länk</b> – Kopiera länken, öppna appens inställningar och klistra sedan in den.
-        \n<b>Dela länk</b> – Långtryck på länken och välj <i>Dela</i>. I popup-menyn, klicka på Connector-appen.
-    </string>
-
     <!--
     ********************************************************************************************
     * OResults settings.
     ******************************************************************************************** -->
     <string name="oresults_api_key">Api key</string>
     <string name="oresults_api_key_is_missing">Api key saknas.</string>
-
     <!--
     ********************************************************************************************
     * Log and status.
@@ -136,15 +102,7 @@
     <string name="status_stopped">Stoppad.</string>
     <string name="status_not_configured">Ej konfigurerad.</string>
     <string name="si_droid_unreachable_title">SI-Droid kan inte nås.</string>
-    <string name="si_droid_unreachable_message">Kontrollera att:
-        \n■ SI-Droid Event körs.
-        \n■ Dess <i>Result Service</i> är aktiverad.
-        \n■ Dess portnummer matchar den här appens inställningar.
-        \n\n<b>Felsökning</b> – Om en tjänst oväntat stoppas, kolla Androids inställningar
-        => Appar => <i>Appnamn</i> => Batteri => <b>Tillåt bakgrundsanvändning</b> eller
-        <b>Inga begränsningar</b> (eller liknande formulering).
-    </string>
-
+    <string name="si_droid_unreachable_message">Kontrollera att: \n■ SI-Droid Event körs. \n■ Dess <i>Result Service</i> är aktiverad. \n■ Dess portnummer matchar den här appens inställningar. \n\n<b>Felsökning</b> – Om en tjänst oväntat stoppas, kolla Androids inställningar =&gt; Appar =&gt; <i>Appnamn</i> =&gt; Batteri =&gt; <b>Tillåt bakgrundsanvändning</b> eller <b>Inga begränsningar</b> (eller liknande formulering).</string>
     <!--
     ********************************************************************************************
     * Log/trace messages.
@@ -152,29 +110,18 @@
     <string name="si_droid_no_results">Inga resultat ← SI-Droid.</string>
     <string name="uploaded_ok">Uppladdad OK.</string>
     <string name="upload_failed">Misslyckades.</string>
-
     <!--
     ********************************************************************************************
     * Help.
     ******************************************************************************************** -->
     <string name="help_title">Hjälp</string>
-    <string name="help_message">Den här appen hämtar resultatlistor från SI-Droid Event
-        och laddar upp dem till OFeed eller OResults. Den uppladdade resultatlistan kan uppdateras
-        med ett unikt id för varje deltagare.
-    </string>
-
+    <string name="help_message">Den här appen hämtar resultatlistor från SI-Droid Event och laddar upp dem till OFeed eller OResults. Den uppladdade resultatlistan kan uppdateras med ett unikt id för varje deltagare.</string>
     <!--
     ********************************************************************************************
     * Android battery restriction, which can stop the foreground service.
     ******************************************************************************************** -->
     <string name="battery_restriction_title">Batterirestriktioner</string>
-    <string name="battery_restriction">Androids batterirestriktioner är påslagna för appen.
-        Det kan medföra att uppladdningen stoppas.
-        \n\nSlå av batterirestriktionen?
-        \n\nDetta startar Androids inställningar för appen, där du kan ändra inställningen
-        Batteri => <b>Tillåt bakgrundsanvändning</b> eller <b>Inga begränsningar</b> (eller liknande formulering).
-    </string>
-
+    <string name="battery_restriction">Androids batterirestriktioner är påslagna för appen. Det kan medföra att uppladdningen stoppas. \n\nSlå av batterirestriktionen? \n\nDetta startar Androids inställningar för appen, där du kan ändra inställningen Batteri =&gt; <b>Tillåt bakgrundsanvändning</b> eller <b>Inga begränsningar</b> (eller liknande formulering).</string>
     <!--
     ********************************************************************************************
     * Notifications in the status bar. Shows that the foreground service is running.
@@ -182,13 +129,8 @@
     <string name="notification_title">Connector service</string>
     <string name="notification_text">SI-Droid Connector uppladdningstjänst</string>
     <string name="notifications_permission_title">Android behörighet</string>
-    <string name="notifications_permission_message">Tillåt att aviseringsikonen visas.
-        Den indikerar att appens uppladdningstjänst körs.
-    </string>
-    <string name="notifications_permission_not_granted">Aviseringsikonen kommer inte att visas.
-        Uppladdningstjänsten kommer fortfarande att köras.
-    </string>
-
+    <string name="notifications_permission_message">Tillåt att aviseringsikonen visas. Den indikerar att appens uppladdningstjänst körs.</string>
+    <string name="notifications_permission_not_granted">Aviseringsikonen kommer inte att visas. Uppladdningstjänsten kommer fortfarande att köras.</string>
     <!--
     ********************************************************************************************
     * In-app update.
@@ -199,4 +141,12 @@
     <string name="update_canceled">Uppdateringen avbröts.</string>
     <string name="update_failed">Uppdateringen misslyckades.</string>
     <string name="update_postpone_one_week">Skjut upp en vecka</string>
+    <string name="http_timeout_connect" tools:ignore="MissingTranslation">Anslutningstimeout</string>
+    <string name="http_timeout_connect_help" tools:ignore="MissingTranslation">Maximal tidsperiod för att upprätta en anslutning med värden.</string>
+    <string name="http_timeout_read" tools:ignore="MissingTranslation">Läsningstidsgräns</string>
+    <string name="http_timeout_read_help" tools:ignore="MissingTranslation">Maximal tid mellan två datapaket vid väntan på serverns svar.</string>
+    <string name="http_timeout_write" tools:ignore="MissingTranslation">Skriv timeout</string>
+    <string name="http_timeout_write_help" tools:ignore="MissingTranslation">Maximal tid mellan två datapaket vid sändning av begäran till servern.</string>
+    <string name="http_timeout_call" tools:ignore="MissingTranslation">Samtalstidsgräns</string>
+    <string name="http_timeout_call_help" tools:ignore="MissingTranslation">Tidsgräns för ett komplett samtal.</string>
 </resources>
